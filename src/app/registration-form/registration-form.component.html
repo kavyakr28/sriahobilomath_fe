@@ -1,0 +1,323 @@
+<div class="registration-container">
+  <!-- Header Section -->
+  <div class="form-header">
+    <img src="assets/images/paranya-header.jpg" alt="Parayana Header" class="header-image">
+    <h1>Parayana Registration Form</h1>
+    <p>Please fill in all the required details for registration</p>
+  </div>
+
+  <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="registration-form">
+    <!-- Personal Information Section -->
+    <div class="form-section">
+      <h2>Personal Information</h2>
+      
+      <div class="form-row">
+        <!-- Full Name -->
+        <div class="form-group">
+          <label for="fullName">Name of the Parayanakar <span class="required">*</span></label>
+          <input type="text" id="fullName" formControlName="fullName" placeholder="Enter full name" (blur)="f['fullName'].markAsTouched()">
+          <div *ngIf="showErrors('fullName')" class="error-message">
+            <div *ngIf="f['fullName'].errors?.['required']">Name is required</div>
+            <div *ngIf="f['fullName'].errors?.['minlength']">Name must be at least 3 characters</div>
+          </div>
+        </div>
+
+        <!-- Date of Birth -->
+        <div class="form-group">
+          <label for="dob">Date of Birth <span class="required">*</span></label>
+          <input type="text" 
+                 id="dob" 
+                 formControlName="dob" 
+                 placeholder="dd/mm/yyyy" 
+                 (input)="formatDateInput($event)"
+                 (blur)="f['dob'].markAsTouched()"
+                 maxlength="10">
+          <div *ngIf="showErrors('dob')" class="error-message">
+            <div *ngIf="f['dob'].errors?.['required']">Date of Birth is required</div>
+            <div *ngIf="f['dob'].errors?.['pattern']">Please enter a valid date in dd/mm/yyyy format</div>
+            <div *ngIf="f['dob'].errors?.['futureDate']">Date cannot be in the future</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Phone Number -->
+        <div class="form-group">
+          <label for="phone">Phone Number <span class="required">*</span></label>
+          <input type="tel" id="phone" formControlName="phone" placeholder=" XXXXXX XXXX"maxlength="10" (blur)="f['phone'].markAsTouched()">
+          <div *ngIf="showErrors('phone')" class="error-message">
+            <div *ngIf="f['phone'].errors?.['required']">Phone number is required</div>
+            <div *ngIf="f['phone'].errors?.['pattern']">Please enter a valid 10-digit phone number</div>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Email ID</label>
+          <input type="email" id="email" formControlName="email" placeholder="example@email.com" (blur)="f['email'].markAsTouched()">
+          <div *ngIf="showErrors('email')" class="error-message">
+            <div *ngIf="f['email'].errors?.['email']">Please enter a valid email address</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- City -->
+        <div class="form-group">
+          <label for="city">City <span class="required">*</span></label>
+          <input type="text" id="city" formControlName="city" placeholder="Enter your city" (blur)="f['city'].markAsTouched()">
+          <div *ngIf="showErrors('city')" class="error-message">
+            <div *ngIf="f['city'].errors?.['required']">City is required</div>
+            <div *ngIf="f['city'].errors?.['pattern']">Please enter a valid city name</div>
+          </div>
+        </div>
+        
+        <!-- Empty div for alignment -->
+        <div class="form-group"></div>
+      </div>
+
+      <div class="form-row">
+        <!-- Aadhaar Number -->
+        <div class="form-group">
+          <label for="aadhaar">Aadhaar Number <span class="required">*</span></label>
+          <div class="aadhaar-input-container">
+            <input type="tel" inputmode="numeric" id="aadhaar" formControlName="aadhaar" placeholder="XXXXXXXXXXXX" maxlength="12" (blur)="f['aadhaar'].markAsTouched()" (keydown)="$event.key === 'e' || $event.key === '.' || $event.key === '-' || $event.key === '+' ? $event.preventDefault() : null">
+            <div *ngIf="isCheckingAadhaar" class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            <i *ngIf="!isCheckingAadhaar && f['aadhaar'].valid && !f['aadhaar'].errors" class="fas fa-check-circle valid-icon"></i>
+          </div>
+          <div *ngIf="f['aadhaar'].touched" class="error-message">
+            <div *ngIf="f['aadhaar'].errors?.['required']">Aadhaar Id is required</div>
+            <div *ngIf="f['aadhaar'].errors?.['pattern']">Aadhaar Id must only contain numbers</div>
+            <div *ngIf="f['aadhaar'].errors?.['aadhaarExists']">This Aadhaar Id is already registered</div>
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="form-group">
+          <label for="address">Address <span class="required">*</span></label>
+          <textarea id="address" formControlName="address" rows="3" placeholder="Enter your full address" (blur)="f['address'].markAsTouched()"></textarea>
+          <div *ngIf="showErrors('address')" class="error-message">
+            <div *ngIf="f['address'].errors?.['required']">Address is required</div>
+            <div *ngIf="f['address'].errors?.['minlength']">Address must be at least 10 characters</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Scholar In -->
+        <div class="form-group">
+          <label for="scholarIn">Scholar In <span class="required">*</span></label>
+          <select id="scholarIn" formControlName="scholarIn" (change)="onScholarInChange($event)" (blur)="f['scholarIn'].markAsTouched()">
+            <option value="" disabled selected>Select scholarship category</option>
+            <option *ngFor="let option of scholarOptions" [value]="option.value">{{option.label}}</option>
+          </select>
+          <div *ngIf="showErrors('scholarIn')" class="error-message">
+            <div *ngIf="f['scholarIn'].errors?.['required']">Scholar In is required</div>
+          </div>
+        </div>
+
+        <!-- Sakai (dynamic) -->
+        <div class="form-group" *ngIf="subCategoryOptions.length > 0">
+          <label for="sakai">Sakai <span class="required">*</span></label>
+          <select id="sakai" formControlName="sakai" (blur)="f['sakai'].markAsTouched()">
+            <option value="" disabled selected>Select Sakai</option>
+            <option *ngFor="let option of subCategoryOptions" [value]="option.value">{{option.label}}</option>
+          </select>
+          <div *ngIf="showErrors('sakai')" class="error-message">
+            <div *ngIf="f['sakai'].errors?.['required']">Sakai is required</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+       
+        <!-- Emergency Contact -->
+        <div class="form-group">
+          <label for="emergencyContact">Emergency Contact <span class="required">*</span></label>
+          <input type="tel" id="emergencyContact" formControlName="emergencyContact" maxlength="10" placeholder=" XXXXXX XXXX" (blur)="f['emergencyContact'].markAsTouched()">
+          <div *ngIf="showErrors('emergencyContact')" class="error-message">
+            <div *ngIf="f['emergencyContact'].errors?.['required']">Emergency contact is required</div>
+            <div *ngIf="f['emergencyContact'].errors?.['pattern']">Please enter a valid 10-digit phone number</div>
+            <div *ngIf="f['emergencyContact'].errors?.['sameAsPhone']">Emergency contact cannot be the same as phone number</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Banking Information Section -->
+    <div class="form-section banking-section">
+      <h2>Banking Information</h2>
+      
+      <div class="form-row">
+        <!-- Is it your bank account? -->
+        <div class="form-group">
+          <label>Is it your bank account? <span class="required">*</span></label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" formControlName="isOwnAccount" [value]="true" (change)="f['isOwnAccount'].markAsTouched()">
+              <span>Yes</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" formControlName="isOwnAccount" [value]="false" (change)="f['isOwnAccount'].markAsTouched()">
+              <span>No</span>
+            </label>
+          </div>
+          <div *ngIf="showErrors('isOwnAccount')" class="error-message">
+            <div *ngIf="f['isOwnAccount'].errors?.['required']">Please select an option</div>
+          </div>
+        </div>
+
+        <!-- Relationship to account holder (shown only if not own account) -->
+        <div *ngIf="registrationForm.get('isOwnAccount')?.value === false">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="accountHolderRelationship">Relationship to the account holder <span class="required">*</span></label>
+              <input type="text" id="accountHolderRelationship" formControlName="accountHolderRelationship" 
+                     placeholder="e.g., Father, Mother, Spouse" (blur)="f['accountHolderRelationship'].markAsTouched()">
+              <div *ngIf="showErrors('accountHolderRelationship')" class="error-message">
+                <div *ngIf="f['accountHolderRelationship'].errors?.['required']">Relationship is required</div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="accountHolderName">Account Holder Name <span class="required">*</span></label>
+              <input type="text" id="accountHolderName" formControlName="accountHolderName" 
+                     placeholder="Enter account holder's full name" (blur)="f['accountHolderName'].markAsTouched()">
+              <div *ngIf="showErrors('accountHolderName')" class="error-message">
+                <div *ngIf="f['accountHolderName'].errors?.['required']">Account holder name is required</div>
+                <div *ngIf="f['accountHolderName'].errors?.['minlength']">Name must be at least 3 characters</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Account Number -->
+        <div class="form-group">
+          <app-masked-input
+            label="Bank Account Number"
+            formControlName="accountNumber"
+            placeholder="Enter account number"
+            [required]="true">
+          </app-masked-input>
+          <div *ngIf="showErrors('accountNumber')" class="error-message">
+            <div *ngIf="f['accountNumber'].errors?.['required']">Account number is required</div>
+            <div *ngIf="f['accountNumber'].errors?.['pattern'] || f['accountNumber'].errors?.['invalidLength']">
+              Please enter a valid account number (9-18 digits)
+            </div>
+          </div>
+          
+          <!-- Confirm Account Number -->
+          <div class="form-group" *ngIf="f['accountNumber'].value">
+            <app-masked-input
+              label="Confirm Bank Account Number"
+              formControlName="confirmAccountNumber"
+              placeholder="Re-enter account number"
+              [required]="true"
+              [showActualValue]="true">
+            </app-masked-input>
+            <div *ngIf="showErrors('confirmAccountNumber')" class="error-message">
+              <div *ngIf="f['confirmAccountNumber'].errors?.['required']">
+                Please confirm your account number
+              </div>
+              <div *ngIf="f['confirmAccountNumber'].errors?.['pattern'] || f['confirmAccountNumber'].errors?.['invalidLength']">
+                Please enter a valid account number (9-18 digits)
+              </div>
+              <div *ngIf="f['confirmAccountNumber'].errors?.['accountNumberMismatch']">
+                Account numbers do not match
+              </div>
+            </div>
+            <div *ngIf="f['accountNumber'].value && f['confirmAccountNumber'].value && 
+                     !f['confirmAccountNumber'].errors?.['accountNumberMismatch'] && 
+                     !f['confirmAccountNumber'].errors?.['invalidLength'] &&
+                     !f['confirmAccountNumber'].errors?.['required']" 
+                 class="success-message">
+              Account numbers match
+            </div>
+          </div>
+        </div>
+
+        <!-- IFSC Code -->
+        <div class="form-group">
+          <label for="ifscCode">IFSC Code <span class="required">*</span></label>
+          <input type="text" id="ifscCode" formControlName="ifscCode" placeholder="Enter IFSC code" (blur)="f['ifscCode'].markAsTouched()">
+          <div *ngIf="showErrors('ifscCode')" class="error-message">
+            <div *ngIf="f['ifscCode'].errors?.['required']">IFSC code is required</div>
+            <div *ngIf="f['ifscCode'].errors?.['pattern']">Please enter a valid IFSC code (e.g., HDFC0001234)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Bank Selection -->
+        <div class="form-group bank-selection-container">
+          <label for="bankName">Name of the Bank <span class="required">*</span></label>
+          <div class="bank-selection-row">
+            <div class="bank-dropdown">
+              <select id="bankName" formControlName="bankName" (blur)="f['bankName'].markAsTouched()" class="form-control">
+                <option value="" disabled selected>Select Bank</option>
+                <option *ngFor="let bank of banks" 
+                        [value]="bank.name" 
+                        [class.other-option]="bank.isOther">
+                  {{bank.name}}
+                </option>
+              </select>
+              <div *ngIf="showErrors('bankName')" class="error-message">
+                <div *ngIf="f['bankName'].errors?.['required']">Please select a bank</div>
+              </div>
+            </div>
+
+            <!-- Other Bank Name (shown only when 'Others' is selected) -->
+            <div class="other-bank-input" *ngIf="registrationForm.get('bankName')?.value === 'Others (Please specify)'">
+              <input type="text" id="otherBankName" formControlName="otherBankName" 
+                     placeholder="Enter bank name" (blur)="f['otherBankName'].markAsTouched()" 
+                     class="form-control other-bank-input-field">
+              <div *ngIf="showErrors('otherBankName')" class="error-message">
+                <div *ngIf="f['otherBankName'].errors?.['required']">Required</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Branch Name -->
+        <div class="form-group">
+          <label for="branchName">Name of the Branch <span class="required">*</span></label>
+          <input type="text" id="branchName" formControlName="branchName" placeholder="Enter branch name" (blur)="f['branchName'].markAsTouched()">
+          <div *ngIf="showErrors('branchName')" class="error-message">
+            <div *ngIf="f['branchName'].errors?.['required']">Branch name is required</div>
+          </div>
+        </div>
+        
+        <!-- Account Type -->
+        <div class="form-group">
+          <label for="accountType">Account Type <span class="required">*</span></label>
+          <select id="accountType" formControlName="accountType" (blur)="f['accountType'].markAsTouched()" class="form-control">
+            <option value="" disabled selected>Select Account Type</option>
+            <option *ngFor="let type of accountTypes" [value]="type.value">{{type.label}}</option>
+          </select>
+          <div *ngIf="showErrors('accountType')" class="error-message">
+            <div *ngIf="f['accountType'].errors?.['required']">Account type is required</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security Note -->
+    <div class="security-note">
+      <p>Information collected above are safe and encrypted. It will be stored only for the mutt communication.</p>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="form-actions">
+      <button type="submit" [disabled]="registrationForm.invalid  || isSubmitting" class="submit-btn">
+        <span *ngIf="!isSubmitting">Submit Registration</span>
+        <span *ngIf="isSubmitting" class="spinner">Submitting...</span>
+      </button>
+    </div>
+  </form>
+</div>
