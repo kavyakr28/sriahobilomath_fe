@@ -1,27 +1,31 @@
 <div class="dashboard-container">
+  <!-- Logout Button -->
   <div class="logout-container">
-    <button class="logout-button" (click)="logout()">
-      <i class="material-icons">logout</i>
+    <button (click)="logout()" class="logout-button">
       <span>Logout</span>
     </button>
   </div>
-  <h1>Welcome to Admin Dashboard</h1>
+  
+  <h1>Admin Dashboard</h1>
+
   <div class="button-grid">
-    <button class="action-button" (click)="onOnSpotRegistration()">
-      <i class="material-icons">person_add</i>
+    <button (click)="onOnSpotRegistration()" class="action-button">
       <span>On-Spot Registration</span>
     </button>
-    <button class="action-button" (click)="onAttendanceManagement()">
-      <i class="material-icons">groups</i>
+    
+    <button (click)="onAttendanceManagement()" class="action-button">
       <span>Attendance Management</span>
     </button>
-    <button class="action-button" (click)="onQRScanAttendance()">
-      <i class="material-icons">qr_code_scanner</i>
+    
+    <button (click)="onQRScanAttendance()" class="action-button">
       <span>QR Scan for Attendance</span>
     </button>
-    <button class="action-button" (click)="onQRScanGifts()">
-      <i class="material-icons">redeem</i>
+    
+    <button (click)="onQRScanGifts()" class="action-button">
       <span>QR Scan for Gifts</span>
     </button>
-      </div>
+  </div>
+  
+  <!-- Router outlet for child components -->
+  <router-outlet></router-outlet>
 </div>

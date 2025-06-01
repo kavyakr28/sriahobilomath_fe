@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -7,34 +7,40 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent {
-  constructor(private router: Router, private authService: AuthService) {}
+export class DashboardComponent implements OnInit {
 
-  logout(): void {
-    // Clear the token from localStorage
-    localStorage.removeItem('token');
-    // Navigate to login page
-    this.router.navigate(['/login']);
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private authService: AuthService
+  ) { }
+
+
+  ngOnInit(): void {
+    
   }
 
-  onQRScanAttendance(): void {
-    // TODO: Implement QR scan for attendance functionality
-    console.log('QR Scan for Attendance clicked');
-  }
 
-  onQRScanGifts(): void {
-    // TODO: Implement QR scan for gifts functionality
-    console.log('QR Scan for Gifts clicked');
+  
+  onOnSpotRegistration(): void {
+    this.router.navigate(['/registration']);
   }
 
   onAttendanceManagement(): void {
-    // TODO: Implement attendance management functionality
-    console.log('Attendance Management clicked');
   }
 
-  onOnSpotRegistration(): void {
-    // TODO: Implement on-spot registration functionality
-    console.log('On-Spot Registration clicked');
-    this.router.navigate(['/registration']);
+  onQRScanAttendance(): void {
+    console.log('QR Scan for Attendance clicked');
+    // TODO: Implement QR scan for attendance functionality
+  }
+
+  onQRScanGifts(): void {
+    console.log('QR Scan for Gifts clicked');
+    // TODO: Implement QR scan for gifts functionality
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

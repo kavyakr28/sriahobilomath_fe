@@ -32,8 +32,8 @@ import { SignupComponent } from './admin/signup/signup.component';
     RegistrationFormComponent,
     LoginComponent,
     DashboardComponent,
-    SignupComponent
-  ],
+    SignupComponent,
+    ],
   imports: [
     BrowserModule,
     AppRoutingModule,
