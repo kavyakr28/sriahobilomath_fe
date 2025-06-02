@@ -28,6 +28,7 @@ export const ROLE_ADMIN = 'ROLE_ADMIN';
 export const ROLE_USER = 'ROLE_USER';
 
 export interface LoginResponse extends AuthResponse {
+  role: any;
   user: User;
 }
 export interface SignupResponse extends AuthResponse {}
@@ -92,7 +93,7 @@ export class AuthService {
         const { username: _, ...userWithoutUsername } = response.user || {};
         const userData = {
           username,
-          roles: response.user.role,
+          roles: response.role,
           // Don't store password, we'll use the auth header
           ...userWithoutUsername
         };
