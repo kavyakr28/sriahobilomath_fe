@@ -20,13 +20,12 @@ export class DashboardComponent implements OnInit {
     
   }
 
-
-  
   onOnSpotRegistration(): void {
     this.router.navigate(['/registration']);
   }
 
   onAttendanceManagement(): void {
+    this.router.navigate(['/admin/attendance']);
   }
 
   onQRScanAttendance(): void {

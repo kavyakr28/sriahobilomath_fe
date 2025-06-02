@@ -1,0 +1,377 @@
+.attendance-container {
+  padding: 20px;
+  max-width: 100%;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header Styles */
+.header {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.header h2 {
+  margin: 10px 0;
+  color: #333;
+}
+
+.header-actions {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+/* Search Box */
+.search-box {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-box i {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 8px 10px 8px 35px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.export-button, .print-button, .back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.back-button {
+  background-color: #6c757d;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.back-button:hover {
+  background-color: #5a6268;
+}
+
+.export-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.export-button:hover {
+  background-color: #218838;
+}
+
+.print-button {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.print-button:hover {
+  background-color: #138496;
+}
+
+/* Table Styles */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  margin: 20px 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  background: white;
+}
+
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.attendance-table th {
+  background-color: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  text-align: center;
+  padding: 12px 8px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.attendance-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #e9ecef;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.sub-header th {
+  background-color: #f1f3f5;
+  font-weight: 500;
+  font-size: 0.85em;
+  padding: 8px;
+}
+
+/* Attendance Cells */
+.attendance-cell {
+  cursor: pointer;
+  transition: background-color 0.2s;
+  min-width: 40px;
+  height: 40px;
+  position: relative;
+}
+
+.attendance-cell:hover {
+  background-color: #f8f9fa;
+}
+
+.attendance-cell.present {
+  background-color: #d4edda;
+  color: #155724;
+  font-weight: bold;
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border-left-color: #17a2b8;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Error State */
+.error-state {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.retry-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-top: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.retry-button:hover {
+  background-color: #c82333;
+}
+
+/* Print Column */
+.print-cell {
+  white-space: nowrap;
+  text-align: center;
+  padding: 8px;
+}
+
+.print-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #17a2b8;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.print-button:hover {
+  background-color: #138496;
+  text-decoration: none;
+}
+
+.print-button i {
+  font-size: 14px;
+}
+
+/* Action Buttons in Table */
+.actions {
+  white-space: nowrap;
+  text-align: center;
+  padding: 8px;
+}
+
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.action-button:hover {
+  background-color: #5a6268;
+  text-decoration: none;
+}
+
+.action-button i {
+  font-size: 14px;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+  padding: 10px 0;
+}
+
+.pagination button {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination button:not(:disabled):hover {
+  background: #e9ecef;
+}
+
+.pagination span {
+  font-size: 14px;
+  color: #6c757d;
+}
+
+/* Print Styles */
+@media print {
+  .header-actions, .back-button, .actions {
+    display: none !important;
+  }
+  
+  .attendance-table {
+    font-size: 12px;
+  }
+  
+  .attendance-table th, 
+  .attendance-table td {
+    padding: 6px 4px;
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+  .header-actions {
+    flex-direction: column;
+  }
+  
+  .search-box {
+    max-width: 100%;
+  }
+  
+  .action-buttons {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 768px) {
+  .attendance-table th,
+  .attendance-table td {
+    padding: 8px 4px;
+    font-size: 13px;
+  }
+  
+  .sub-header th {
+    font-size: 12px;
+    padding: 6px 2px;
+  }
+  
+  .attendance-cell {
+    min-width: 30px;
+    height: 30px;
+  }
+  
+  .export-button, 
+  .print-button, 
+  .back-button {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 576px) {
+  .pagination {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .pagination span {
+    order: -1;
+  }
+}

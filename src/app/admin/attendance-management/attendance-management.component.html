@@ -1,0 +1,144 @@
+<div class="attendance-container">
+  <div class="header">
+    <button (click)="onBack()" class="back-button">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </button>
+    <h2>Attendance Management</h2>
+    
+    <div class="header-actions">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" [(ngModel)]="searchText" placeholder="Search...">
+      </div>
+      <div class="action-buttons">
+        <button (click)="exportToExcel()" class="export-button">
+          <i class="fas fa-file-export"></i> Export
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+<div *ngIf="isLoading" class="loading-state">
+  <div class="spinner"></div>
+  <p>Loading attendance data...</p>
+</div>
+
+<!-- Error State -->
+<div *ngIf="errorMessage" class="error-state">
+  <div class="error-icon">
+    <i class="fas fa-exclamation-circle"></i>
+  </div>
+  <p>{{ errorMessage }}</p>
+  <button (click)="loadAttendanceData()" class="retry-button">
+    <i class="fas fa-sync-alt"></i> Retry
+  </button>
+</div>
+
+<!-- Data Table -->
+<div class="table-responsive" *ngIf="!isLoading && !errorMessage">
+    <table class="attendance-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Scholar</th>
+          <th>Shaka</th>
+          <th>Reg. Date</th>
+          <th colspan="2">Day 1</th>
+          <th colspan="2">Day 2</th>
+          <th colspan="2">Day 3</th>
+          <th colspan="2">Day 4</th>
+          <th colspan="2">Day 5</th>
+          <th>Print</th>
+          <th>Actions</th>
+        </tr>
+        <tr class="sub-header">
+          <th colspan="5"></th>
+          <th>FN</th><th>AN</th>
+          <th>FN</th><th>AN</th>
+          <th>FN</th><th>AN</th>
+          <th>FN</th><th>AN</th>
+          <th>FN</th><th>AN</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let record of paginatedRecords">
+          <td>{{ record.name }}</td>
+          <td>{{ record.phoneNumber }}</td>
+          <td>{{ record.scholar }}</td>
+          <td>{{ record.shaka }}</td>
+          <td>{{ record.registrationDate | date: 'dd/MM/yyyy' }}</td>
+          
+          <!-- Day 1 -->
+          <td (click)="toggleAttendance(record, 'day1', 'forenoon')" 
+              [class.present]="record.days.day1.forenoon" class="attendance-cell">
+            {{ record.days.day1.forenoon ? '✓' : '' }}
+          </td>
+          <td (click)="toggleAttendance(record, 'day1', 'afternoon')" 
+              [class.present]="record.days.day1.afternoon" class="attendance-cell">
+            {{ record.days.day1.afternoon ? '✓' : '' }}
+          </td>
+          
+          <!-- Day 2 -->
+          <td (click)="toggleAttendance(record, 'day2', 'forenoon')" 
+              [class.present]="record.days.day2.forenoon" class="attendance-cell">
+            {{ record.days.day2.forenoon ? '✓' : '' }}
+          </td>
+          <td (click)="toggleAttendance(record, 'day2', 'afternoon')" 
+              [class.present]="record.days.day2.afternoon" class="attendance-cell">
+            {{ record.days.day2.afternoon ? '✓' : '' }}
+          </td>
+          
+          <!-- Day 3 -->
+          <td (click)="toggleAttendance(record, 'day3', 'forenoon')" 
+              [class.present]="record.days.day3.forenoon" class="attendance-cell">
+            {{ record.days.day3.forenoon ? '✓' : '' }}
+          </td>
+          <td (click)="toggleAttendance(record, 'day3', 'afternoon')" 
+              [class.present]="record.days.day3.afternoon" class="attendance-cell">
+            {{ record.days.day3.afternoon ? '✓' : '' }}
+          </td>
+          
+          <!-- Day 4 -->
+          <td (click)="toggleAttendance(record, 'day4', 'forenoon')" 
+              [class.present]="record.days.day4.forenoon" class="attendance-cell">
+            {{ record.days.day4.forenoon ? '✓' : '' }}
+          </td>
+          <td (click)="toggleAttendance(record, 'day4', 'afternoon')" 
+              [class.present]="record.days.day4.afternoon" class="attendance-cell">
+            {{ record.days.day4.afternoon ? '✓' : '' }}
+          </td>
+          
+          <!-- Day 5 -->
+          <td (click)="toggleAttendance(record, 'day5', 'forenoon')" 
+              [class.present]="record.days.day5.forenoon" class="attendance-cell">
+            {{ record.days.day5.forenoon ? '✓' : '' }}
+          </td>
+          <td (click)="toggleAttendance(record, 'day5', 'afternoon')" 
+              [class.present]="record.days.day5.afternoon" class="attendance-cell">
+            {{ record.days.day5.afternoon ? '✓' : '' }}
+          </td>
+          
+          <td class="print-cell">
+            <button (click)="printIdCard(record)" class="print-button" title="Print ID Card" [disabled]="isLoading">
+              <i class="fas fa-id-card"></i> Print ID
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+</div>

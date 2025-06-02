@@ -1,4 +1,5 @@
 export interface RegistrationFormData {
+  id?: number;  // Optional ID field
   name: string;
   email: string;
   phoneNumber: string;

@@ -25,6 +25,8 @@ import { LoginComponent } from './admin/login/login.component';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { AuthGuard } from './guards/auth.guard';
 import { SignupComponent } from './admin/signup/signup.component';
+import { AttendanceManagementModule } from './admin/attendance-management/attendance-management.module';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -41,6 +43,7 @@ import { SignupComponent } from './admin/signup/signup.component';
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    AttendanceManagementModule,
     // Material Modules
     MatFormFieldModule,
     MatInputModule,
@@ -57,6 +60,11 @@ import { SignupComponent } from './admin/signup/signup.component';
     RegistrationService,
     AuthService,
     AuthGuard,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

@@ -84,7 +84,7 @@ h1 {
   padding: 1.5rem;
   width: 100%;
   max-width: 300px;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
