@@ -7,7 +7,7 @@ import { RegistrationFormData } from '../models/registration-form-data.model';
   providedIn: 'root'
 })
 export class RegistrationService {
-  private backendUrl = 'http://localhost:8080/api/registrations'; // Your backend API endpoint
+  private backendUrl = '/api/registrations'; // Your backend API endpoint
 
   constructor(private http: HttpClient) {}
 
@@ -46,6 +46,14 @@ export class RegistrationService {
       catchError(this.handleError)
     );
   }
+
+  getRegistrationCount(): Observable<number> {
+    const url = `${this.backendUrl}/count`;
+    return this.http.get<number>(url).pipe(
+      catchError(this.handleError)
+    );
+  }
+
 
   /**
    * Handle HTTP errors
