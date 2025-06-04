@@ -279,19 +279,28 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 15px;
-  margin-top: 20px;
-  padding: 10px 0;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+  padding: 0.5rem;
+  flex-wrap: nowrap; /* Prevent wrapping */
+  overflow-x: auto; /* Add horizontal scroll if needed */
+  white-space: nowrap; /* Keep items in one line */
+  width: 100%;
 }
 
 .pagination button {
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
-  color: #495057;
-  padding: 5px 12px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.75rem;
+  margin: 0 0.25rem;
+  border: 1px solid #e0e0e0;
+  background: #fff;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .pagination button:disabled {
@@ -300,14 +309,55 @@
 }
 
 .pagination button:not(:disabled):hover {
-  background: #e9ecef;
+  background: #f5f5f5;
+  border-color: #bdbdbd;
 }
 
 .pagination span {
-  font-size: 14px;
-  color: #6c757d;
+  margin: 0 1rem;
+  font-size: 0.95rem;
+  white-space: nowrap;
 }
 
+/* Remove the flex-wrap from media queries since we don't want wrapping at any size */
+@media (max-width: 600px) {
+  .pagination {
+    gap: 0.5rem;
+    padding: 0.5rem 0.25rem;
+  }
+  
+  .pagination button {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 0.5rem;
+    font-size: 0.85rem;
+  }
+  
+  .pagination span {
+    margin: 0 0.5rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 400px) {
+  .pagination {
+    gap: 0.25rem;
+    padding: 0.5rem 0.1rem;
+  }
+  
+  .pagination button {
+    min-width: 30px;
+    height: 30px;
+    padding: 0 0.3rem;
+    font-size: 0.8rem;
+  }
+  
+  .pagination span {
+    font-size: 0.8rem;
+    margin: 0 0.3rem;
+  }
+}
 /* Print Styles */
 @media print {
   .header-actions, .back-button, .actions {
