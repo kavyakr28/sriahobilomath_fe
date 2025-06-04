@@ -375,3 +375,56 @@
     order: -1;
   }
 }
+
+.count-card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-left: 4px solid #4CAF50;
+}
+
+.count-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.count-card i {
+  font-size: 2rem;
+  color: #4CAF50;
+}
+
+.count-info h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: bold;
+  align-items: center;
+  color: #666;
+}
+
+.count-number {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0.25rem 0 0;
+  color: #333;
+}
+
+/* Make all table headers bold */
+.attendance-table th {
+  font-weight: 600;
+}
+
+/* If you want to make the sub-header row slightly different, you can target it specifically */
+.attendance-table thead tr:first-child th {
+  font-weight: 700; /* Slightly bolder for main headers */
+  font-size: 1.05em; /* Slightly larger for main headers */
+}
+
+.attendance-table .sub-header th {
+  font-weight: 600; /* Slightly lighter for sub-headers */
+  font-size: 0.95em; /* Slightly smaller for sub-headers */
+}

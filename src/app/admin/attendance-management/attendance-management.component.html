@@ -4,6 +4,16 @@
       <i class="fas fa-arrow-left"></i> Back to Dashboard
     </button>
     <h2>Attendance Management</h2>
+
+    <div class="count-card" *ngIf="!isLoading && !errorMessage">
+      <div class="count-card-content">
+        <i class="fas fa-users"></i>
+        <div class="count-info">
+          <h3>Total Attendees</h3>
+          <p class="count-number">{{ attendanceList.length }}</p>
+        </div>
+      </div>
+    </div>
     
     <div class="header-actions">
       <div class="search-box">
@@ -51,7 +61,7 @@
           <th colspan="2">Day 4</th>
           <th colspan="2">Day 5</th>
           <th>Print</th>
-          <th>Gifts</th>
+          <th>Gift</th>
         </tr>
         <tr class="sub-header">
           <th colspan="5"></th>
@@ -60,6 +70,7 @@
           <th>FN</th><th>AN</th>
           <th>FN</th><th>AN</th>
           <th>FN</th><th>AN</th>
+          <th></th>
           <th></th>
         </tr>
       </thead>
