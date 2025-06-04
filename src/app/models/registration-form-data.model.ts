@@ -1,11 +1,11 @@
 export interface RegistrationFormData {
   id?: number;  // Optional ID field
-  name: string;
+  fullName: string;
   email: string;
-  phoneNumber: string;
+  phone: string;
   aadhaar: string;
-  scholar: string;
-  shaka: string;
+  scholarIn: string;
+  sakai: string;
   emergencyContact: string;
   bankAccount: string;
   ifsc: string;

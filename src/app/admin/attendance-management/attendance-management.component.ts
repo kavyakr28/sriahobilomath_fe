@@ -5,10 +5,10 @@ import { RegistrationFormData } from '../../models/registration-form-data.model'
 
 export interface AttendanceRecord {
   id: number;
-  name: string;
-  phoneNumber: string;
-  scholar: string;
-  shaka: string;
+  fullName: string;
+  phone: string;
+  scholarIn: string;
+  sakai: string;
   registrationDate: string;
   days: {
     day1: { forenoon: boolean; afternoon: boolean };
@@ -17,6 +17,7 @@ export interface AttendanceRecord {
     day4: { forenoon: boolean; afternoon: boolean };
     day5: { forenoon: boolean; afternoon: boolean };
   };
+  gifted: boolean;
 }
 
 @Component({
@@ -51,10 +52,10 @@ export class AttendanceManagementComponent implements OnInit {
         // Transform registration data to attendance records
         this.attendanceList = registrations.map((reg, index) => ({
           id: reg.id || index + 1,
-          name: reg.name,
-          phoneNumber: reg.phoneNumber,
-          scholar: reg.scholar,
-          shaka: reg.shaka,
+          fullName: reg.fullName,
+          phone: reg.phone,
+          scholarIn: reg.scholarIn,
+          sakai: reg.sakai,
           registrationDate: reg.registrationDate || new Date().toISOString().split('T')[0],
           days: {
             day1: { forenoon: false, afternoon: false },
@@ -62,7 +63,8 @@ export class AttendanceManagementComponent implements OnInit {
             day3: { forenoon: false, afternoon: false },
             day4: { forenoon: false, afternoon: false },
             day5: { forenoon: false, afternoon: false }
-          }
+          },
+          gifted: false
         }));
         this.isLoading = false;
       },
@@ -124,10 +126,10 @@ export class AttendanceManagementComponent implements OnInit {
     if (!this.searchText) return this.attendanceList;
     const searchLower = this.searchText.toLowerCase();
     return this.attendanceList.filter(record => 
-      record.name.toLowerCase().includes(searchLower) ||
-      record.phoneNumber.includes(this.searchText) ||
-      record.scholar.toLowerCase().includes(searchLower) ||
-      record.shaka.toLowerCase().includes(searchLower)
+      record.fullName.toLowerCase().includes(searchLower) ||
+      record.phone.includes(this.searchText) ||
+      record.scholarIn.toLowerCase().includes(searchLower) ||
+      record.sakai.toLowerCase().includes(searchLower)
     );
   }
 
