@@ -37,7 +37,7 @@ export interface SignupResponse extends AuthResponse {}
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api'; // Update with your API URL
+  private apiUrl = '/api'; // Update with your API URL
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 

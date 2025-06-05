@@ -26,7 +26,7 @@
       <div class="form-group">
         <div class="password-label-container">
           <label for="password">Password</label>
-          <a routerLink="/forgot-password" class="forgot-password">Forgot Password?</a>
+          <!-- <a routerLink="/forgot-password" class="forgot-password">Forgot Password?</a> -->
         </div>
         <div class="input-container" [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
           <i class="material-icons">lock</i>
@@ -49,13 +49,13 @@
         </div>
       </div>
 
-      <div class="form-group remember-me">
+      <!-- <div class="form-group remember-me">
         <label class="checkbox-container">
           <input type="checkbox" formControlName="rememberMe">
           <span class="checkmark"></span>
           Remember me
         </label>
-      </div>
+      </div> -->
 
       <button type="submit" class="login-button" [disabled]="loginForm.invalid || isLoading">
         <span *ngIf="!isLoading">Sign In</span>
@@ -66,9 +66,9 @@
         {{ errorMessage }}
       </div>
       
-      <div class="signup-link">
+      <!-- <div class="signup-link">
         Don't have an account? <a routerLink="/signup">Sign up</a>
-      </div>
+      </div> -->
     </form>
   </div>
 </div>
