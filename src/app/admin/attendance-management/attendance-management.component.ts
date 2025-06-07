@@ -91,29 +91,27 @@ printIdCard(record: AttendanceRecord): void {
       
       // Create the print content with the record details and QR code
       const printContent = `
-        <div style="font-family: Arial, sans-serif; max-width: 300px; margin: 0 auto; border: 2px solid #333; padding: 20px; text-align: center;">
-          <h2 style="margin: 0 0 15px 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">Saptathi Mahotsavam</h2>
+        <div style="font-family: Arial, sans-serif; max-width: 300px; margin: 0 auto; border: 2px solid #333; padding: 20px; text-align: center; display: flex; flex-direction: column; align-items: center;">
+          <h2 style="margin: 0 0 15px 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px; width: 100%;">Saptathi Mahotsavam</h2>
           
-          <div style="margin-bottom: 15px; font-size: 20px; font-weight: bold;">${record.fullName}</div>
+          <div style="margin-bottom: 15px; font-size: 20px; font-weight: bold; width: 100%;">${record.fullName}</div>
           
-          <div style="display: flex; justify-content: space-between; margin-bottom: 15px; text-align: left; padding: 0 20px;">
-            <div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 15px; text-align: center; padding: 0 20px; width: 100%;">
+            <div style="flex: 1;">
               <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Scholar</div>
               <div style="font-weight: 500;">${record.scholarIn}</div>
             </div>
-            <div>
+            <div style="flex: 1;">
               <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Shaka</div>
               <div style="font-weight: 500;">${record.sakai}</div>
             </div>
           </div>
           
-          <div style="margin: 15px 0; padding: 10px; background-color: #f8f9fa; border-radius: 4px;">
-            <img src="${qrCodeUrl}" alt="QR Code" style="max-width: 150px; height: auto; display: block; margin: 0 auto;">
+          <div style="background-color: #f8f9fa; border-radius: 4px; width: 100%; display: flex; justify-content: center;">
+            <img src="${qrCodeUrl}" alt="QR Code" style="max-width: 200px; height: auto; display: block;">
           </div>
-          
         </div>
       `;
-
       // Create a new window for printing
       const printWindow = window.open('', '_blank');
       if (printWindow) {
