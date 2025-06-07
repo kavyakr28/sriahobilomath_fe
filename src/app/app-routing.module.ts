@@ -22,6 +22,13 @@ const routes: Routes = [
     component: AttendanceManagementComponent,
     canActivate: [AuthGuard]
   },
+  {
+    path: 'admin/qr-scanner',
+    redirectTo: 'admin/qr-scanner/attendance',
+    pathMatch: 'full'
+  },
+  // Add a catch-all route for 404
+  { path: '**', redirectTo: 'registration' }
 ];
 
 @NgModule({

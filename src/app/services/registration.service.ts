@@ -54,6 +54,18 @@ export class RegistrationService {
     );
   }
 
+  /**
+   * Process a scan with the given ID and type
+   * @param id The ID of the scan to process
+   * @param type The type of scan (e.g., 'attendance' or 'gifts')
+   * @returns Observable with the server response
+   */
+  processScan(id: number, type: string): Observable<any> {
+    const url = `${this.backendUrl}/scan/${id}/${type}`;
+    return this.http.post(url, {}).pipe(
+      catchError(this.handleError)
+    );
+  }
 
   /**
    * Handle HTTP errors

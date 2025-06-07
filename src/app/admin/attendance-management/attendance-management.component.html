@@ -4,6 +4,16 @@
       <i class="fas fa-arrow-left"></i> Back to Dashboard
     </button>
     <h2>Attendance Management</h2>
+
+    <div class="count-card" *ngIf="!isLoading && !errorMessage">
+      <div class="count-card-content">
+        <i class="fas fa-users"></i>
+        <div class="count-info">
+          <h3>Total Attendees</h3>
+          <p class="count-number">{{ attendanceList.length }}</p>
+        </div>
+      </div>
+    </div>
     
     <div class="header-actions">
       <div class="search-box">
@@ -51,7 +61,7 @@
           <th colspan="2">Day 4</th>
           <th colspan="2">Day 5</th>
           <th>Print</th>
-          <th>Actions</th>
+          <th>Gift</th>
         </tr>
         <tr class="sub-header">
           <th colspan="5"></th>
@@ -61,69 +71,65 @@
           <th>FN</th><th>AN</th>
           <th>FN</th><th>AN</th>
           <th></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let record of paginatedRecords">
-          <td>{{ record.name }}</td>
-          <td>{{ record.phoneNumber }}</td>
-          <td>{{ record.scholar }}</td>
-          <td>{{ record.shaka }}</td>
+          <td>{{ record.fullName }}</td>
+          <td>{{ record.phone }}</td>
+          <td>{{ record.scholarIn }}</td>
+          <td>{{ record.sakai }}</td>
           <td>{{ record.registrationDate | date: 'dd/MM/yyyy' }}</td>
           
           <!-- Day 1 -->
-          <td (click)="toggleAttendance(record, 'day1', 'forenoon')" 
-              [class.present]="record.days.day1.forenoon" class="attendance-cell">
+          <td aria-readonly="true" [class.present]="record.days.day1.forenoon" class="attendance-cell">
             {{ record.days.day1.forenoon ? '✓' : '' }}
           </td>
-          <td (click)="toggleAttendance(record, 'day1', 'afternoon')" 
-              [class.present]="record.days.day1.afternoon" class="attendance-cell">
+          <td aria-readonly="true" [class.present]="record.days.day1.afternoon" class="attendance-cell">
             {{ record.days.day1.afternoon ? '✓' : '' }}
           </td>
           
           <!-- Day 2 -->
-          <td (click)="toggleAttendance(record, 'day2', 'forenoon')" 
-              [class.present]="record.days.day2.forenoon" class="attendance-cell">
+          <td aria-readonly="true" [class.present]="record.days.day2.forenoon" class="attendance-cell">
             {{ record.days.day2.forenoon ? '✓' : '' }}
           </td>
-          <td (click)="toggleAttendance(record, 'day2', 'afternoon')" 
-              [class.present]="record.days.day2.afternoon" class="attendance-cell">
+          <td aria-readonly="true" [class.present]="record.days.day2.afternoon" class="attendance-cell">
             {{ record.days.day2.afternoon ? '✓' : '' }}
           </td>
           
           <!-- Day 3 -->
-          <td (click)="toggleAttendance(record, 'day3', 'forenoon')" 
-              [class.present]="record.days.day3.forenoon" class="attendance-cell">
+          <td aria-readonly="true" [class.present]="record.days.day3.forenoon" class="attendance-cell">
             {{ record.days.day3.forenoon ? '✓' : '' }}
           </td>
-          <td (click)="toggleAttendance(record, 'day3', 'afternoon')" 
-              [class.present]="record.days.day3.afternoon" class="attendance-cell">
+          <td aria-readonly="true" [class.present]="record.days.day3.afternoon" class="attendance-cell">
             {{ record.days.day3.afternoon ? '✓' : '' }}
           </td>
           
           <!-- Day 4 -->
-          <td (click)="toggleAttendance(record, 'day4', 'forenoon')" 
-              [class.present]="record.days.day4.forenoon" class="attendance-cell">
+          <td aria-readonly="true" [class.present]="record.days.day4.forenoon" class="attendance-cell">
             {{ record.days.day4.forenoon ? '✓' : '' }}
           </td>
-          <td (click)="toggleAttendance(record, 'day4', 'afternoon')" 
-              [class.present]="record.days.day4.afternoon" class="attendance-cell">
+          <td aria-readonly="true" [class.present]="record.days.day4.afternoon" class="attendance-cell">
             {{ record.days.day4.afternoon ? '✓' : '' }}
           </td>
           
           <!-- Day 5 -->
-          <td (click)="toggleAttendance(record, 'day5', 'forenoon')" 
-              [class.present]="record.days.day5.forenoon" class="attendance-cell">
+          <td aria-readonly="true" [class.present]="record.days.day5.forenoon" class="attendance-cell">
             {{ record.days.day5.forenoon ? '✓' : '' }}
           </td>
-          <td (click)="toggleAttendance(record, 'day5', 'afternoon')" 
-              [class.present]="record.days.day5.afternoon" class="attendance-cell">
+          <td aria-readonly="true" [class.present]="record.days.day5.afternoon" class="attendance-cell">
             {{ record.days.day5.afternoon ? '✓' : '' }}
           </td>
           
           <td class="print-cell">
             <button (click)="printIdCard(record)" class="print-button" title="Print ID Card" [disabled]="isLoading">
               <i class="fas fa-id-card"></i> Print ID
+            </button>
+          </td>
+          <td class="gift-cell" aria-readonly="true">
+            <button class="gift-button" title="Toggle Gift" [disabled]="isLoading">
+              <i class="fas fa-gift"></i> {{ record.gifted ? '✓' : '' }}
             </button>
           </td>
         </tr>
