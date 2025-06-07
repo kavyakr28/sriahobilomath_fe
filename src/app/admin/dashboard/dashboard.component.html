@@ -17,13 +17,45 @@
       <span>Attendance Management</span>
     </button>
     
-    <button (click)="onQRScanAttendance()" class="action-button">
+    <button (click)="onQRScanAttendance()"
+    class="action-button">
       <span>QR Scan for Attendance</span>
     </button>
     
     <button (click)="onQRScanGifts()" class="action-button">
       <span>QR Scan for Gifts</span>
     </button>
+  </div>
+
+  <div class="scanner-container" *ngIf="isCameraActive">
+    <div class="scanner-header">
+      <h3>{{ currentScanType === 'attendance' ? 'Scan Attendance QR' : 'Scan Gift QR' }}</h3>
+      <button mat-icon-button (click)="onCloseScanner()" class="close-button">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="scanner-wrapper">
+      <zxing-scanner
+        #scanner
+        class="scanner"
+        [enable]="isCameraActive"
+        [autostart]="true"
+        [device]="(selectedDevice$ | async) ?? undefined"
+        [formats]="allowedFormats"
+        (camerasFound)="devices$.next($event)"
+        (scanSuccess)="handleScanSuccess($event)"
+        (scanError)="scanError($event)">
+      </zxing-scanner>
+      
+      <div class="scanner-overlay"></div>
+      <div class="scanner-frame"></div>
+    </div>
+    
+    <div class="scanner-instructions">
+      <p>Position the QR code within the frame to scan</p>
+      <p class="hint">Make sure the QR code is well-lit and clearly visible</p>
+    </div>
   </div>
   
   <!-- Router outlet for child components -->

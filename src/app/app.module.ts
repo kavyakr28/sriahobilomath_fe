@@ -19,6 +19,9 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ZXingScannerModule } from '@zxing/ngx-scanner';
 
 import { SharedModule } from './shared/shared.module';
 import { LoginComponent } from './admin/login/login.component';
@@ -44,6 +47,8 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     HttpClientModule,
     BrowserAnimationsModule,
     AttendanceManagementModule,
+    // Shared Module
+    SharedModule,
     // Material Modules
     MatFormFieldModule,
     MatInputModule,
@@ -54,6 +59,9 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     MatIconModule,
     MatCheckboxModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
+    MatDialogModule,
+    ZXingScannerModule,
     SharedModule,
   ],
   providers: [
