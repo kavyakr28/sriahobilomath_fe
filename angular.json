@@ -68,7 +68,7 @@
               ".ngrok.io",
               "*.ngrok-free.app",
               "https://2426-2401-4900-1cd4-e46f-2d9a-b832-6de2-eede.ngrok-free.app"
-            ],
+            ]
           },
           "configurations": {
             "production": {
