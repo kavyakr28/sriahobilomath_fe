@@ -111,9 +111,6 @@ printIdCard(record: AttendanceRecord): void {
             <img src="${qrCodeUrl}" alt="QR Code" style="max-width: 150px; height: auto; display: block; margin: 0 auto;">
           </div>
           
-          <div style="font-size: 12px; color: #777; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
-            ID: ${record.id} | ${new Date(record.registrationDate).toLocaleDateString()}
-          </div>
         </div>
       `;
 
