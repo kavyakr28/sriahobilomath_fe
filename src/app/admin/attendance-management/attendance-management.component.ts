@@ -82,45 +82,143 @@ export class AttendanceManagementComponent implements OnInit {
   }
 
 
-  printIdCard(record: any): void {
-    // Store the current record for the ID card
-    const printContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 300px; margin: 0 auto; border: 2px solid #333; padding: 20px; text-align: center;">
-        <h2 style="margin: 0 0 10px 0; color: #2c3e50;">Participant ID Card</h2>
-        <div style="border-bottom: 1px solid #eee; margin-bottom: 15px; padding-bottom: 15px;">
-          <div style="font-size: 18px; font-weight: bold; margin-bottom: 5px;">${record.name}</div>
-          <div style="color: #666; margin-bottom: 5px;">${record.scholar}</div>
-          <div style="color: #666; margin-bottom: 5px;">${record.shaka}</div>
-          <div style="color: #666;">ID: ${record.id}</div>
+ 
+printIdCard(record: AttendanceRecord): void {
+  this.registrationService.getQRImage(record.id).subscribe({
+    next: (blob: Blob) => {
+      // Create object URL from the blob
+      const qrCodeUrl = URL.createObjectURL(blob);
+      
+      // Create the print content with the record details and QR code
+      const printContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 300px; margin: 0 auto; border: 2px solid #333; padding: 20px; text-align: center;">
+          <h2 style="margin: 0 0 15px 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">Saptathi Mahotsavam</h2>
+          
+          <div style="margin-bottom: 15px; font-size: 20px; font-weight: bold;">${record.fullName}</div>
+          
+          <div style="display: flex; justify-content: space-between; margin-bottom: 15px; text-align: left; padding: 0 20px;">
+            <div>
+              <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Scholar</div>
+              <div style="font-weight: 500;">${record.scholarIn}</div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Shaka</div>
+              <div style="font-weight: 500;">${record.sakai}</div>
+            </div>
+          </div>
+          
+          <div style="margin: 15px 0; padding: 10px; background-color: #f8f9fa; border-radius: 4px;">
+            <img src="${qrCodeUrl}" alt="QR Code" style="max-width: 150px; height: auto; display: block; margin: 0 auto;">
+          </div>
+          
+          <div style="font-size: 12px; color: #777; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+            ID: ${record.id} | ${new Date(record.registrationDate).toLocaleDateString()}
+          </div>
         </div>
-        <div style="font-size: 12px; color: #777; margin-top: 15px;">
-          Valid for the event period
+      `;
+
+      // Create a new window for printing
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>ID Card - ${record.fullName}</title>
+              <style>
+                @media print {
+                  @page { 
+                    size: auto; 
+                    margin: 10mm;
+                  }
+                  body { 
+                    margin: 0;
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                  }
+                }
+                @page {
+                  size: 80mm 120mm;
+                  margin: 0;
+                }
+              </style>
+            </head>
+            <body onload="window.print(); window.onafterprint = function() { window.close(); }">
+              ${printContent}
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+      }
+    },
+    error: (error) => {
+      console.error('Error loading QR code:', error);
+      // Fallback if QR code fails to load
+      this.showFallbackPrint(record);
+    }
+  });
+}
+
+private showFallbackPrint(record: AttendanceRecord): void {
+  const printContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 300px; margin: 0 auto; border: 2px solid #333; padding: 20px; text-align: center;">
+      <h2 style="margin: 0 0 15px 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 10px;">Participant ID</h2>
+      
+      <div style="margin-bottom: 15px; font-size: 20px; font-weight: bold;">${record.fullName}</div>
+      
+      <div style="display: flex; justify-content: space-between; margin-bottom: 15px; text-align: left; padding: 0 20px;">
+        <div>
+          <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Scholar</div>
+          <div style="font-weight: 500;">${record.scholarIn}</div>
+        </div>
+        <div>
+          <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Shaka</div>
+          <div style="font-weight: 500;">${record.sakai}</div>
         </div>
       </div>
-    `;
+      
+      <div style="margin: 15px 0; padding: 30px; background-color: #f8f9fa; border-radius: 4px; color: #999; font-style: italic;">
+        QR Code not available
+      </div>
+      
+      <div style="font-size: 12px; color: #777; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+        ID: ${record.id} | ${new Date(record.registrationDate).toLocaleDateString()}
+      </div>
+    </div>
+  `;
 
-    // Create a new window for printing
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>ID Card - ${record.name}</title>
-            <style>
-              @media print {
-                @page { size: auto; margin: 5mm; }
-                body { margin: 0; }
+  const printWindow = window.open('', '_blank');
+  if (printWindow) {
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>ID Card - ${record.fullName}</title>
+          <style>
+            @media print {
+              @page { 
+                size: auto; 
+                margin: 10mm;
               }
-            </style>
-          </head>
-          <body onload="window.print();window.close()">
-            ${printContent}
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-    }
+              body { 
+                margin: 0;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+              }
+            }
+            @page {
+              size: 80mm 120mm;
+              margin: 0;
+            }
+          </style>
+        </head>
+        <body onload="window.print(); window.onafterprint = function() { window.close(); }">
+          ${printContent}
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   }
+}
+
 
   get filteredRecords(): AttendanceRecord[] {
     if (!this.searchText) return this.attendanceList;

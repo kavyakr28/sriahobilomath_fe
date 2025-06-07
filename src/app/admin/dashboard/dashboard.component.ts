@@ -68,13 +68,19 @@ export class DashboardComponent implements OnInit {
   }
 
   handleScanSuccess(result: string): void {
+    alert("Scan Success");
     if (!this.currentScanType) return;
+    console.log(`QR Code scanned (${this.currentScanType}):`, result);
     // Process based on scan type
     if (this.currentScanType === 'attendance') {
       this.processAttendanceScan(Number(result));
+      // Show success message
+      alert(`Successfully scanned ${this.currentScanType} QR code`);
       this.scanSuccess$.next(result);
     } else if (this.currentScanType === 'gifts') {
       this.processGiftScan(Number(result));
+      // Show success message
+      alert(`Successfully scanned ${this.currentScanType} QR code`);
       this.scanSuccess$.next(result);
     }
     
@@ -84,38 +90,36 @@ export class DashboardComponent implements OnInit {
   
   private processAttendanceScan(scanResult: number): void {
     // TODO: Implement attendance processing logic
+    console.log('Processing attendance for:', scanResult);
     const { slots, currentAttendanceType } = this.generateDateSlots('06-06-2025', '10-06-2025');
+console.log("slots",slots);
+console.log("currentAttendanceType",currentAttendanceType);
+    console.log("Current Attendance Type:", currentAttendanceType);
     // Example: Call your attendance service
     this.registrationService.processScan(scanResult, currentAttendanceType).subscribe(
       (response) => {
-        if(response.attendanceAlreadyMarked){
-          alert('Attendance already marked');
-        }
-        else{
-          alert('Attendance marked successfully');
-        }
+        console.log('Attendance processed successfully:', response);
       },
       (error) => {
         console.error('Error processing attendance:', error);
       }
     );
+    // this.attendanceService.recordAttendance(scanResult).subscribe(...);
   }
   
   private processGiftScan(scanResult: number): void {
     // TODO: Implement gift processing logic
-    this.registrationService.processScan(scanResult, 'gift').subscribe(
+    console.log('Processing gift for:', scanResult);
+    // Example: Call your gift service
+    this.registrationService.processScan(scanResult, 'gifts').subscribe(
       (response) => {
-        if(response.giftAlreadyMarked){
-          alert('Gift already marked');
-        }
-        else{
-          alert('Gift marked successfully');
-        }
+        console.log('Gift processed successfully:', response);
       },
       (error) => {
         console.error('Error processing gift:', error);
       }
     );
+    // this.giftService.processGift(scanResult).subscribe(...);
   }
 
   onOnSpotRegistration(): void {
@@ -127,11 +131,13 @@ export class DashboardComponent implements OnInit {
   }
 
   onQRScanAttendance(): void {
-    this.currentScanType = 'attendance';
+    console.log('QR Scan for Attendance clicked');
+    // this.currentScanType = 'attendance';
     this.toggleCamera(true);
   }
 
   onQRScanGifts(): void {
+    console.log('QR Scan for Gifts clicked');
     this.currentScanType = 'gifts';
     this.toggleCamera(true);
   }
@@ -240,8 +246,10 @@ export class DashboardComponent implements OnInit {
       if (isCurrentDay) {
         if (current.timeSlot === 'Fore Noon' && current.date.getHours() >= 9 && current.date.getHours() < 12) {
           currentAttendanceType = foreNoonSlot.attendanceType;
+          console.log('Current Attendance Type:', currentAttendanceType);
         } else if (current.timeSlot === 'Afternoon' && current.date.getHours() >= 13 && current.date.getHours() < 24) {
           currentAttendanceType = afternoonSlot.attendanceType;
+          console.log('Current Attendance Type:', currentAttendanceType);
         }
       }
       
@@ -253,5 +261,17 @@ export class DashboardComponent implements OnInit {
     }
     
     return { slots, currentAttendanceType };
+  }
+  
+  // Example usage
+  exampleUsage() {
+    console.log('Example Usage:');
+    const { slots, currentAttendanceType } = this.generateDateSlots('06-06-2025', '10-06-2025');
+    console.log('Generated Date Slots:', slots);
+    console.log('Current Attendance Type:', currentAttendanceType);
+    
+    const current = this.getCurrentDateTime();
+    console.log('Current Date/Time:', current.formattedDateTime);
+    console.log('Current Time Slot:', current.timeSlot);
   }
 }

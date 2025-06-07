@@ -61,8 +61,23 @@ export class RegistrationService {
    * @returns Observable with the server response
    */
   processScan(id: number, type: string): Observable<any> {
+    console.log("id",id);
+    console.log("type",type);
     const url = `${this.backendUrl}/scan/${id}/${type}`;
     return this.http.post(url, {}).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * QR Image Generation Call
+   * @param id Registration ID
+   * @returns Observable with the QR image
+   */
+  getQRImage(id:number): Observable<any> {
+    console.log("id in getQRImage",id);
+    const url = `${this.backendUrl}/${id}/qr-code`;
+    return this.http.get(url, { responseType: 'blob' }).pipe(
       catchError(this.handleError)
     );
   }
