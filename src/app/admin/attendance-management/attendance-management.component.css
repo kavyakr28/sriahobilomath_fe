@@ -63,6 +63,39 @@
   gap: 15px;
 }
 
+.editable-field {
+  width: 100%;
+  padding: 4px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  text-align: right;
+  font-size: 14px;
+}
+
+.editable-field:focus {
+  outline: none;
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.edit-button, .delete-button {
+  background: none;
+  border: none;
+  color: #0d6efd;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 14px;
+}
+
+.edit-button:hover {
+  color: #0b5ed7;
+}
+
+.delete-button:hover {
+  color: #dc3545;
+}
+
+
 .export-button, .print-button, .back-button {
   display: inline-flex;
   align-items: center;
@@ -365,6 +398,54 @@
   white-space: nowrap;
 }
 
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-top: 1px solid #dee2e6;
+  margin-top: 20px;
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pagination-controls button {
+  background: none;
+  border: 1px solid #dee2e6;
+  color: #6c757d;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+.pagination-controls button:hover:not(:disabled) {
+  background-color: #f8f9fa;
+  color: #0d6efd;
+  border-color: #0d6efd;
+}
+.pagination-controls button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.page-info {
+  font-size: 14px;
+  color: #6c757d;
+  min-width: 80px;
+  text-align: center;
+}
+
+
 /* Remove the flex-wrap from media queries since we don't want wrapping at any size */
 @media (max-width: 600px) {
   .pagination {
@@ -520,6 +601,24 @@
     text-align: center;
     margin: 0;
   }
+
+  .editable-field {
+    font-size: 13px;
+    padding: 3px;
+  }
+  .pagination-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .pagination-controls {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .pagination-controls button {
+    padding: 4px 8px;
+    font-size: 13px;
+  }
 }
 
 @media (max-width: 576px) {
@@ -558,6 +657,15 @@
   
   .pagination span {
     order: -1;
+  }
+
+  .editable-field {
+    font-size: 12px;
+    padding: 2px;
+  }
+  .pagination-controls button {
+    padding: 3px 6px;
+    font-size: 12px;
   }
 }
 

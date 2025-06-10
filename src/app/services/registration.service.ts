@@ -66,8 +66,6 @@ export class RegistrationService {
    * @returns Observable with the server response
    */
   processScan(id: number, type: string): Observable<any> {
-    console.log("id",id);
-    console.log("type",type);
     const url = `${this.backendUrl}/scan/${id}/${type}`;
     return this.http.post(url, {}).pipe(
       catchError(this.handleError)
@@ -90,14 +88,38 @@ export class RegistrationService {
   /**
    * get list of IDs
    */
-
-
   getAllIds(startDate: string, endDate: string): Observable<any> {
     const url = `${this.backendUrl}/attendance-between-dates?startDate=${startDate}&endDate=${endDate}`;
     return this.http.get<any>(url).pipe(
       catchError(this.handleError)
     );
   }
+
+  /**
+   * Update travel charges, sambavanai, and total amount for a registration
+   * @param registrationId The ID of the registration to update
+   * @param charges Object containing travelCharge, sambavanai, and totalAmount
+   * @returns Observable that completes when the update is successful
+   */
+  updateCharges(registrationId: number, charges: {
+    travelCharge: number,
+    sambavanai: number,
+    totalAmount: number
+  }): Observable<void> {
+    const url = `${this.backendUrl}/${registrationId}/charges`;
+    
+    // Convert numbers to strings to match BigDecimal format
+    const payload = {
+      travelCharge: charges.travelCharge.toString(),
+      sambavanai: charges.sambavanai.toString(),
+      totalAmount: charges.totalAmount.toString()
+    };
+
+    return this.http.post<void>(url, payload).pipe(
+      catchError(this.handleError)
+    );
+  }
+
 
   /**
    * Handle HTTP errors

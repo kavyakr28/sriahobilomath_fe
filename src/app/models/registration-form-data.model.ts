@@ -13,4 +13,7 @@ export interface RegistrationFormData {
   bankName: string;
   accountType: string;
   registrationDate: string;
+  travelCharges: number;
+  sambavanai: number;
+  totalAmount: number;
 }

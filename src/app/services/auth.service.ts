@@ -9,7 +9,7 @@ export interface User {
   username: string;
   password: string;
   name: string;
-  role: string;
+  roles: string;
 }
 
 export interface AuthResponse {
@@ -91,9 +91,10 @@ export class AuthService {
         localStorage.setItem('auth', authHeader);
         // Create user data without duplicating the username
         const { username: _, ...userWithoutUsername } = response.user || {};
+        console.log('response',response);
         const userData = {
           username,
-          roles: response.role,
+          role: response.role,
           // Don't store password, we'll use the auth header
           ...userWithoutUsername
         };
@@ -149,12 +150,12 @@ export class AuthService {
 
   isAdmin(): boolean {
     const user = this.currentUserValue;
-    return user?.role?.includes(ROLE_ADMIN) || false;
+    return user?.roles?.includes(ROLE_ADMIN) || false;
   }
   
   hasRole(role: string): boolean {
     const user = this.currentUserValue;
-    return user?.role?.includes(role) || false;
+    return user?.roles?.includes(role) || false;
   }
 
   getCurrentUser(): User | null {

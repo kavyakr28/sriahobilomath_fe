@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {  RegistrationService } from '../../services/registration.service';
 import { RegistrationFormData } from '../../models/registration-form-data.model';
+import { AuthService } from 'src/app/services/auth.service';
 
 export interface AttendanceRecord {
   id: number;
@@ -11,6 +12,9 @@ export interface AttendanceRecord {
   scholarIn: string;
   sakai: string;
   registrationDate: string;
+  travelCharges: number;
+  sambavanai: number;
+  totalAmount: number;
   days: {
     day1: { forenoon: boolean; afternoon: boolean };
     day2: { forenoon: boolean; afternoon: boolean };
@@ -29,7 +33,7 @@ export interface AttendanceRecord {
 export class AttendanceManagementComponent implements OnInit {
   attendanceList: AttendanceRecord[] = [];
   currentPage = 1;
-  itemsPerPage = 10;
+  itemsPerPage = 100;
   searchText = '';
   
   isLoading = false;
@@ -39,14 +43,37 @@ export class AttendanceManagementComponent implements OnInit {
   endDate: string = '';
 
   idSearchText = '';
+  isEditing = false;
 
   constructor(
     private router: Router,
-    private registrationService: RegistrationService
+    private registrationService: RegistrationService,
+    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
     this.loadAttendanceData();
+  }
+
+
+  checkRole(): string | null {
+    const user = this.authService.getCurrentUser();
+    console.log("user",user?.roles);
+    if (user?.roles?.includes('ADMIN')) {
+      console.log("inside admin");
+      return 'ADMIN';
+    } else if (user?.roles?.includes('USER')) {
+      console.log("inside user");
+      return 'USER';
+    }
+    return null;
+  }
+
+  // Toggle edit mode only for admins
+  toggleEdit(): void {
+    if (this.checkRole() === 'ADMIN') {
+      this.isEditing = !this.isEditing;
+    }
   }
 
   loadAttendanceData(): void {
@@ -66,7 +93,10 @@ export class AttendanceManagementComponent implements OnInit {
           scholarIn: reg.scholarIn,
           sakai: reg.sakai,
           registrationDate: reg.registrationDate || new Date().toISOString().split('T')[0],
-          days: {
+          travelCharges: reg.travelCharges,
+          sambavanai: reg.sambavanai,
+          totalAmount: reg.totalAmount,
+                days: {
             day1: { forenoon: false, afternoon: false },
             day2: { forenoon: false, afternoon: false },
             day3: { forenoon: false, afternoon: false },
@@ -89,7 +119,41 @@ export class AttendanceManagementComponent implements OnInit {
     record.days[day as keyof typeof record.days][session] = !record.days[day as keyof typeof record.days][session];
     // TODO: Call API to update attendance
   }
+   // Check if we should show edit controls
+   canEdit(): boolean {
+    return this.checkRole() === 'ADMIN' && this.isEditing;
+  }
 
+  editRecord(record: AttendanceRecord): void {
+    if (!this.canEdit()) return;
+    console.log('Editing record:', record);
+    // You can open a modal or navigate to an edit form here
+  }
+
+ updateTravelCharges(record: AttendanceRecord): void {
+
+// Create charges object with numbers
+    const charges = {
+      travelCharge: record.travelCharges,
+      sambavanai: record.sambavanai,
+      totalAmount: record.totalAmount
+    };
+    console.log("charges :",charges);
+// Call the service to update charges
+this.registrationService.updateCharges(record.id, charges).subscribe({
+  next: () => {
+    console.log('Charges updated successfully');
+  },
+  error: (err) => {
+    console.error('Error updating charges:', err);
+    alert('Failed to update charges: ' + err.message);
+  }
+});
+
+
+
+
+ }
 
  
 printIdCard(record: AttendanceRecord): void {
@@ -317,6 +381,16 @@ private showFallbackPrint(record: AttendanceRecord): void {
 
   get totalPages(): number {
     return Math.ceil(this.filteredRecords.length / this.itemsPerPage);
+  }
+
+  getEndIndex(): number {
+    return Math.min(this.currentPage * this.itemsPerPage, this.filteredRecords.length);
+  }
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+    }
   }
 
   changePage(page: number): void {
