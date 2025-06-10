@@ -365,6 +365,8 @@ private showFallbackPrint(record: AttendanceRecord): void {
           registration: {
             id: item.id,
             fullName: item.registration.fullName,
+            scholarIn: item.registration.scholarIn,
+            sakai: item.registration.sakai,
           },
           qrCodeIdentifier: imageUrl
       }
@@ -401,29 +403,46 @@ private showFallbackPrint(record: AttendanceRecord): void {
                 padding: 0;
               }
               
-              @media print {
+            @media print {
                 body {
                   -webkit-print-color-adjust: exact !important;
                   print-color-adjust: exact !important;
+                  margin: 0;
+                  padding: 0;
+                  width: 100%;
+                  height: 100%;
                 }
-                
-                .id-card {
-                  border: 2px solid #333 !important;
-                  box-shadow: none !important;
-                  margin: 10px;
-                  page-break-inside: avoid;
-                }
-                
+
                 .container {
                   display: flex;
                   flex-wrap: wrap;
-                  justify-content: center;
+                  justify-content: space-between;
                   gap: 20px;
                   padding: 20px;
+                  width: 100%;
+                  margin: 0;
+                }
+
+                .id-card {
+                  border: 2px solid #333 !important;
+                  box-shadow: none !important;
+                  margin: 0;
+                  page-break-inside: avoid;
+                  min-width: 33%;
+                  flex: 0 0 31%;
+                  max-width: 31%;
+                }
+
+                @page {
+                  size: A4;
+                  margin: 20mm;
+                }
+
+                @page :first {
+                  margin-top: 0;
                 }
               }
-              
-              body { 
+               body { 
                 margin: 0; 
                 padding: 20px; 
                 display: flex; 
@@ -447,7 +466,7 @@ private showFallbackPrint(record: AttendanceRecord): void {
                 max-width: 300px; 
                 margin: 0 auto; 
                 border: 2px solid #333; 
-                padding: 20px; 
+                padding: 25px; 
                 text-align: center; 
                 display: flex; 
                 flex-direction: column; 
@@ -525,9 +544,17 @@ private showFallbackPrint(record: AttendanceRecord): void {
                   <span class="label">Name:</span>
                   <span class="value">${item.registration.fullName}</span>
                 </div>
+                <div class="detail-row">
+                  <span class="label">Scholar In:</span>
+                  <span class="value">${item.registration.scholarIn}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">Sakai:</span>
+                  <span class="value">${item.registration.sakai}</span>
+                </div>
                 ${item.qrCodeIdentifier ? `
                   <div class="qr-code">
-                    <img src="${item.qrCodeIdentifier}" alt="QR Code" width="100" height="100">
+                    <img src="${item.qrCodeIdentifier}" alt="QR Code" width="120" height="120">
                   </div>
                 ` : ''}
               </div>
