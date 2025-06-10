@@ -3,9 +3,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, throwError, map } from 'rxjs';
 import { RegistrationFormData } from '../models/registration-form-data.model';
 
+
+
+
 @Injectable({
   providedIn: 'root'
 })
+
+
 export class RegistrationService {
   private backendUrl = '/api/registrations'; // Your backend API endpoint
 
@@ -75,9 +80,21 @@ export class RegistrationService {
    * @returns Observable with the QR image
    */
   getQRImage(id:number): Observable<any> {
-    console.log("id in getQRImage",id);
     const url = `${this.backendUrl}/${id}/qr-code`;
     return this.http.get(url, { responseType: 'blob' }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+
+  /**
+   * get list of IDs
+   */
+
+
+  getAllIds(startDate: string, endDate: string): Observable<any> {
+    const url = `${this.backendUrl}/attendance-between-dates?startDate=${startDate}&endDate=${endDate}`;
+    return this.http.get<any>(url).pipe(
       catchError(this.handleError)
     );
   }

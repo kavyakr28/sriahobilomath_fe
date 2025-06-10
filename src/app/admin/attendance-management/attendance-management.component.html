@@ -21,6 +21,17 @@
         <input type="text" [(ngModel)]="searchText" placeholder="Search...">
       </div>
       <div class="action-buttons">
+        <div class="print-actions">
+          <div class="date-range-picker">
+            <i class="far fa-calendar-alt"></i>
+            <input type="date" [(ngModel)]="startDate" placeholder="Start Date">
+            <span>to</span>
+            <input type="date" [(ngModel)]="endDate" placeholder="End Date">
+          </div>
+          <button (click)="printAll()" class="print-button">
+            <i class="fas fa-print"></i> Print All
+          </button>
+        </div>
         <button (click)="exportToExcel()" class="export-button">
           <i class="fas fa-file-export"></i> Export
         </button>
