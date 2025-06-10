@@ -394,104 +394,122 @@ private showFallbackPrint(record: AttendanceRecord): void {
       <head>
         <title>ID Cards</title>
         <style>
-          @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
-          
-          body { 
-            font-family: 'Poppins', Arial, sans-serif; 
-            margin: 0; 
-            padding: 20px;
-            background-color: #f0f2f5;
-          }
-          .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            padding: 20px;
-            color:#000;
-          }
-          .id-card { 
-            width: 300px;
-            height: 180px;
-            background: none
-            border-radius: 12px;
-            padding: 20px;
-            color: #000;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.97);
-          }
-          .id-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            transform: rotate(30deg);
-          }
-          .header { 
-            text-align: center;
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color:#000;
-          }
-          .qr-code { 
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: white;
-            padding: 5px;
-            border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-          }
-          .details { 
-            margin-top: 10px;
-            position: relative;
-            z-index: 1;
-          }
-          .detail-row {
-            margin: 8px 0;
-            display: flex;
-            align-items: center;
-          }
-          .label {
-            font-size: 12px;
-            color: #000;
-            width: 70px;
-            display: inline-block;
-          }
-          .value {
-            font-size: 14px;
-            font-weight: 500;
-          }
-          .id-number {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 13px;
-            margin-top: 10px;
-            display: inline-block;
-            font-family: monospace;
-            letter-spacing: 1px;
-          }
-          .logo {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            font-size: 12px;
-            opacity: 0.8;
-          }
-        </style>
+              @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+              
+              @page {
+                margin: 0;
+                padding: 0;
+              }
+              
+              @media print {
+                body {
+                  -webkit-print-color-adjust: exact !important;
+                  print-color-adjust: exact !important;
+                }
+                
+                .id-card {
+                  border: 2px solid #333 !important;
+                  box-shadow: none !important;
+                  margin: 10px;
+                  page-break-inside: avoid;
+                }
+                
+                .container {
+                  display: flex;
+                  flex-wrap: wrap;
+                  justify-content: center;
+                  gap: 20px;
+                  padding: 20px;
+                }
+              }
+              
+              body { 
+                margin: 0; 
+                padding: 20px; 
+                display: flex; 
+                justify-content: center; 
+                align-items: center;
+                min-height: 100vh;
+              }
+              
+              .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 20px;
+                padding: 20px;
+              }
+              
+              .id-card { 
+                font-family: Arial, sans-serif; 
+                max-width: 300px; 
+                margin: 0 auto; 
+                border: 2px solid #333; 
+                padding: 20px; 
+                text-align: center; 
+                display: flex; 
+                flex-direction: column; 
+                align-items: center;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+              }
+              
+              .header { 
+                text-align: center;
+                font-size: 18px;
+                font-weight: 600;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                color:#000;
+              }
+              
+              .qr-code { 
+                max-width: 100%;
+                height: auto;
+                display: block;
+                margin: 0 auto;
+              }
+              
+              .details { 
+                margin-top: 10px;
+                position: relative;
+                z-index: 1;
+              }
+              
+              .detail-row {
+                margin: 8px 0;
+                display: flex;
+                align-items: center;
+              }
+              
+              .label {
+                font-size: 12px;
+                color: #000;
+                width: 70px;
+                display: inline-block;
+              }
+              
+              .value {
+                font-size: 14px;
+                font-weight: 500;
+              }
+              
+              .id-number {
+                background: rgba(255, 255, 255, 0.15);
+                padding: 5px 10px;
+                border-radius: 4px;
+                font-size: 13px;
+                margin-top: 10px;
+                display: inline-block;
+                font-family: monospace;
+                letter-spacing: 1px;
+              }
+            </style>
       </head>
       <body>
         <div class="container">
