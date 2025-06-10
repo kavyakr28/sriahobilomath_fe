@@ -18,8 +18,13 @@
     <div class="header-actions">
       <div class="search-box">
         <i class="fas fa-search"></i>
-        <input type="text" [(ngModel)]="searchText" placeholder="Search...">
+        <input type="text" [(ngModel)]="searchText" placeholder="Search by Name/Phone/Scholar/Shaka">
       </div>
+      <div class="id-search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" [(ngModel)]="idSearchText" placeholder="Search by ID">
+      </div>
+      <div class="action-buttons">
       <div class="action-buttons">
         <div class="print-actions">
           <div class="date-range-picker">

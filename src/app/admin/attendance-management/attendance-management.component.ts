@@ -38,6 +38,8 @@ export class AttendanceManagementComponent implements OnInit {
   startDate: string = '';
   endDate: string = '';
 
+  idSearchText = '';
+
   constructor(
     private router: Router,
     private registrationService: RegistrationService
@@ -50,6 +52,8 @@ export class AttendanceManagementComponent implements OnInit {
   loadAttendanceData(): void {
     this.isLoading = true;
     this.errorMessage = '';
+
+
     
     this.registrationService.getRegistrations().subscribe({
       next: (registrations: RegistrationFormData[]) => {
@@ -286,13 +290,23 @@ private showFallbackPrint(record: AttendanceRecord): void {
 
 
   get filteredRecords(): AttendanceRecord[] {
-    if (!this.searchText) return this.attendanceList;
+    if (!this.searchText  && !this.idSearchText) return this.attendanceList;
     const searchLower = this.searchText.toLowerCase();
-    return this.attendanceList.filter(record => 
-      record.fullName.toLowerCase().includes(searchLower) ||
-      record.phone.includes(this.searchText) ||
-      record.scholarIn.toLowerCase().includes(searchLower) ||
-      record.sakai.toLowerCase().includes(searchLower)
+    return this.attendanceList.filter(record => {
+
+      // Check ID search
+      if (this.idSearchText && !record.id.toString().includes(this.idSearchText)) {
+        return false;
+      }
+      const searchLower = this.searchText.toLowerCase();
+
+      return (
+        record.fullName.toLowerCase().includes(searchLower) ||
+        record.phone.includes(this.searchText) ||
+        record.scholarIn.toLowerCase().includes(searchLower) ||
+        record.sakai.toLowerCase().includes(searchLower)
+      );
+    }
     );
   }
 
