@@ -61,8 +61,10 @@
     <table class="attendance-table">
       <thead>
         <tr>
+          <th>ID</th>
           <th>Name</th>
           <th>Phone</th>
+          <th>Aadhaar</th>
           <th>Scholar</th>
           <th>Shaka</th>
           <th>Reg. Date</th>
@@ -87,8 +89,10 @@
       </thead>
       <tbody>
         <tr *ngFor="let record of paginatedRecords">
+          <td>{{ record.id }}</td>
           <td>{{ record.fullName }}</td>
           <td>{{ record.phone }}</td>
+          <td>{{ record.aadhaar }}</td>
           <td>{{ record.scholarIn }}</td>
           <td>{{ record.sakai }}</td>
           <td>{{ record.registrationDate | date: 'dd/MM/yyyy' }}</td>

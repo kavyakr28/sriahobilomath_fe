@@ -7,6 +7,7 @@ export interface AttendanceRecord {
   id: number;
   fullName: string;
   phone: string;
+  aadhaar: string;
   scholarIn: string;
   sakai: string;
   registrationDate: string;
@@ -57,6 +58,7 @@ export class AttendanceManagementComponent implements OnInit {
           id: reg.id || index + 1,
           fullName: reg.fullName,
           phone: reg.phone,
+          aadhaar: reg.aadhaar,
           scholarIn: reg.scholarIn,
           sakai: reg.sakai,
           registrationDate: reg.registrationDate || new Date().toISOString().split('T')[0],
