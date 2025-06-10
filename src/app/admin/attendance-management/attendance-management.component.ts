@@ -470,7 +470,7 @@ private showFallbackPrint(record: AttendanceRecord): void {
               
               .qr-code { 
                 max-width: 100%;
-                height: auto;
+                height: 100px;
                 display: block;
                 margin: 0 auto;
               }
@@ -527,7 +527,7 @@ private showFallbackPrint(record: AttendanceRecord): void {
                 </div>
                 ${item.qrCodeIdentifier ? `
                   <div class="qr-code">
-                    <img src="${item.qrCodeIdentifier}" alt="QR Code" width="70" height="70">
+                    <img src="${item.qrCodeIdentifier}" alt="QR Code" width="100" height="100">
                   </div>
                 ` : ''}
               </div>
