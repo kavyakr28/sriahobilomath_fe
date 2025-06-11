@@ -91,9 +91,10 @@ export class AuthService {
         localStorage.setItem('auth', authHeader);
         // Create user data without duplicating the username
         const { username: _, ...userWithoutUsername } = response.user || {};
+        console.log("response : ",response);
         const userData = {
           username,
-          // role: response.role,
+          roles: response.role,
           // Don't store password, we'll use the auth header
           ...userWithoutUsername
         };

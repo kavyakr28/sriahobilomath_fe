@@ -10,7 +10,7 @@
         <i class="fas fa-users"></i>
         <div class="count-info">
           <h3>Total Attendees</h3>
-          <p class="count-number">{{ attendanceList.length }}</p>
+          <p class="count-number">{{ attendanceRecords.length }}</p>
         </div>
       </div>
     </div>
@@ -74,24 +74,33 @@
           <th>Unq ID</th>
           <th>Name</th>
           <th>Phone</th>
-          <th>Aadhaar</th>
+          <th *ngIf="checkRole() === 'ADMIN'">Aadhaar</th>
           <th>Scholar</th>
           <th>Shaka</th>
           <th>Reg. Date</th>
-          <th colspan="2">Day 1</th>
-          <th colspan="2">Day 2</th>
-          <th colspan="2">Day 3</th>
-          <th colspan="2">Day 4</th>
-          <th colspan="2">Day 5</th>
+          <th colspan="2"> <div>Day 1</div>
+            <div style="font-size: 0.8em; font-weight: normal;">25-06-2025</div>
+         </th>
+          <th colspan="2"> <div>Day 2</div>
+            <div style="font-size: 0.8em; font-weight: normal;">26-06-2025</div>
+         </th>
+          <th colspan="2"> <div>Day 3</div>
+            <div style="font-size: 0.8em; font-weight: normal;">27-06-2025</div>
+         </th>
+          <th colspan="2"> <div>Day 4</div>
+            <div style="font-size: 0.8em; font-weight: normal;">28-06-2025</div>
+         </th>
+          <th colspan="2"> <div>Day 5</div>
+            <div style="font-size: 0.8em; font-weight: normal;">29-06-2025</div>
+         </th>
           <th>Print</th>
           <th>Gift</th>
-          <th>Travel Charges</th>
-          <th>Sambavanai</th>
-          <th>Total Amount</th>
+          <th *ngIf="checkRole() === 'ADMIN'">Travel Charges</th>
+          <th *ngIf="checkRole() === 'ADMIN'">Sambavanai</th>
+          <th *ngIf="checkRole() === 'ADMIN'">Total Amount</th>
         </tr>
         <tr class="sub-header">
-          <th colspan="5"></th>
-          <th>FN</th><th>AN</th>
+          <th colspan="8"></th>
           <th>FN</th><th>AN</th>
           <th>FN</th><th>AN</th>
           <th>FN</th><th>AN</th>
@@ -107,7 +116,7 @@
           <td>{{ record.registration.id }}</td>
           <td>{{ record.registration.fullName }}</td>
           <td>{{ record.registration.phone }}</td>
-          <td>{{ record.registration.aadhaar }}</td>
+          <td *ngIf="checkRole() === 'ADMIN'">{{ record.registration.aadhaar }}</td>
           <td>{{ record.registration.scholarIn }}</td>
           <td>{{ record.registration.sakai }}</td>
           <td>{{ record.registration.registrationDate | date: 'dd/MM/yyyy' }}</td>

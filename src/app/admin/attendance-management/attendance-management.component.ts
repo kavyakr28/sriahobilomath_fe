@@ -59,10 +59,10 @@ export class AttendanceManagementComponent implements OnInit {
 
   checkRole(): string | null {
     const user = this.authService.getCurrentUser();
-
-    if (user?.role?.includes('ADMIN')) {
+    console.log("user",user);
+    if (user?.role?.includes('ADMIN') || user?.username.toLowerCase() === 'admin') {
       return 'ADMIN';
-    } else if (user?.role?.includes('USER')) {
+    } else if (user?.role?.includes('USER') || user?.username.toLowerCase() === 'user') {
       return 'USER';
     }
     return null;
@@ -225,63 +225,82 @@ printIdCard(record: RegistrationResponse): void {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Print ID Card</title>
             <style>
-              @media print {
-                body { -webkit-print-color-adjust: exact; }
-                @page { margin: 0; size: 100mm 150mm; }
+           
+              @page {
+                margin: 0;
+                size: 100mm 125mm;
               }
+              @media print {
+                html, body {
+                  width: 100mm;
+                  height: 125mm;
+                  margin: 0;
+                  padding: 0;
+                  -webkit-print-color-adjust: exact;
+                }
+                body * {
+                  visibility: hidden;
+                }
+                .id-card, .id-card * {
+                  visibility: visible;
+                }
+                .id-card {
+                  position: absolute;
+                  left: 0;
+                  top: 0;
+                  margin: 0;
+                  padding: 0;
+                  box-shadow: none !important;
+                }
+              }
+
               body { 
                 margin: 0; 
-                padding: 20px; 
+                padding: 0;
+                width: 100mm;
+                height: 125mm;
                 display: flex; 
                 justify-content: center; 
                 align-items: center;
-                min-height: 100vh;
+                background: white;
+                position: relative;
               }
               .id-card {
                 font-family: Arial, sans-serif; 
-                max-width: 300px; 
-                margin: 0 auto; 
-                border: 2px solid #333; 
-                padding: 20px; 
+                width: 100%;
+                height: 100%;
+                border: 1px solid #333; 
+                padding: 10px; 
                 text-align: center; 
                 display: flex; 
-                flex-direction: column; 
+                flex-direction: column;
                 align-items: center;
-                border-radius: 8px;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-              }
-              .qr-container {
+                justify-content: space-between;
                 background: white;
-                padding: 15px;
-                border-radius: 8px;
-                margin: 10px 0;
-                width: 100%;
                 box-sizing: border-box;
+                position: relative;
               }
-              .qr-container img {
-                max-width: 100%;
-                height: auto;
-                display: block;
-                margin: 0 auto;
-              }
+                
             </style>
           </head>
           <body>
             <div class="id-card">
-              <h2 style="margin: 0 0 15px 0; color: #fff; text-shadow: 1px 1px 2px rgba(15, 15, 15, 0.96); border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px; width: 100%;">Saptathi Mahotsavam</h2>
-              
+              <div style="margin-bottom: 15px; font-size: 20px; font-weight: bold; width: 100%; background: rgba(255,255,255,0.8); padding: 8px; border-radius: 4px;">
+                ID: ${record.registration.id}
+              </div>
+
               <div style="margin-bottom: 15px; font-size: 20px; font-weight: bold; width: 100%; background: rgba(255,255,255,0.8); padding: 8px; border-radius: 4px;">
                 ${record.registration.fullName}
               </div>
               
               <div style="display: flex; justify-content: space-between; margin-bottom: 15px; text-align: center; padding: 0 10px; width: 100%; gap: 10px;">
                 <div style="flex: 1; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 4px;">
-                  <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Scholar</div>
-                  <div style="font-weight: 600; color: #2c3e50;">${record.registration.scholarIn}</div>
+                  <div style="font-size: 12px;font-weight: bold; color: #2c3e50; margin-bottom: 5px;">Scholar</div>
+                  <div style="font-weight: bold; color: #2c3e50;">${record.registration.scholarIn}</div>
                 </div>
                 <div style="flex: 1; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 4px;">
-                  <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Shaka</div>
-                  <div style="font-weight: 600; color: #2c3e50;">${record.registration.sakai}</div>
+                  <div style="font-size: 12px;font-weight: bold; color: #2c3e50; margin-bottom: 5px;">Shaka</div>
+                  <div style="font-weight: bold; color: #2c3e50;">${record.registration.sakai}</div>
                 </div>
               </div>
               
@@ -290,15 +309,6 @@ printIdCard(record: RegistrationResponse): void {
               </div>
             </div>
             
-            <script>
-              // Fallback in case onload doesn't fire
-              setTimeout(() => { window.print(); }, 1000);
-              
-              // Close after print (for mobile)
-              window.onafterprint = function() {
-                window.close();
-              };
-            </script>
           </body>
           </html>
         `;
@@ -403,22 +413,22 @@ private showFallbackPrint(record: AttendanceRecord): void {
 }
 
 
-  get filteredRecords(): AttendanceRecord[] {
-    if (!this.searchText  && !this.idSearchText) return this.attendanceList;
+  get filteredRecords(): RegistrationResponse[] {
+    if (!this.searchText  && !this.idSearchText) return this.attendanceRecords;
     const searchLower = this.searchText.toLowerCase();
-    return this.attendanceList.filter(record => {
+    return this.attendanceRecords.filter(record => {
 
       // Check ID search
-      if (this.idSearchText && !record.id.toString().includes(this.idSearchText)) {
+      if (this.idSearchText && !record.registration.id.toString().includes(this.idSearchText)) {
         return false;
       }
       const searchLower = this.searchText.toLowerCase();
 
       return (
-        record.fullName.toLowerCase().includes(searchLower) ||
-        record.phone.includes(this.searchText) ||
-        record.scholarIn.toLowerCase().includes(searchLower) ||
-        record.sakai.toLowerCase().includes(searchLower)
+        record.registration.fullName.toLowerCase().includes(searchLower) ||
+        record.registration.phone.includes(this.searchText) ||
+        record.registration.scholarIn.toLowerCase().includes(searchLower) ||
+        record.registration.sakai.toLowerCase().includes(searchLower)
       );
     }
     );
