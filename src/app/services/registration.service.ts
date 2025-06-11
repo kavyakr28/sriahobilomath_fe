@@ -112,7 +112,7 @@ export class RegistrationService {
     travelCharge: number,
     sambavanai: number,
     totalAmount: number
-  }, attendanceLog: AttendanceData[]): Observable<void> {
+  }, attendanceLog: AttendanceData): Observable<void> {
     const url = `${this.backendUrl}/${registrationId}/charges`;
     
     // Convert numbers to strings to match BigDecimal format
@@ -122,6 +122,7 @@ export class RegistrationService {
       totalAmount: charges.totalAmount.toString(),
       attendanceLog: attendanceLog
     };
+    console.log("payload :",payload);
 
     return this.http.post<void>(url, payload).pipe(
       catchError(this.handleError)

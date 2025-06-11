@@ -33,7 +33,7 @@ export interface AttendanceRecord {
 export class AttendanceManagementComponent implements OnInit {
   attendanceList: AttendanceRecord[] = [];
   attendanceRecords: RegistrationResponse[] = [];
-  attendanceLog: AttendanceData[] = [];
+  attendanceLog: AttendanceData | {} = {};
   currentPage = 1;
   itemsPerPage = 100;
   searchText = '';
@@ -46,6 +46,8 @@ export class AttendanceManagementComponent implements OnInit {
 
   idSearchText = '';
   isEditing = false;
+
+  filteredRecords: RegistrationResponse[] = [];
 
   constructor(
     private router: Router,
@@ -82,9 +84,9 @@ export class AttendanceManagementComponent implements OnInit {
 
     this.registrationService.getAllRegistrations().subscribe({
       next: (registrations: RegistrationListResponse) => {
-        console.log("registrations",registrations);
         this.attendanceRecords = registrations;
-        console.log("attendanceRecords",this.attendanceRecords);
+        this.filteredRecords = [...registrations];
+        console.log("Filtered Records",this.filteredRecords);
         
         this.isLoading = false;
       },
@@ -198,36 +200,27 @@ export class AttendanceManagementComponent implements OnInit {
       sambavanai: record?.attendanceAndGifts?.sambavanai || 0,
       totalAmount: record?.attendanceAndGifts?.totalAmount || 0
     };
-
-    this.attendanceLog.push({
-      id: record.registration.id,
-      day1FnAttendance: record?.attendanceAndGifts?.day1FnAttendance,
-      day1AnAttendance: record?.attendanceAndGifts?.day1AnAttendance,
-      day2FnAttendance: record?.attendanceAndGifts?.day2FnAttendance,
-      day2AnAttendance: record?.attendanceAndGifts?.day2AnAttendance,
-      day3FnAttendance: record?.attendanceAndGifts?.day3FnAttendance,
-      day3AnAttendance: record?.attendanceAndGifts?.day3AnAttendance,
-      day4FnAttendance: record?.attendanceAndGifts?.day4FnAttendance,
-      day4AnAttendance: record?.attendanceAndGifts?.day4AnAttendance,
-      day5FnAttendance: record?.attendanceAndGifts?.day5FnAttendance,
-      day5AnAttendance: record?.attendanceAndGifts?.day5AnAttendance,
-    })
-    
-    // Calculate total amount
-    // record.attendanceAndGifts.totalAmount = record.attendanceAndGifts.travelCharge + record.attendanceAndGifts.sambavanai;
-    console.log("charges :",charges);
-// Call the service to update charges
+this.attendanceLog = {
+  day1FnAttendance: record?.attendanceAndGifts?.day1FnAttendance,
+  day1AnAttendance: record?.attendanceAndGifts?.day1AnAttendance,
+  day2FnAttendance: record?.attendanceAndGifts?.day2FnAttendance,
+  day2AnAttendance: record?.attendanceAndGifts?.day2AnAttendance,
+  day3FnAttendance: record?.attendanceAndGifts?.day3FnAttendance,
+  day3AnAttendance: record?.attendanceAndGifts?.day3AnAttendance,
+  day4FnAttendance: record?.attendanceAndGifts?.day4FnAttendance,
+  day4AnAttendance: record?.attendanceAndGifts?.day4AnAttendance,
+  day5FnAttendance: record?.attendanceAndGifts?.day5FnAttendance,
+  day5AnAttendance: record?.attendanceAndGifts?.day5AnAttendance,
+}
 this.registrationService.updateCharges(record.registration.id, charges, this.attendanceLog).subscribe({
   next: () => {
-    console.log('Charges updated successfully');
+    alert('Charges updated successfully');
   },
   error: (err) => {
     console.error('Error updating charges:', err);
     alert('Failed to update charges: ' + err.message);
   }
 });
-
-
  }
 
  
@@ -458,34 +451,51 @@ private showFallbackPrint(record: AttendanceRecord): void {
 }
 
 
-  get filteredRecords(): RegistrationResponse[] {
-    if (!this.searchText  && !this.idSearchText) return this.attendanceRecords;
-    const searchLower = this.searchText.toLowerCase();
-    return this.attendanceRecords.filter(record => {
-
-      // Check ID search
-      if (this.idSearchText && !record.registration.id.toString().includes(this.idSearchText)) {
-        return false;
-      }
-      const searchLower = this.searchText.toLowerCase();
-
-      return (
-        record.registration.fullName.toLowerCase().includes(searchLower) ||
-        record.registration.phone.includes(this.searchText) ||
-        record.registration.scholarIn.toLowerCase().includes(searchLower) ||
-        record.registration.sakai.toLowerCase().includes(searchLower)
-      );
-    }
-    );
+updateFilteredRecords(): void {
+  // If no search criteria, return all records
+  if ((!this.searchText || this.searchText.trim() === '') && 
+      (!this.idSearchText || this.idSearchText.trim() === '')) {
+    this.filteredRecords = [...this.attendanceRecords];
+    return;
   }
 
-  // get paginatedRecords(): AttendanceRecord[] {
-  //   const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-  //   return this.filteredRecords.slice(startIndex, startIndex + this.itemsPerPage);
-  // }
+  const searchLower = this.searchText ? this.searchText.toLowerCase().trim() : '';
+  const idSearch = this.idSearchText ? this.idSearchText.trim() : '';
+
+  this.filteredRecords = this.attendanceRecords.filter(record => {
+    // If ID search is provided and doesn't match, filter out
+    if (idSearch && !record.registration.id.toString().includes(idSearch)) {
+      return false;
+    }
+
+    // If no text search, return records that matched the ID search
+    if (!searchLower) {
+      return true;
+    }
+
+    // Check text search against all relevant fields
+    return (
+      (record.registration.fullName && 
+       record.registration.fullName.toLowerCase().includes(searchLower)) ||
+      (record.registration.phone && 
+       record.registration.phone.includes(searchLower)) ||
+      (record.registration.scholarIn && 
+       record.registration.scholarIn.toLowerCase().includes(searchLower)) ||
+      (record.registration.sakai && 
+       record.registration.sakai.toLowerCase().includes(searchLower))
+    );
+  });
+
+  // Reset to first page when search changes
+  this.currentPage = 1;
+}
+
+onSearchChange(): void {
+  this.updateFilteredRecords();
+}
   get paginatedRecords(): RegistrationResponse[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    return this.attendanceRecords.slice(startIndex, startIndex + this.itemsPerPage);
+    return this.filteredRecords.slice(startIndex, startIndex + this.itemsPerPage);
   }
 
   get totalPages(): number {

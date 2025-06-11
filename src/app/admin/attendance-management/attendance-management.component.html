@@ -18,11 +18,11 @@
     <div class="header-actions">
       <div class="search-box">
         <!-- <i class="fas fa-search"></i> -->
-        <input type="text" [(ngModel)]="searchText" placeholder="Search by Name/Phone/Scholar/Shaka">
+        <input type="text" [(ngModel)]="searchText" (input)="onSearchChange()" placeholder="Search by Name/Phone/Scholar/Shaka">
       </div>
       <div class="id-search-box">
         <i class="fas fa-search"></i>
-        <input type="text" [(ngModel)]="idSearchText" placeholder="Search by ID">
+        <input type="text" [(ngModel)]="idSearchText" (input)="onSearchChange()" placeholder="Search by ID">
       </div>
       <div class="action-buttons">
         <button class="edit-toggle" *ngIf="checkRole() === 'ADMIN'" (click)="toggleEdit()" [class.active]="isEditing">
@@ -69,7 +69,7 @@
 <div class="table-responsive" *ngIf="!isLoading && !errorMessage">
     <table class="attendance-table">
       <thead>
-        <tr>
+        <tr >
           <th>#</th>
           <th>Unq ID</th>
           <th>Name</th>
@@ -122,117 +122,115 @@
           <td>{{ record.registration.registrationDate | date: 'dd/MM/yyyy' }}</td>
           
           <!-- Day 1 -->
-          <!-- <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day1FnAttendance" class="attendance-cell">
-            {{ record?.attendanceAndGifts?.day1FnAttendance ? '✓' : '' }}
-          </td> -->
-          <td class="attendance-cell"><ng-container *ngIf="isEditing; else viewMode">
+          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day1FnAttendance" class="attendance-cell">
+            <ng-container *ngIf="isEditing; else viewModeday1Fn">
             <input type="checkbox" 
                    [ngModel]="record?.attendanceAndGifts?.day1FnAttendance"
                    (ngModelChange)="onDayAttendanceChange(record, $event, 'day1','FN')"
                    [disabled]="!isEditing"
                    >
           </ng-container>
-          <ng-template #viewMode>
-           {{ record?.attendanceAndGifts?.day1FnAttendance ? '✓' : '' }}
+          <ng-template #viewModeday1Fn>
+           {{ record?.attendanceAndGifts?.day1FnAttendance === true ? '✓' : '' }}
           </ng-template></td>
           
           <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day1AnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewMode">
+            <ng-container *ngIf="isEditing; else viewModeday1An">
               <input type="checkbox" 
                      [ngModel]="record?.attendanceAndGifts?.day1AnAttendance"
                      (ngModelChange)="onDayAttendanceChange(record, $event, 'day1','AN')"
                      [disabled]="!isEditing"
                      >
             </ng-container>
-            <ng-template #viewMode>{{ record?.attendanceAndGifts?.day1AnAttendance ? '✓' : '' }}</ng-template>
+            <ng-template #viewModeday1An>{{ record?.attendanceAndGifts?.day1AnAttendance === true ? '✓' : '' }}</ng-template>
           </td>
           
           <!-- Day 2 -->
           <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day2FnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewMode">
+            <ng-container *ngIf="isEditing; else viewModeday2Fn">
               <input type="checkbox" 
                      [ngModel]="record?.attendanceAndGifts?.day2FnAttendance"
                      (ngModelChange)="onDayAttendanceChange(record, $event, 'day2','FN')"
                      [disabled]="!isEditing"
                      >
             </ng-container>
-            <ng-template #viewMode>{{ record?.attendanceAndGifts?.day2FnAttendance ? '✓' : '' }}</ng-template>
+            <ng-template #viewModeday2Fn>{{ record?.attendanceAndGifts?.day2FnAttendance === true ? '✓' : '' }}</ng-template>
           </td>
           <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day2AnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewMode">
+            <ng-container *ngIf="isEditing; else viewModeday2An">
               <input type="checkbox" 
                      [ngModel]="record?.attendanceAndGifts?.day2AnAttendance"
                      (ngModelChange)="onDayAttendanceChange(record, $event, 'day2','AN')"
                      [disabled]="!isEditing"
                      >
             </ng-container>
-            <ng-template #viewMode>{{ record?.attendanceAndGifts?.day2AnAttendance ? '✓' : '' }}</ng-template>
+            <ng-template #viewModeday2An>{{ record?.attendanceAndGifts?.day2AnAttendance === true ? '✓' : '' }}</ng-template>
           </td>
           
           <!-- Day 3 -->
           <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day3FnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewMode">
+            <ng-container *ngIf="isEditing; else viewModeday3Fn">
               <input type="checkbox" 
                      [ngModel]="record?.attendanceAndGifts?.day3FnAttendance"
                      (ngModelChange)="onDayAttendanceChange(record, $event, 'day3','FN')"
                      [disabled]="!isEditing"
                      >
             </ng-container>
-            <ng-template #viewMode>{{ record?.attendanceAndGifts?.day3FnAttendance ? '✓' : '' }}</ng-template>
+            <ng-template #viewModeday3Fn>{{ record?.attendanceAndGifts?.day3FnAttendance === true ? '✓' : '' }}</ng-template>
           </td>
           <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day3AnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewMode">
+            <ng-container *ngIf="isEditing; else viewModeday3An">
               <input type="checkbox" 
                      [ngModel]="record?.attendanceAndGifts?.day3AnAttendance"
                      (ngModelChange)="onDayAttendanceChange(record, $event, 'day3','AN')"
                      [disabled]="!isEditing"
                      >
             </ng-container>
-            <ng-template #viewMode>{{ record?.attendanceAndGifts?.day3AnAttendance ? '✓' : '' }}</ng-template>
+            <ng-template #viewModeday3An>{{ record?.attendanceAndGifts?.day3AnAttendance === true ? '✓' : '' }}</ng-template>
           </td>
           
           <!-- Day 4 -->
           <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day4FnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewMode">
+            <ng-container *ngIf="isEditing; else viewModeday4Fn">
               <input type="checkbox" 
                      [ngModel]="record?.attendanceAndGifts?.day4FnAttendance"
                      (ngModelChange)="onDayAttendanceChange(record, $event, 'day4','FN')"
                      [disabled]="!isEditing"
                      >
             </ng-container>
-            <ng-template #viewMode>{{ record?.attendanceAndGifts?.day4FnAttendance ? '✓' : '' }}</ng-template>
+            <ng-template #viewModeday4Fn>{{ record?.attendanceAndGifts?.day4FnAttendance === true ? '✓' : '' }}</ng-template>
           </td>
           <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day4AnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewMode">
+            <ng-container *ngIf="isEditing; else viewModeday4An">
               <input type="checkbox" 
                      [ngModel]="record?.attendanceAndGifts?.day4AnAttendance"
                      (ngModelChange)="onDayAttendanceChange(record, $event, 'day4','AN')"
                      [disabled]="!isEditing"
                      >
             </ng-container>
-            <ng-template #viewMode>{{ record?.attendanceAndGifts?.day4AnAttendance ? '✓' : '' }}</ng-template>
+            <ng-template #viewModeday4An>{{ record?.attendanceAndGifts?.day4AnAttendance === true ? '✓' : '' }}</ng-template>
           </td>
           
           <!-- Day 5 -->
           <td aria-readonly="true" [class.present]="record ?.attendanceAndGifts?.day5FnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewMode">
+            <ng-container *ngIf="isEditing; else viewModeday5Fn">
               <input type="checkbox" 
                      [ngModel]="record?.attendanceAndGifts?.day5FnAttendance"
                      (ngModelChange)="onDayAttendanceChange(record, $event, 'day5','FN')"
                      [disabled]="!isEditing"
                      >
             </ng-container>
-            <ng-template #viewMode>{{ record?.attendanceAndGifts?.day5FnAttendance ? '✓' : '' }}</ng-template>
+            <ng-template #viewModeday5Fn>{{ record?.attendanceAndGifts?.day5FnAttendance === true ? '✓' : '' }}</ng-template>
           </td>
           <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day5AnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewMode">
+            <ng-container *ngIf="isEditing; else viewModeday5An">
               <input type="checkbox" 
                      [ngModel]="record?.attendanceAndGifts?.day5AnAttendance"
                      (ngModelChange)="onDayAttendanceChange(record, $event, 'day5','AN')"
                      [disabled]="!isEditing"
                      >
             </ng-container>
-            <ng-template #viewMode>{{ record?.attendanceAndGifts?.day5AnAttendance ? '✓' : '' }}</ng-template>
+            <ng-template #viewModeday5An>{{ record?.attendanceAndGifts?.day5AnAttendance === true ? '✓' : '' }}</ng-template>
           </td>
           
           <td class="print-cell">
@@ -242,7 +240,7 @@
           </td>
           <td class="gift-cell" aria-readonly="true">
             <button class="gift-button" title="Toggle Gift" [disabled]="isLoading">
-              <i class="fas fa-gift"></i> {{ record?.attendanceAndGifts?.giftGiven ? '✓' : '' }}
+              <i class="fas fa-gift"></i> {{ record?.attendanceAndGifts?.giftGiven === true ? '✓' : '' }}
             </button>
           </td>
           
