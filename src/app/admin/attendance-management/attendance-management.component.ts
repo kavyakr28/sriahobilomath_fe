@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {  RegistrationService } from '../../services/registration.service';
-import { RegistrationFormData, RegistrationListResponse, RegistrationResponse } from '../../models/registration-form-data.model';
+import { AttendanceData, RegistrationFormData, RegistrationListResponse, RegistrationResponse } from '../../models/registration-form-data.model';
 import { AuthService } from 'src/app/services/auth.service';
 
 export interface AttendanceRecord {
@@ -33,6 +33,7 @@ export interface AttendanceRecord {
 export class AttendanceManagementComponent implements OnInit {
   attendanceList: AttendanceRecord[] = [];
   attendanceRecords: RegistrationResponse[] = [];
+  attendanceLog: AttendanceData[] = [];
   currentPage = 1;
   itemsPerPage = 100;
   searchText = '';
@@ -59,7 +60,7 @@ export class AttendanceManagementComponent implements OnInit {
 
   checkRole(): string | null {
     const user = this.authService.getCurrentUser();
-    console.log("user",user);
+
     if (user?.role?.includes('ADMIN') || user?.username.toLowerCase() === 'admin') {
       return 'ADMIN';
     } else if (user?.role?.includes('USER') || user?.username.toLowerCase() === 'user') {
@@ -78,40 +79,6 @@ export class AttendanceManagementComponent implements OnInit {
   loadAttendanceData(): void {
     this.isLoading = true;
     this.errorMessage = '';
-
-
-    
-    // this.registrationService.getRegistrations().subscribe({
-    //   next: (registrations: RegistrationFormData[]) => {
-    //     // Transform registration data to attendance records
-    //     this.attendanceList = registrations.map((reg, index) => ({
-    //       id: reg.id || index + 1,
-    //       fullName: reg.fullName || '',
-    //       phone: reg.phone || '',
-    //       aadhaar: reg.aadhaar || '',
-    //       scholarIn: reg.scholarIn || '',
-    //     sakai: reg.sakai || '',
-    //       registrationDate: reg.registrationDate || new Date().toISOString().split('T')[0],
-    //       travelCharges: reg.travelCharge || 0,
-    //       sambavanai: reg.sambavanai || 0,
-    //       totalAmount: reg.totalAmount || 0,
-    //             days: {
-    //         day1: { forenoon: false, afternoon: false },
-    //         day2: { forenoon: false, afternoon: false },
-    //         day3: { forenoon: false, afternoon: false },
-    //         day4: { forenoon: false, afternoon: false },
-    //         day5: { forenoon: false, afternoon: false }
-    //       },
-    //       gifted: false
-    //     }));
-    //     this.isLoading = false;
-    //   },
-    //   error: (error) => {
-    //     console.error('Error loading registrations:', error);
-    //     this.errorMessage = 'Failed to load registration data. Please try again later.';
-    //     this.isLoading = false;
-    //   }
-    // });
 
     this.registrationService.getAllRegistrations().subscribe({
       next: (registrations: RegistrationListResponse) => {
@@ -179,6 +146,50 @@ export class AttendanceManagementComponent implements OnInit {
     record.attendanceAndGifts.totalAmount = (record.attendanceAndGifts.travelCharge || 0) + value;
   }
 
+  onDayAttendanceChange(record: RegistrationResponse, value: boolean, day: string, session: string): void {
+    if (!this.canEdit()) return;
+    console.log("record",record);
+    console.log("value",value);
+    console.log("day",day);
+    if (!record.attendanceAndGifts) {
+
+      record.attendanceAndGifts = {
+        day1FnAttendance: false,
+        day1AnAttendance: false,
+        day2FnAttendance: false,
+        day2AnAttendance: false,
+        day3FnAttendance: false,
+        day3AnAttendance: false,
+        day4FnAttendance: false,
+        day4AnAttendance: false,
+        day5FnAttendance: false,
+        day5AnAttendance: false,
+      };
+    }
+    if (day === 'day1' && session === 'FN') {
+      record.attendanceAndGifts.day1FnAttendance = value;
+    } else if (day === 'day1' && session === 'AN') {
+      record.attendanceAndGifts.day1AnAttendance = value;
+    } else if (day === 'day2' && session === 'FN') {
+      record.attendanceAndGifts.day2FnAttendance = value;
+    } else if (day === 'day2' && session === 'AN') {
+      record.attendanceAndGifts.day2AnAttendance = value;
+    } else if (day === 'day3' && session === 'FN') {
+      record.attendanceAndGifts.day3FnAttendance = value;
+    } else if (day === 'day3' && session === 'AN') {
+      record.attendanceAndGifts.day3AnAttendance = value;
+    } else if (day === 'day4' && session === 'FN') {
+      record.attendanceAndGifts.day4FnAttendance = value;
+    } else if (day === 'day4' && session === 'AN') {
+      record.attendanceAndGifts.day4AnAttendance = value;
+    } else if (day === 'day5' && session === 'FN') {
+      record.attendanceAndGifts.day5FnAttendance = value;
+    } else if (day === 'day5' && session === 'AN') {
+      record.attendanceAndGifts.day5AnAttendance = value;
+    }
+    // record.attendanceAndGifts.day1FnAttendance = value || false;
+  }
+
  updateTravelCharges(record: RegistrationResponse): void {
 
 // Create charges object with numbers
@@ -187,12 +198,26 @@ export class AttendanceManagementComponent implements OnInit {
       sambavanai: record?.attendanceAndGifts?.sambavanai || 0,
       totalAmount: record?.attendanceAndGifts?.totalAmount || 0
     };
+
+    this.attendanceLog.push({
+      id: record.registration.id,
+      day1FnAttendance: record?.attendanceAndGifts?.day1FnAttendance,
+      day1AnAttendance: record?.attendanceAndGifts?.day1AnAttendance,
+      day2FnAttendance: record?.attendanceAndGifts?.day2FnAttendance,
+      day2AnAttendance: record?.attendanceAndGifts?.day2AnAttendance,
+      day3FnAttendance: record?.attendanceAndGifts?.day3FnAttendance,
+      day3AnAttendance: record?.attendanceAndGifts?.day3AnAttendance,
+      day4FnAttendance: record?.attendanceAndGifts?.day4FnAttendance,
+      day4AnAttendance: record?.attendanceAndGifts?.day4AnAttendance,
+      day5FnAttendance: record?.attendanceAndGifts?.day5FnAttendance,
+      day5AnAttendance: record?.attendanceAndGifts?.day5AnAttendance,
+    })
     
     // Calculate total amount
     // record.attendanceAndGifts.totalAmount = record.attendanceAndGifts.travelCharge + record.attendanceAndGifts.sambavanai;
     console.log("charges :",charges);
 // Call the service to update charges
-this.registrationService.updateCharges(record.registration.id, charges).subscribe({
+this.registrationService.updateCharges(record.registration.id, charges, this.attendanceLog).subscribe({
   next: () => {
     console.log('Charges updated successfully');
   },

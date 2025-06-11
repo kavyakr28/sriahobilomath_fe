@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, throwError, map } from 'rxjs';
-import { RegistrationFormData, RegistrationListResponse } from '../models/registration-form-data.model';
+import { AttendanceData, RegistrationFormData, RegistrationListResponse } from '../models/registration-form-data.model';
 
 
 
@@ -112,14 +112,15 @@ export class RegistrationService {
     travelCharge: number,
     sambavanai: number,
     totalAmount: number
-  }): Observable<void> {
+  }, attendanceLog: AttendanceData[]): Observable<void> {
     const url = `${this.backendUrl}/${registrationId}/charges`;
     
     // Convert numbers to strings to match BigDecimal format
     const payload = {
       travelCharge: charges.travelCharge.toString(),
       sambavanai: charges.sambavanai.toString(),
-      totalAmount: charges.totalAmount.toString()
+      totalAmount: charges.totalAmount.toString(),
+      attendanceLog: attendanceLog
     };
 
     return this.http.post<void>(url, payload).pipe(

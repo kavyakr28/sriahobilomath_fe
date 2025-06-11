@@ -88,4 +88,18 @@ export interface Registration {
  }
  
  export type RegistrationListResponse = RegistrationResponse[];
+
+ export type AttendanceData = {
+  id : number;
+  day1FnAttendance?: boolean;
+   day1AnAttendance?: boolean;
+   day2FnAttendance?: boolean;
+   day2AnAttendance?: boolean;
+   day3FnAttendance?: boolean;
+   day3AnAttendance?: boolean;
+   day4FnAttendance?: boolean;
+   day4AnAttendance?: boolean;
+   day5FnAttendance?: boolean;
+   day5AnAttendance?: boolean;
+  };
  
