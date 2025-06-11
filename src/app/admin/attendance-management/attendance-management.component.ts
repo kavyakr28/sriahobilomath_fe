@@ -539,6 +539,12 @@ onSearchChange(): void {
     // This would typically use a library like xlsx to export data
   }
 
+  exportAllRecords(): void {
+    this.isLoading = true;
+    this.registrationService.exportToExcel();
+    this.isLoading = false;
+  }
+
   printAll(): void {
     if (!this.startDate || !this.endDate) {
       alert('Please select both start and end dates');

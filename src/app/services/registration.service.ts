@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, throwError, map } from 'rxjs';
 import { AttendanceData, RegistrationFormData, RegistrationListResponse } from '../models/registration-form-data.model';
+import { saveAs } from 'file-saver';
 
 
 
@@ -127,6 +128,15 @@ export class RegistrationService {
     return this.http.post<void>(url, payload).pipe(
       catchError(this.handleError)
     );
+  }
+
+  exportToExcel(): void {
+    this.http.get(`${this.backendUrl}/export/excel`, { 
+      responseType: 'blob' 
+    }).subscribe((data: Blob) => {
+      const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      saveAs(blob, 'registrations.xlsx');
+    });
   }
 
 
