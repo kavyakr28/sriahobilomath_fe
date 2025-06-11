@@ -270,45 +270,65 @@ printIdCard(record: RegistrationResponse): void {
                 width: 100%;
                 height: 100%;
                 border: 1px solid #333; 
-                padding: 10px; 
-                text-align: center; 
+                padding: 0; 
+                text-align: left; 
                 display: flex; 
                 flex-direction: column;
                 align-items: center;
-                justify-content: space-between;
                 background: white;
                 box-sizing: border-box;
                 position: relative;
+                padding-top: 150px;
+                padding-left:25px
+              }
               }
                 
             </style>
-          </head>
-          <body>
+          </head>           
+             <body>
             <div class="id-card">
-              <div style="margin-bottom: 15px; font-size: 20px; font-weight: bold; width: 100%; background: rgba(255,255,255,0.8); padding: 8px; border-radius: 4px;">
-                ID: ${record.registration.id}
-              </div>
-
-              <div style="margin-bottom: 15px; font-size: 20px; font-weight: bold; width: 100%; background: rgba(255,255,255,0.8); padding: 8px; border-radius: 4px;">
-                ${record.registration.fullName}
+              <!-- Header with Logo/Title -->
+              <div style="text-align: center; margin-bottom: 1px; width: 100%;">
+          
               </div>
               
-              <div style="display: flex; justify-content: space-between; margin-bottom: 15px; text-align: center; padding: 0 10px; width: 100%; gap: 10px;">
-                <div style="flex: 1; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 4px;">
-                  <div style="font-size: 12px;font-weight: bold; color: #2c3e50; margin-bottom: 5px;">Scholar</div>
-                  <div style="font-weight: bold; color: #2c3e50;">${record.registration.scholarIn}</div>
-                </div>
-                <div style="flex: 1; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 4px;">
-                  <div style="font-size: 12px;font-weight: bold; color: #2c3e50; margin-bottom: 5px;">Shaka</div>
-                  <div style="font-weight: bold; color: #2c3e50;">${record.registration.sakai}</div>
-                </div>
-              </div>
+              <div style="display: flex; margin: 1px 0; padding: 0 1px; width: 100%;">
+    <div style="width: 70px; font-size: 15px; color: #555;">Name:</div>
+    <div style="font-size: 15px; font-weight: bold; flex: 1; padding: 1px 0 1px 1px;">
+      ${record.registration.fullName}
+    </div>
+  </div>
+  
+  <!-- ID Number -->
+  <div style="display: flex; margin: 1px 0; padding: 0 1px; width: 100%;">
+    <div style="width: 70px; font-size: 15px; color: #555;">ID No:</div>
+    <div style="font-size: 15px; font-weight: bold; flex: 1; padding: 1px 0 1px 1px;">
+      ${record.registration.id}
+    </div>
+  </div>
               
-              <div class="qr-container">
-                <img src="${qrCodeUrl}" alt="QR Code" onload="window.print()">
-              </div>
-            </div>
-            
+              <!-- Vedham -->
+  <div style="display: flex; margin: 1px 0; padding: 0 1px; width: 100%;">
+    <div style="width: 70px; font-size: 15px; color: #555;">Vedham:</div>
+    <div style="font-size: 15px; font-weight: bold; flex: 1; padding: 1px 0 1px 1px;">
+      ${record.registration.scholarIn || 'N/A'}
+    </div>
+  </div>
+  
+  <!-- Shakai -->
+  <div style="display: flex; margin: 1px 0 1px 0; padding: 0 1px; width: 100%;">
+    <div style="width: 70px; font-size: 15px; color: #555;">Shakai:</div>
+    <div style="font-size: 15px; font-weight: bold; flex: 1; padding: 1px 0 1px 1px;">
+      ${record.registration.sakai || 'N/A'}
+    </div>
+  </div>
+  
+  <!-- QR Code -->
+  <div style="text-align: center; margin: 10px 0 5px 0;padding-top:10px width: 100%;">
+  <div style=" font-size: 15px; color: #555;padding-bottom:5px">QR Code:</div>
+    <img src="${qrCodeUrl}" alt="QR Code" style="width: 180px; height: 180px;  padding-top: 3px;">
+  </div>
+  
           </body>
           </html>
         `;
