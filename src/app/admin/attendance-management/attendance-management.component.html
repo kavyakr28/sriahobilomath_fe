@@ -104,52 +104,52 @@
       <tbody>
         <tr *ngFor="let record of paginatedRecords; let i = index">
           <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
-          <td>{{ record.id }}</td>
-          <td>{{ record.fullName }}</td>
-          <td>{{ record.phone }}</td>
-          <td>{{ record.aadhaar }}</td>
-          <td>{{ record.scholarIn }}</td>
-          <td>{{ record.sakai }}</td>
-          <td>{{ record.registrationDate | date: 'dd/MM/yyyy' }}</td>
+          <td>{{ record.registration.id }}</td>
+          <td>{{ record.registration.fullName }}</td>
+          <td>{{ record.registration.phone }}</td>
+          <td>{{ record.registration.aadhaar }}</td>
+          <td>{{ record.registration.scholarIn }}</td>
+          <td>{{ record.registration.sakai }}</td>
+          <td>{{ record.registration.registrationDate | date: 'dd/MM/yyyy' }}</td>
           
           <!-- Day 1 -->
-          <td aria-readonly="true" [class.present]="record.days.day1.forenoon" class="attendance-cell">
-            {{ record.days.day1.forenoon ? '✓' : '' }}
+          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day1FnAttendance" class="attendance-cell">
+            {{ record?.attendanceAndGifts?.day1FnAttendance ? '✓' : '' }}
           </td>
-          <td aria-readonly="true" [class.present]="record.days.day1.afternoon" class="attendance-cell">
-            {{ record.days.day1.afternoon ? '✓' : '' }}
+          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day1AnAttendance" class="attendance-cell">
+            {{ record?.attendanceAndGifts?.day1AnAttendance ? '✓' : '' }}
           </td>
           
           <!-- Day 2 -->
-          <td aria-readonly="true" [class.present]="record.days.day2.forenoon" class="attendance-cell">
-            {{ record.days.day2.forenoon ? '✓' : '' }}
+          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day2FnAttendance" class="attendance-cell">
+            {{ record?.attendanceAndGifts?.day2FnAttendance ? '✓' : '' }}
           </td>
-          <td aria-readonly="true" [class.present]="record.days.day2.afternoon" class="attendance-cell">
-            {{ record.days.day2.afternoon ? '✓' : '' }}
+          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day2AnAttendance" class="attendance-cell">
+            {{ record?.attendanceAndGifts?.day2AnAttendance ? '✓' : '' }}
           </td>
           
           <!-- Day 3 -->
-          <td aria-readonly="true" [class.present]="record.days.day3.forenoon" class="attendance-cell">
-            {{ record.days.day3.forenoon ? '✓' : '' }}
+          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day3FnAttendance" class="attendance-cell">
+            {{ record?.attendanceAndGifts?.day3FnAttendance ? '✓' : '' }}
           </td>
-          <td aria-readonly="true" [class.present]="record.days.day3.afternoon" class="attendance-cell">
-            {{ record.days.day3.afternoon ? '✓' : '' }}
+          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day3AnAttendance" class="attendance-cell">
+            {{ record?.attendanceAndGifts?.day3AnAttendance ? '✓' : '' }}
           </td>
           
           <!-- Day 4 -->
-          <td aria-readonly="true" [class.present]="record.days.day4.forenoon" class="attendance-cell">
-            {{ record.days.day4.forenoon ? '✓' : '' }}
+          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day4FnAttendance" class="attendance-cell">
+            {{ record?.attendanceAndGifts?.day4FnAttendance ? '✓' : '' }}
           </td>
-          <td aria-readonly="true" [class.present]="record.days.day4.afternoon" class="attendance-cell">
-            {{ record.days.day4.afternoon ? '✓' : '' }}
+          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day4AnAttendance" class="attendance-cell">
+            {{ record?.attendanceAndGifts?.day4AnAttendance ? '✓' : '' }}
           </td>
           
           <!-- Day 5 -->
-          <td aria-readonly="true" [class.present]="record.days.day5.forenoon" class="attendance-cell">
-            {{ record.days.day5.forenoon ? '✓' : '' }}
+          <td aria-readonly="true" [class.present]="record ?.attendanceAndGifts?.day5FnAttendance" class="attendance-cell">
+            {{ record?.attendanceAndGifts?.day5FnAttendance ? '✓' : '' }}
           </td>
-          <td aria-readonly="true" [class.present]="record.days.day5.afternoon" class="attendance-cell">
-            {{ record.days.day5.afternoon ? '✓' : '' }}
+          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day5AnAttendance" class="attendance-cell">
+            {{ record?.attendanceAndGifts?.day5AnAttendance ? '✓' : '' }}
           </td>
           
           <td class="print-cell">
@@ -159,21 +159,25 @@
           </td>
           <td class="gift-cell" aria-readonly="true">
             <button class="gift-button" title="Toggle Gift" [disabled]="isLoading">
-              <i class="fas fa-gift"></i> {{ record.gifted ? '✓' : '' }}
+              <i class="fas fa-gift"></i> {{ record?.attendanceAndGifts?.giftGiven ? '✓' : '' }}
             </button>
           </td>
           
             <!--Admin only columns-->
           <td *ngIf="checkRole() === 'ADMIN'">
-            <input type="number" [(ngModel)]="record.travelCharges" class="editable-field">
+            <input type="number" [ngModel]="record?.attendanceAndGifts?.travelCharge ?? 0"
+            (ngModelChange)="onTravelChange(record, $event)"
+             class="editable-field">
           </td>
           <td *ngIf="checkRole() === 'ADMIN'">
-            <input type="number" [(ngModel)]="record.sambavanai" class="editable-field">
+            <input type="number" [ngModel]="record?.attendanceAndGifts?.sambavanai ?? 0"
+            (ngModelChange)="onSambavanaiChange(record, $event)"
+             class="editable-field">
           </td>
           <td *ngIf="checkRole() === 'ADMIN'">
-            <input type="number" [(ngModel)]="record.totalAmount" class="editable-field">
+            <span class="total-amount">{{ record?.attendanceAndGifts?.totalAmount ?? 0 }}</span>
           </td>
-          <td *ngIf="checkRole() === 'ADMIN'">
+          <td *ngIf="checkRole() === 'ADMIN' && isEditing">
             <button (click)="updateTravelCharges(record)" class="update-button">Update</button>
           </td>
         </tr>

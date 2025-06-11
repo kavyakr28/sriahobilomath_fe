@@ -9,7 +9,7 @@ export interface User {
   username: string;
   password: string;
   name: string;
-  roles: string;
+  role: string;
 }
 
 export interface AuthResponse {
@@ -91,10 +91,9 @@ export class AuthService {
         localStorage.setItem('auth', authHeader);
         // Create user data without duplicating the username
         const { username: _, ...userWithoutUsername } = response.user || {};
-        console.log('response',response);
         const userData = {
           username,
-          role: response.role,
+          // role: response.role,
           // Don't store password, we'll use the auth header
           ...userWithoutUsername
         };
@@ -108,7 +107,6 @@ export class AuthService {
     return this.http.post<SignupResponse>(`${this.apiUrl}/auth/register`, userData)
       .pipe(
         tap((response: SignupResponse) => {
-          console.log("response",response);
           // Store the token and user data in local storage
           localStorage.setItem('token', response.token);
           this.router.navigate(['/login']);
@@ -150,12 +148,12 @@ export class AuthService {
 
   isAdmin(): boolean {
     const user = this.currentUserValue;
-    return user?.roles?.includes(ROLE_ADMIN) || false;
+    return user?.role?.includes(ROLE_ADMIN) || false;
   }
   
   hasRole(role: string): boolean {
     const user = this.currentUserValue;
-    return user?.roles?.includes(role) || false;
+    return user?.role?.includes(role) || false;
   }
 
   getCurrentUser(): User | null {

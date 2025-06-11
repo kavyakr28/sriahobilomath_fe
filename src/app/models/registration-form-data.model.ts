@@ -1,19 +1,91 @@
 export interface RegistrationFormData {
-  id?: number;  // Optional ID field
-  fullName: string;
-  email: string;
-  phone: string;
-  aadhaar: string;
-  scholarIn: string;
-  sakai: string;
-  emergencyContact: string;
-  bankAccount: string;
-  ifsc: string;
-  branchName: string;
-  bankName: string;
-  accountType: string;
-  registrationDate: string;
-  travelCharges: number;
-  sambavanai: number;
-  totalAmount: number;
+   id?: number;
+   fullName?: string;
+   dob?: string;
+   phone?: string;
+   email?: string;
+   aadhaar?: string;
+   scholarIn?: string;
+   sakai: string;
+   emergencyContact?: string;
+   ownAccount?: boolean;
+   accountHolderRelationship?: string;
+   accountHolderName?: string;
+   accountNumber?: string;
+   address?: string;
+   city?: string;
+   ifscCode?: string;
+   branchName?: string;
+   bankName?: string;
+   accountType?: string;
+   registrationDate?: string;
+   giftGiven?: boolean;
+   travelCharge?: number;
+   sambavanai?: number;
+   totalAmount?: number;
+   day1FnAttendance?: boolean;
+   day1AnAttendance?: boolean;
+   day2FnAttendance?: boolean;
+   day2AnAttendance?: boolean;
+   day3FnAttendance?: boolean;
+   day3AnAttendance?: boolean;
+   day4FnAttendance?: boolean;
+   day4AnAttendance?: boolean;
+   day5FnAttendance?: boolean;
+   day5AnAttendance?: boolean;
+
 }
+
+export interface Registration {
+   id: number;
+   fullName: string;
+   dob: string;
+   phone: string;
+   email: string;
+   aadhaar: string;
+   scholarIn: string;
+   sakai: string;
+   emergencyContact: string;
+   ownAccount: boolean;
+   accountHolderRelationship: string | null;
+   accountHolderName: string | null;
+   accountNumber: string;
+   address: string;
+   city: string;
+   ifscCode: string;
+   branchName: string;
+   bankName: string;
+   accountType: string;
+   registrationDate: string;
+ }
+ 
+ export interface AttendanceAndGifts {
+   id?: number;
+   qrCodeIdentifier?: string;
+   giftGiven?: boolean;
+   sambavanai?: number;
+   travelCharge?: number;
+   totalAmount?: number;
+   day1FnAttendance?: boolean;
+   day1AnAttendance?: boolean;
+   day2FnAttendance?: boolean;
+   day2AnAttendance?: boolean;
+   day3FnAttendance?: boolean;
+   day3AnAttendance?: boolean;
+   day4FnAttendance?: boolean;
+   day4AnAttendance?: boolean;
+   day5FnAttendance?: boolean;
+   day5AnAttendance?: boolean;
+   createdAt?: string;
+   updatedAt?: string;
+   registration?: Registration;
+   totalAttendance?: number;
+ }
+ 
+ export interface RegistrationResponse {
+   registration: Registration;
+   attendanceAndGifts?: AttendanceAndGifts;
+ }
+ 
+ export type RegistrationListResponse = RegistrationResponse[];
+ 

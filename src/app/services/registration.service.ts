@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, throwError, map } from 'rxjs';
-import { RegistrationFormData } from '../models/registration-form-data.model';
+import { RegistrationFormData, RegistrationListResponse } from '../models/registration-form-data.model';
 
 
 
@@ -48,6 +48,13 @@ export class RegistrationService {
   getRegistrations(): Observable<RegistrationFormData[]> {
     const url = `${this.backendUrl}/all`;
     return this.http.get<RegistrationFormData[]>(url).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getAllRegistrations(): Observable<RegistrationListResponse> {
+    const url = `${this.backendUrl}/all-records`;
+    return this.http.get<RegistrationListResponse>(url).pipe(
       catchError(this.handleError)
     );
   }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import {  RegistrationService } from '../../services/registration.service';
-import { RegistrationFormData } from '../../models/registration-form-data.model';
+import { RegistrationFormData, RegistrationListResponse, RegistrationResponse } from '../../models/registration-form-data.model';
 import { AuthService } from 'src/app/services/auth.service';
 
 export interface AttendanceRecord {
@@ -32,6 +32,7 @@ export interface AttendanceRecord {
 })
 export class AttendanceManagementComponent implements OnInit {
   attendanceList: AttendanceRecord[] = [];
+  attendanceRecords: RegistrationResponse[] = [];
   currentPage = 1;
   itemsPerPage = 100;
   searchText = '';
@@ -58,12 +59,10 @@ export class AttendanceManagementComponent implements OnInit {
 
   checkRole(): string | null {
     const user = this.authService.getCurrentUser();
-    console.log("user",user?.roles);
-    if (user?.roles?.includes('ADMIN')) {
-      console.log("inside admin");
+
+    if (user?.role?.includes('ADMIN')) {
       return 'ADMIN';
-    } else if (user?.roles?.includes('USER')) {
-      console.log("inside user");
+    } else if (user?.role?.includes('USER')) {
       return 'USER';
     }
     return null;
@@ -82,29 +81,44 @@ export class AttendanceManagementComponent implements OnInit {
 
 
     
-    this.registrationService.getRegistrations().subscribe({
-      next: (registrations: RegistrationFormData[]) => {
-        // Transform registration data to attendance records
-        this.attendanceList = registrations.map((reg, index) => ({
-          id: reg.id || index + 1,
-          fullName: reg.fullName,
-          phone: reg.phone,
-          aadhaar: reg.aadhaar,
-          scholarIn: reg.scholarIn,
-          sakai: reg.sakai,
-          registrationDate: reg.registrationDate || new Date().toISOString().split('T')[0],
-          travelCharges: reg.travelCharges,
-          sambavanai: reg.sambavanai,
-          totalAmount: reg.totalAmount,
-                days: {
-            day1: { forenoon: false, afternoon: false },
-            day2: { forenoon: false, afternoon: false },
-            day3: { forenoon: false, afternoon: false },
-            day4: { forenoon: false, afternoon: false },
-            day5: { forenoon: false, afternoon: false }
-          },
-          gifted: false
-        }));
+    // this.registrationService.getRegistrations().subscribe({
+    //   next: (registrations: RegistrationFormData[]) => {
+    //     // Transform registration data to attendance records
+    //     this.attendanceList = registrations.map((reg, index) => ({
+    //       id: reg.id || index + 1,
+    //       fullName: reg.fullName || '',
+    //       phone: reg.phone || '',
+    //       aadhaar: reg.aadhaar || '',
+    //       scholarIn: reg.scholarIn || '',
+    //     sakai: reg.sakai || '',
+    //       registrationDate: reg.registrationDate || new Date().toISOString().split('T')[0],
+    //       travelCharges: reg.travelCharge || 0,
+    //       sambavanai: reg.sambavanai || 0,
+    //       totalAmount: reg.totalAmount || 0,
+    //             days: {
+    //         day1: { forenoon: false, afternoon: false },
+    //         day2: { forenoon: false, afternoon: false },
+    //         day3: { forenoon: false, afternoon: false },
+    //         day4: { forenoon: false, afternoon: false },
+    //         day5: { forenoon: false, afternoon: false }
+    //       },
+    //       gifted: false
+    //     }));
+    //     this.isLoading = false;
+    //   },
+    //   error: (error) => {
+    //     console.error('Error loading registrations:', error);
+    //     this.errorMessage = 'Failed to load registration data. Please try again later.';
+    //     this.isLoading = false;
+    //   }
+    // });
+
+    this.registrationService.getAllRegistrations().subscribe({
+      next: (registrations: RegistrationListResponse) => {
+        console.log("registrations",registrations);
+        this.attendanceRecords = registrations;
+        console.log("attendanceRecords",this.attendanceRecords);
+        
         this.isLoading = false;
       },
       error: (error) => {
@@ -113,6 +127,8 @@ export class AttendanceManagementComponent implements OnInit {
         this.isLoading = false;
       }
     });
+
+
   }
 
   toggleAttendance(record: AttendanceRecord, day: string, session: 'forenoon' | 'afternoon'): void {
@@ -130,17 +146,53 @@ export class AttendanceManagementComponent implements OnInit {
     // You can open a modal or navigate to an edit form here
   }
 
- updateTravelCharges(record: AttendanceRecord): void {
+  onTravelChange(record: RegistrationResponse, value: number): void {
+    if (!this.canEdit()) return;
+
+    if (!record.attendanceAndGifts) {
+      record.attendanceAndGifts = {
+        travelCharge: 0,
+        sambavanai: 0,
+        totalAmount: 0
+      };
+    }
+    
+    // Update the model value
+    record.attendanceAndGifts.travelCharge = value;
+    // Calculate total amount
+    record.attendanceAndGifts.totalAmount = value + (record.attendanceAndGifts.sambavanai || 0);
+  }
+
+  onSambavanaiChange(record: RegistrationResponse, value: number): void {
+    if (!this.canEdit()) return;
+
+    if (!record.attendanceAndGifts) {
+      record.attendanceAndGifts = {
+        travelCharge: 0,
+        sambavanai: 0,
+        totalAmount: 0
+      };
+    }    
+    // Update the model value
+    record.attendanceAndGifts.sambavanai = value;
+    // Calculate total amount
+    record.attendanceAndGifts.totalAmount = (record.attendanceAndGifts.travelCharge || 0) + value;
+  }
+
+ updateTravelCharges(record: RegistrationResponse): void {
 
 // Create charges object with numbers
     const charges = {
-      travelCharge: record.travelCharges,
-      sambavanai: record.sambavanai,
-      totalAmount: record.totalAmount
+      travelCharge: record?.attendanceAndGifts?.travelCharge || 0,
+      sambavanai: record?.attendanceAndGifts?.sambavanai || 0,
+      totalAmount: record?.attendanceAndGifts?.totalAmount || 0
     };
+    
+    // Calculate total amount
+    // record.attendanceAndGifts.totalAmount = record.attendanceAndGifts.travelCharge + record.attendanceAndGifts.sambavanai;
     console.log("charges :",charges);
 // Call the service to update charges
-this.registrationService.updateCharges(record.id, charges).subscribe({
+this.registrationService.updateCharges(record.registration.id, charges).subscribe({
   next: () => {
     console.log('Charges updated successfully');
   },
@@ -151,13 +203,11 @@ this.registrationService.updateCharges(record.id, charges).subscribe({
 });
 
 
-
-
  }
 
  
-printIdCard(record: AttendanceRecord): void {
-    this.registrationService.getQRImage(record.id).subscribe({
+printIdCard(record: RegistrationResponse): void {
+    this.registrationService.getQRImage(record.registration.id).subscribe({
       next: (blob: Blob) => {
         const qrCodeUrl = URL.createObjectURL(blob);
         
@@ -221,17 +271,17 @@ printIdCard(record: AttendanceRecord): void {
               <h2 style="margin: 0 0 15px 0; color: #fff; text-shadow: 1px 1px 2px rgba(15, 15, 15, 0.96); border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px; width: 100%;">Saptathi Mahotsavam</h2>
               
               <div style="margin-bottom: 15px; font-size: 20px; font-weight: bold; width: 100%; background: rgba(255,255,255,0.8); padding: 8px; border-radius: 4px;">
-                ${record.fullName}
+                ${record.registration.fullName}
               </div>
               
               <div style="display: flex; justify-content: space-between; margin-bottom: 15px; text-align: center; padding: 0 10px; width: 100%; gap: 10px;">
                 <div style="flex: 1; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 4px;">
                   <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Scholar</div>
-                  <div style="font-weight: 600; color: #2c3e50;">${record.scholarIn}</div>
+                  <div style="font-weight: 600; color: #2c3e50;">${record.registration.scholarIn}</div>
                 </div>
                 <div style="flex: 1; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 4px;">
                   <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Shaka</div>
-                  <div style="font-weight: 600; color: #2c3e50;">${record.sakai}</div>
+                  <div style="font-weight: 600; color: #2c3e50;">${record.registration.sakai}</div>
                 </div>
               </div>
               
@@ -374,9 +424,13 @@ private showFallbackPrint(record: AttendanceRecord): void {
     );
   }
 
-  get paginatedRecords(): AttendanceRecord[] {
+  // get paginatedRecords(): AttendanceRecord[] {
+  //   const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+  //   return this.filteredRecords.slice(startIndex, startIndex + this.itemsPerPage);
+  // }
+  get paginatedRecords(): RegistrationResponse[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    return this.filteredRecords.slice(startIndex, startIndex + this.itemsPerPage);
+    return this.attendanceRecords.slice(startIndex, startIndex + this.itemsPerPage);
   }
 
   get totalPages(): number {
