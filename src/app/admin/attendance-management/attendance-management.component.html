@@ -238,25 +238,40 @@
               <i class="fas fa-id-card"></i> Print ID
             </button>
           </td>
-          <td class="gift-cell" aria-readonly="true">
-            <button class="gift-button" title="Toggle Gift" [disabled]="isLoading">
-              <i class="fas fa-gift"></i> {{ record?.attendanceAndGifts?.giftGiven === true ? '✓' : '' }}
-            </button>
+          <td class="gift-cell" [class.present]="record?.attendanceAndGifts?.giftGiven" aria-readonly="true">
+           
+            <ng-container *ngIf="isEditing; else viewGiftGiven">
+              <input type="checkbox" 
+                     [ngModel]="record?.attendanceAndGifts?.giftGiven"
+                     (ngModelChange)="onGiftGiven(record, $event)"
+                     [disabled]="!isEditing"
+                     >
+          </ng-container>
+          <ng-template #viewGiftGiven>{{ record?.attendanceAndGifts?.giftGiven === true ? '🎁' : '' }}</ng-template>
           </td>
           
             <!--Admin only columns-->
           <td *ngIf="checkRole() === 'ADMIN'">
+            <ng-container *ngIf="isEditing; else viewTravelCharge">
             <input type="number" [ngModel]="record?.attendanceAndGifts?.travelCharge ?? 0"
             (ngModelChange)="onTravelChange(record, $event)"
              class="editable-field">
+          </ng-container>
+          <ng-template #viewTravelCharge>{{ record?.attendanceAndGifts?.travelCharge ?? 0 }}</ng-template>
           </td>
           <td *ngIf="checkRole() === 'ADMIN'">
+            <ng-container *ngIf="isEditing; else viewSambavanai">
             <input type="number" [ngModel]="record?.attendanceAndGifts?.sambavanai ?? 0"
             (ngModelChange)="onSambavanaiChange(record, $event)"
              class="editable-field">
+          </ng-container>
+          <ng-template #viewSambavanai>{{ record?.attendanceAndGifts?.sambavanai ?? 0 }}</ng-template>
           </td>
           <td *ngIf="checkRole() === 'ADMIN'">
+              <ng-container *ngIf="isEditing; else viewTotalAmount">
             <span class="total-amount">{{ record?.attendanceAndGifts?.totalAmount ?? 0 }}</span>
+          </ng-container>
+          <ng-template #viewTotalAmount>{{ record?.attendanceAndGifts?.totalAmount ?? 0 }}</ng-template>
           </td>
           <td *ngIf="checkRole() === 'ADMIN' && isEditing">
             <button (click)="updateTravelCharges(record)" class="update-button">Update</button>

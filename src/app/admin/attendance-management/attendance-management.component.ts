@@ -148,6 +148,17 @@ export class AttendanceManagementComponent implements OnInit {
     record.attendanceAndGifts.totalAmount = (record.attendanceAndGifts.travelCharge || 0) + value;
   }
 
+  onGiftGiven(record: RegistrationResponse, value: boolean): void {
+    if (!this.canEdit()) return;
+
+    if(!record.attendanceAndGifts){
+      record.attendanceAndGifts = {
+        giftGiven: false
+      };
+    }
+    record.attendanceAndGifts.giftGiven = value;
+  }
+
   onDayAttendanceChange(record: RegistrationResponse, value: boolean, day: string, session: string): void {
     if (!this.canEdit()) return;
     console.log("record",record);
