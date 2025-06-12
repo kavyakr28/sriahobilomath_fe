@@ -9,6 +9,8 @@ import { RegistrationService } from './services/registration.service';
 import { AuthService } from './services/auth.service';
 import { AppComponent } from './app.component';
 
+import { RouterModule } from '@angular/router';
+
 // Material Modules
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -49,6 +51,7 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     AttendanceManagementModule,
     // Shared Module
     SharedModule,
+    RouterModule,
     // Material Modules
     MatFormFieldModule,
     MatInputModule,
@@ -62,7 +65,6 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     MatSnackBarModule,
     MatDialogModule,
     ZXingScannerModule,
-    SharedModule,
   ],
   providers: [
     RegistrationService,

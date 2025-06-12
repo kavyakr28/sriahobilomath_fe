@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RegistrationService } from '../services/registration.service';
+import { aadhaarCheck } from '../models/aadhaarCheck';
 
 @Component({
   selector: 'app-registration-form',
@@ -316,6 +317,7 @@ export class RegistrationFormComponent implements OnInit {
 
   // Check if Aadhaar exists
   validateAadhaarNotExists(control: any): Promise<any> {
+    console.log('Validating Aadhaar:', control.value);
     const aadhaar = control.value;
     if (!aadhaar || aadhaar.length !== 12) {
       control.setErrors(null);
@@ -326,9 +328,8 @@ export class RegistrationFormComponent implements OnInit {
     
     return new Promise((resolve) => {
       this.registrationService.checkAadhaar(aadhaar).subscribe({
-        next: (response: any) => {
+        next: (response: aadhaarCheck) => {
           this.isCheckingAadhaar = false;
-          
           // Check if response is an object with aadhaarNumberAvailable property
           const isAvailable = typeof response === 'boolean' ? response : response?.aadhaarNumberAvailable;
           

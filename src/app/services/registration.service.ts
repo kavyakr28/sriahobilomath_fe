@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, throwError, map } from 'rxjs';
 import { AttendanceData, RegistrationFormData, RegistrationListResponse } from '../models/registration-form-data.model';
 import { saveAs } from 'file-saver';
+import { aadhaarCheck } from '../models/aadhaarCheck';
 
 
 
@@ -38,10 +39,13 @@ export class RegistrationService {
    * @param aadhaar Aadhaar number to check
    * @returns Observable with boolean indicating if Aadhaar exists
    */
-  checkAadhaar(aadhaar: string): Observable<boolean> {
+  checkAadhaar(aadhaar: string): Observable<aadhaarCheck> {
     const url = `${this.backendUrl}/check-aadhaar?aadhaarNumber=${aadhaar}`;
-    return this.http.get<{ exists: boolean }>(url).pipe(
-      map(response => response.exists),
+    return this.http.get<aadhaarCheck>(url).pipe(
+      map(response => {
+        console.log("Response in service", response);
+        return response;
+      }),
       catchError(this.handleError)
     );
   }
@@ -130,13 +134,16 @@ export class RegistrationService {
     );
   }
 
-  exportToExcel(): void {
-    this.http.get(`${this.backendUrl}/export/excel`, { 
-      responseType: 'blob' 
-    }).subscribe((data: Blob) => {
-      const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-      saveAs(blob, 'registrations.xlsx');
-    });
+  exportRegistrationsToCsv(): void {
+    this.http.get(`${this.backendUrl}/export-csv`, { responseType: 'blob' }) // Important: responseType is 'blob'
+      .subscribe(blob => {
+        // Use file-saver to trigger the download
+        // The filename here will be "registrations_export.csv" as set by the backend
+        saveAs(blob, 'registrations_export.csv');
+      }, error => {
+        console.error('Error downloading the CSV file:', error);
+        // Handle error appropriately in your UI
+      });
   }
 
 

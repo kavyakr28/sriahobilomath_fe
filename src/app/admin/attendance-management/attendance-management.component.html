@@ -45,7 +45,11 @@
           <i class="fas fa-file-export"></i> Export
         </button>
         <button (click)="exportAllRecords()" class="export-button">
-          <i class="fas fa-file-export"></i> Export All
+          <i class="fas fa-file-export"></i> 
+          <span *ngIf="!isExporting">Export All</span>
+          <span *ngIf="isExporting">
+            <i class="fas fa-spinner fa-spin"></i> Exporting All...
+          </span>
         </button>
       </div>
     </div>

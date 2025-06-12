@@ -46,6 +46,7 @@ export class AttendanceManagementComponent implements OnInit {
 
   idSearchText = '';
   isEditing = false;
+  isExporting = false;
 
   filteredRecords: RegistrationResponse[] = [];
 
@@ -354,7 +355,6 @@ printIdCard(record: RegistrationResponse): void {
   
   <!-- QR Code -->
   <div style="text-align: center; margin: 10px 0 5px 0;padding-top:10px width: 100%;">
-  <div style=" font-size: 15px; color: #555;padding-bottom:5px">QR Code:</div>
     <img src="${qrCodeUrl}" alt="QR Code" style="width: 180px; height: 180px;  padding-top: 3px;">
   </div>
   
@@ -539,10 +539,12 @@ onSearchChange(): void {
     // This would typically use a library like xlsx to export data
   }
 
-  exportAllRecords(): void {
-    this.isLoading = true;
-    this.registrationService.exportToExcel();
-    this.isLoading = false;
+  exportAllRecords() {
+    console.log('Exporting all records...');
+    this.isExporting = true;
+    this.registrationService.exportRegistrationsToCsv();
+    this.isExporting = false;
+   
   }
 
   printAll(): void {
