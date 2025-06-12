@@ -91,9 +91,14 @@ export class DashboardComponent implements OnInit {
     const { slots, currentAttendanceType } = this.generateDateSlots('13-06-2025', '17-06-2025');    
     this.registrationService.processScan(scanResult, currentAttendanceType).subscribe(
       (response) => {
+        if(response.attendanceAlreadyMarked){
+          alert(`Attendance already marked for ${scanResult}`);
+          return;
+        }else{
+          alert(`Successfully scanned Attendance QR code for ID ${scanResult}`);
+        }
         console.log('Attendance processed successfully:', response);
         
-      alert(`Successfully scanned Attendance QR code for ${scanResult}`);
       },
       (error) => {
         console.error('Error processing attendance:', error);
@@ -109,9 +114,14 @@ export class DashboardComponent implements OnInit {
     // Example: Call your gift service
     this.registrationService.processScan(scanResult, 'gifts').subscribe(
       (response) => {
+        if(response.giftGiven){
+          alert(`Gift already marked for ${scanResult}`);
+          return;
+        }else{
+          alert(`Successfully scanned Gifts QR code for ID ${scanResult}`);
+        }
         console.log('Gift processed successfully:', response);
         
-      alert(`Successfully scanned Gifts QR code for ${scanResult}`);
       },
       (error) => {
         console.error('Error processing gift:', error);
