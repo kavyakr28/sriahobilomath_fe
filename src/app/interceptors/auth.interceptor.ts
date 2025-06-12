@@ -25,8 +25,11 @@ export class AuthInterceptor implements HttpInterceptor {
   ) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    const requestPath = this.getRequestPath(request.url);
+
     // Allow auth service calls and defined public API paths to pass without token
-    if (request.url.startsWith(this.authServicePathPrefix) || this.isRequestPublic(request)) {
+    // Compare against the extracted path
+    if (requestPath.startsWith(this.authServicePathPrefix) || this.isRequestPublic(request, requestPath)) {
       return next.handle(request);
     }
 
@@ -65,10 +68,21 @@ export class AuthInterceptor implements HttpInterceptor {
     }
   }
 
-  private isRequestPublic(request: HttpRequest<unknown>): boolean {
-    return this.publicApiPaths.some(pattern =>
-      pattern.methods.includes(request.method) &&
-      (request.method === 'GET' ? request.url.startsWith(pattern.path) : request.url === pattern.path)
+  private getRequestPath(url: string): string {
+    try {
+      // If URL is absolute, new URL().pathname will extract the path.
+      // e.g., "https://example.com/api/foo" -> "/api/foo"
+      return new URL(url).pathname;
+    } catch (e) {
+      // If URL is relative (e.g., "/api/foo") or parsing fails, assume it's already a path.
+      return url;
+    }
+  }
+
+  private isRequestPublic(request: HttpRequest<unknown>, requestPath: string): boolean {
+    return this.publicApiPaths.some(apiPattern =>
+      apiPattern.methods.includes(request.method) &&
+      (request.method === 'GET' ? requestPath.startsWith(apiPattern.path) : requestPath === apiPattern.path)
     );
   }
 }

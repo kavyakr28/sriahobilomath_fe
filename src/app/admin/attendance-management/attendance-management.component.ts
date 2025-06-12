@@ -649,168 +649,106 @@ onSearchChange(): void {
         <style>
               @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
               
+              /* Page setup for individual ID cards */
               @page {
+                size: 100mm 125mm; /* Target dimension */
                 margin: 0;
                 padding: 0;
               }
               
-            @media print {
-                body {
-                  -webkit-print-color-adjust: exact !important;
-                  print-color-adjust: exact !important;
-                  margin: 0;
-                  padding: 0;
-                  width: 100%;
-                  height: 100%;
-                }
-
-                .container {
-                  display: flex;
-                  flex-wrap: wrap;
-                  justify-content: space-between;
-                  gap: 20px;
-                  padding: 20px;
-                  width: 100%;
-                  margin: 0;
-                }
-
-                .id-card {
-                  border: 2px solid #333 !important;
-                  box-shadow: none !important;
-                  margin: 0;
-                  page-break-inside: avoid;
-                  min-width: 33%;
-                  flex: 0 0 31%;
-                  max-width: 31%;
-                }
-
-                @page {
-                  size: A4;
-                  margin: 20mm;
-                }
-
-                @page :first {
-                  margin-top: 0;
-                }
-              }
                body { 
                 margin: 0; 
-                padding: 20px; 
-                display: flex; 
-                justify-content: center; 
-                align-items: center;
-                min-height: 100vh;
+                padding: 0; /* Body itself has no padding */
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
               }
               
-              .container {
-                max-width: 1200px;
-                margin: 0 auto;
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 20px;
-                padding: 20px;
-              }
-              
+              /* Styling for each ID card to match printIdCard */
               .id-card { 
-                font-family: Arial, sans-serif; 
-                max-width: 300px; 
-                margin: 0 auto; 
-                border: 2px solid #333; 
-                padding: 25px; 
-                text-align: center; 
+                width: 100mm; /* Full page width */
+                height: 125mm; /* Full page height */
+                box-sizing: border-box;
+                border: 1px solid #333;         /* From printIdCard */
+                font-family: Arial, sans-serif;  /* From printIdCard */
                 display: flex; 
                 flex-direction: column; 
-                align-items: center;
-                border-radius: 8px;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                padding-top: 150px; /* Adjusted for general content, original was 150px */
+                padding-left: 25px; /* From printIdCard */
+                padding-right: 15px; /* Balanced right padding */
+                padding-bottom: 15px; /* Balanced bottom padding */
+                page-break-after: always; /* Each card on a new page */
+                background: white; /* Ensure background for print */
               }
               
-              .header { 
-                text-align: center;
-                font-size: 18px;
-                font-weight: 600;
-                margin-bottom: 15px;
-                padding-bottom: 10px;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                color:#000;
-              }
-              
-              .qr-code { 
-                max-width: 100%;
-                height: 100px;
-                display: block;
-                margin: 0 auto;
-              }
-              
+              /* Details block styling */
               .details { 
-                margin-top: 10px;
-                position: relative;
-                z-index: 1;
+                text-align: left; /* Align text within details to the left */
+                margin-bottom: 15px; /* Space between details and QR code */
               }
               
               .detail-row {
-                margin: 8px 0;
+                margin: 1px 0; /* Matched from printIdCard inline style */
                 display: flex;
                 align-items: center;
+                width: 100%; /* Takes full available width in the details block */
               }
               
               .label {
-                font-size: 12px;
-                color: #000;
-                width: 70px;
-                display: inline-block;
+                width: 70px;        /* Matched from printIdCard */
+                font-size: 15px;    /* From printIdCard */
+                color: #555;        /* From printIdCard */
+                padding-right: 5px; /* Space between label and value */
               }
               
               .value {
-                font-size: 14px;
-                font-weight: 500;
+                font-size: 15px;    /* From printIdCard */
+                font-weight: bold; /* From printIdCard */
+                flex: 1;
+              }
+
+              /* QR Code container styling */
+              .qr-code-container { 
+                text-align: center; /* Center the image */
+                margin-top: auto; /* Pushes QR code to the bottom of the flex column */
+                padding-top: 10px; /* Mimic spacing from printIdCard */
+                align-self: center; /* Center the block itself if not full width */
               }
               
-              .id-number {
-                background: rgba(255, 255, 255, 0.15);
-                padding: 5px 10px;
-                border-radius: 4px;
-                font-size: 13px;
-                margin-top: 10px;
-                display: inline-block;
-                font-family: monospace;
-                letter-spacing: 1px;
+              .qr-code-container img {
+                width: 180px; /* Matched from printIdCard */
+                height: 180px; /* Matched from printIdCard */
               }
             </style>
       </head>
       <body>
-        <div class="container">
-          ${data.map(item => `
+        <!-- Removed the outer .container div, each card is a direct child of body -->
+        ${data.map(item => `
             <div class="id-card">
               <div class="details">
-                <div class="detail-row">
-                  <span class="label">ID:</span>
-                  <span class="value">${item.registration.id}</span>
-                </div>
                 <div class="detail-row">
                   <span class="label">Name:</span>
                   <span class="value">${item.registration.fullName}</span>
                 </div>
                 <div class="detail-row">
-                  <span class="label">Scholar In:</span>
-                  <span class="value">${item.registration.scholarIn}</span>
+                  <span class="label">ID No:</span>
+                  <span class="value">${item.registration.id}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">Vedham:</span>
+                  <span class="value">${item.registration.scholarIn || 'N/A'}</span>
                 </div>
                 <div class="detail-row">
                   <span class="label">Sakai:</span>
-                  <span class="value">${item.registration.sakai}</span>
+                  <span class="value">${item.registration.sakai || 'N/A'}</span>
                 </div>
                 ${item.qrCodeIdentifier ? `
-                  <div class="qr-code">
-                    <img src="${item.qrCodeIdentifier}" alt="QR Code" width="120" height="120">
+                  <div class="qr-code-container">
+                    <img src="${item.qrCodeIdentifier}" alt="QR Code">
                   </div>
                 ` : ''}
               </div>
             </div>
-          `).join('')}
-        </div>
+        `).join('')}
       </body>
       </html>
     `;
