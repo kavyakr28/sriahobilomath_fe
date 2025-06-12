@@ -535,7 +535,7 @@ onSearchChange(): void {
   }
 
   exportAllRecords(): void {
-    console.log('Exporting  records...');
+    console.log('Exporting all records...');
     this.isExportingAll = true;
     this.registrationService.exportRegistrationsToCsvAll().subscribe({
       next: () => {
@@ -553,7 +553,7 @@ onSearchChange(): void {
   }
 
   exportToExcel() {
-    console.log('Exporting all records...');
+    console.log('Exporting records...');
     this.isExporting = true;
     this.registrationService.exportRegistrationsToCsv().subscribe({
       next: () => {
@@ -785,7 +785,6 @@ onSearchChange(): void {
         <div class="container">
           ${data.map(item => `
             <div class="id-card">
-              <div class="header">Saptathi Mahotsavam</div>
               <div class="details">
                 <div class="detail-row">
                   <span class="label">ID:</span>
