@@ -658,7 +658,7 @@ onSearchChange(): void {
               
                body { 
                 margin: 0; 
-                padding: 0; /* Body itself has no padding */
+                padding-left: 125px; /* Body itself has no padding */
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
               }

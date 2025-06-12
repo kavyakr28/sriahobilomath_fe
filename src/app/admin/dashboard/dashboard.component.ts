@@ -68,20 +68,17 @@ export class DashboardComponent implements OnInit {
   }
 
   handleScanSuccess(result: string): void {
-    alert("Scan Success");
     if (!this.currentScanType) return;
     console.log(`QR Code scanned (${this.currentScanType}):`, result);
     // Process based on scan type
     if (this.currentScanType === 'attendance') {
       this.processAttendanceScan(Number(result));
       // Show success message
-      alert(`Successfully scanned ${this.currentScanType} QR code`);
-      this.scanSuccess$.next(result);
+      // this.scanSuccess$.next(result);
     } else if (this.currentScanType === 'gifts') {
       this.processGiftScan(Number(result));
       // Show success message
-      alert(`Successfully scanned ${this.currentScanType} QR code`);
-      this.scanSuccess$.next(result);
+      // this.scanSuccess$.next(result);
     }
     
     // Reset scan type after processing
@@ -91,17 +88,16 @@ export class DashboardComponent implements OnInit {
   private processAttendanceScan(scanResult: number): void {
     // TODO: Implement attendance processing logic
     console.log('Processing attendance for:', scanResult);
-    const { slots, currentAttendanceType } = this.generateDateSlots('06-06-2025', '10-06-2025');
-console.log("slots",slots);
-console.log("currentAttendanceType",currentAttendanceType);
-    console.log("Current Attendance Type:", currentAttendanceType);
-    // Example: Call your attendance service
+    const { slots, currentAttendanceType } = this.generateDateSlots('13-06-2025', '17-06-2025');    
     this.registrationService.processScan(scanResult, currentAttendanceType).subscribe(
       (response) => {
         console.log('Attendance processed successfully:', response);
+        
+      alert(`Successfully scanned Attendance QR code for ${scanResult}`);
       },
       (error) => {
         console.error('Error processing attendance:', error);
+        alert(`Failed to scan Attendance QR code for ${scanResult}`);
       }
     );
     // this.attendanceService.recordAttendance(scanResult).subscribe(...);
@@ -114,12 +110,14 @@ console.log("currentAttendanceType",currentAttendanceType);
     this.registrationService.processScan(scanResult, 'gifts').subscribe(
       (response) => {
         console.log('Gift processed successfully:', response);
+        
+      alert(`Successfully scanned Gifts QR code for ${scanResult}`);
       },
       (error) => {
         console.error('Error processing gift:', error);
+        alert(`Failed to scan Gifts QR code for ${scanResult}`);
       }
     );
-    // this.giftService.processGift(scanResult).subscribe(...);
   }
 
   onOnSpotRegistration(): void {
@@ -198,6 +196,8 @@ console.log("currentAttendanceType",currentAttendanceType);
       attendanceType: string
     }> = [];
     
+    console.log('Generating date slots for:', startDate, endDate);
+    
     const current = this.getCurrentDateTime();
     let currentAttendanceType: string = '';
     let dayCount= 1;
@@ -244,10 +244,10 @@ console.log("currentAttendanceType",currentAttendanceType);
       
       // Check if this is the current time slot
       if (isCurrentDay) {
-        if (current.timeSlot === 'Fore Noon' && current.date.getHours() >= 9 && current.date.getHours() < 12) {
+        if (current.timeSlot === 'Fore Noon' && current.date.getHours() <= 9 && current.date.getHours() <= 12) {
           currentAttendanceType = foreNoonSlot.attendanceType;
           console.log('Current Attendance Type:', currentAttendanceType);
-        } else if (current.timeSlot === 'Afternoon' && current.date.getHours() >= 13 && current.date.getHours() < 24) {
+        } else if (current.timeSlot === 'Afternoon' && current.date.getHours() <= 13 && current.date.getHours() < 24) {
           currentAttendanceType = afternoonSlot.attendanceType;
           console.log('Current Attendance Type:', currentAttendanceType);
         }
