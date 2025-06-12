@@ -132,7 +132,7 @@ console.log("currentAttendanceType",currentAttendanceType);
 
   onQRScanAttendance(): void {
     console.log('QR Scan for Attendance clicked');
-    // this.currentScanType = 'attendance';
+    this.currentScanType = 'attendance';
     this.toggleCamera(true);
   }
 

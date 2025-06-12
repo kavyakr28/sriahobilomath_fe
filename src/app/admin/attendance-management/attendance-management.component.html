@@ -50,8 +50,8 @@
         </button>
         <button *ngIf="checkRole() === 'ADMIN'" (click)="exportAllRecords()" class="export-button">
           <i class="fas fa-file-export"></i> 
-          <span *ngIf="!isExporting">Export All</span>
-          <span *ngIf="isExporting">
+          <span *ngIf="!isExportingAll">Export All</span>
+          <span *ngIf="isExportingAll">
             <i class="fas fa-spinner fa-spin"></i> Exporting All...
           </span>
         </button>

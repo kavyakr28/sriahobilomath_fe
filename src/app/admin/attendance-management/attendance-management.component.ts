@@ -47,6 +47,7 @@ export class AttendanceManagementComponent implements OnInit {
   idSearchText = '';
   isEditing = false;
   isExporting = false;
+  isExportingAll = false;
 
   filteredRecords: RegistrationResponse[] = [];
 
@@ -534,16 +535,38 @@ onSearchChange(): void {
   }
 
   exportAllRecords(): void {
-    // TODO: Implement export to Excel functionality
-    console.log('Exporting attendance data to Excel...');
-    // This would typically use a library like xlsx to export data
+    console.log('Exporting  records...');
+    this.isExportingAll = true;
+    this.registrationService.exportRegistrationsToCsvAll().subscribe({
+      next: () => {
+        console.log('All records CSV export successful.');
+        this.isExportingAll = false;
+      },
+      error: (err) => {
+        console.error('Error exporting all records CSV:', err);
+        // Optionally, show a user-friendly error message
+        alert('Failed to export all records: ' + err.message);
+        this.isExportingAll = false;
+      }
+    });
+    
   }
 
   exportToExcel() {
     console.log('Exporting all records...');
     this.isExporting = true;
-    this.registrationService.exportRegistrationsToCsv();
-    this.isExporting = false;
+    this.registrationService.exportRegistrationsToCsv().subscribe({
+      next: () => {
+        console.log('CSV export successful.');
+        this.isExporting = false;
+      },
+      error: (err) => {
+        console.error('Error exporting CSV:', err);
+        // Optionally, show a user-friendly error message
+        alert('Failed to export records: ' + err.message);
+        this.isExporting = false;
+      }
+    });
    
   }
 

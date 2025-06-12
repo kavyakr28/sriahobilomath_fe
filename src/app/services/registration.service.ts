@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, catchError, throwError, map } from 'rxjs';
+import { Observable, catchError, throwError, map, tap } from 'rxjs';
 import { AttendanceData, RegistrationFormData, RegistrationListResponse } from '../models/registration-form-data.model';
 import { saveAs } from 'file-saver';
 import { aadhaarCheck } from '../models/aadhaarCheck';
@@ -134,19 +134,35 @@ export class RegistrationService {
     );
   }
 
-  exportRegistrationsToCsv(): void {
-    this.http.get(`${this.backendUrl}/export-csv`, { responseType: 'blob' }) // Important: responseType is 'blob'
-      .subscribe(blob => {
-        // Use file-saver to trigger the download
-        // The filename here will be "registrations_export.csv" as set by the backend
-        saveAs(blob, 'registrations_export.csv');
-      }, error => {
-        console.error('Error downloading the CSV file:', error);
-        // Handle error appropriately in your UI
-      });
+  exportRegistrationsToCsv(): Observable<Blob> {
+    return this.http.get(`${this.backendUrl}/export-csv`, { responseType: 'blob' })
+      .pipe(
+        tap((blob: Blob) => {
+          // Use file-saver to trigger the download
+          // The filename here will be "registrations_export.csv" as set by the backend
+          saveAs(blob, 'registrations_export.csv');
+        }),
+        catchError(error => {
+          console.error('Error downloading the CSV file:', error);
+          // Re-throw the error to be handled by the component
+          return throwError(() => new Error('Error downloading CSV file.'));
+        })
+      );
   }
 
 
+  exportRegistrationsToCsvAll(): Observable<Blob> {
+    return this.http.get(`${this.backendUrl}/export-csv-all-records`, { responseType: 'blob' })
+      .pipe(
+        tap(blob => {
+        saveAs(blob, 'registrations_all_records_export.csv'); // Differentiated filename
+      }),
+      catchError(error => {
+        console.error('Error downloading all records CSV file:', error);
+        return throwError(() => new Error('Error downloading all records CSV file.'));
+      })
+    );
+}
   /**
    * Handle HTTP errors
    * @param error Error object
