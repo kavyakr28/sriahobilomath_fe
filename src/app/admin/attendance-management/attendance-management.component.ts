@@ -533,13 +533,13 @@ onSearchChange(): void {
     this.router.navigate(['/admin/dashboard']);
   }
 
-  exportToExcel(): void {
+  exportAllRecords(): void {
     // TODO: Implement export to Excel functionality
     console.log('Exporting attendance data to Excel...');
     // This would typically use a library like xlsx to export data
   }
 
-  exportAllRecords() {
+  exportToExcel() {
     console.log('Exporting all records...');
     this.isExporting = true;
     this.registrationService.exportRegistrationsToCsv();

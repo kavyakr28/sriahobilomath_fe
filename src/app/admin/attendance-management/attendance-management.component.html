@@ -42,9 +42,13 @@
           </button>
         </div>
         <button (click)="exportToExcel()" class="export-button">
-          <i class="fas fa-file-export"></i> Export
+          <i class="fas fa-file-export"></i> 
+          <span *ngIf="!isExporting">Export</span>
+          <span *ngIf="isExporting">
+            <i class="fas fa-spinner fa-spin"></i> Exporting...
+          </span>
         </button>
-        <button (click)="exportAllRecords()" class="export-button">
+        <button *ngIf="checkRole() === 'ADMIN'" (click)="exportAllRecords()" class="export-button">
           <i class="fas fa-file-export"></i> 
           <span *ngIf="!isExporting">Export All</span>
           <span *ngIf="isExporting">
