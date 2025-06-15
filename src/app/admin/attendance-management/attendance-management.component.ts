@@ -157,20 +157,28 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
     }
   }
   
-  startDrag(event: MouseEvent, isThumb = false) {
-    const scrollbar = (event.currentTarget as HTMLElement).closest('.dummy-scrollbar');
+  startDrag(event: MouseEvent | TouchEvent, isThumb = false) {
+    // Type guard to handle both MouseEvent and TouchEvent
+    const isTouch = 'touches' in event;
+    const clientX = isTouch ? (event as TouchEvent).touches[0].clientX : (event as MouseEvent).clientX;
+    const pageX = isTouch ? (event as TouchEvent).touches[0].pageX : (event as MouseEvent).pageX;
+    
+    const target = event.target as HTMLElement;
+    const scrollbar = (target.closest('.dummy-scrollbar') || 
+                      target.closest('.dummy-scrollbar-thumb')?.parentElement) as HTMLElement;
     if (!scrollbar) return;
     
     this.isDragging = true;
     const scrollbarRect = scrollbar.getBoundingClientRect();
     
-    // Prevent text selection during drag
+    // Prevent text selection during drag and disable pull-to-refresh
     document.body.style.userSelect = 'none';
     document.body.style.webkitUserSelect = 'none';
+    document.body.style.touchAction = 'none';
     
     if (!isThumb) {
       // Calculate the position where the thumb should be centered
-      const clickPosition = event.clientX - scrollbarRect.left;
+      const clickPosition = clientX - scrollbarRect.left;
       const thumbWidth = this.getThumbWidth();
       let newThumbPosition = clickPosition - (thumbWidth / 2);
       
@@ -183,14 +191,36 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
       this.syncTableScroll();
       
       // Update startX for smooth dragging after click
-      this.startX = scrollbarRect.left + newThumbPosition - event.clientX;
+      this.startX = scrollbarRect.left + newThumbPosition - clientX;
     } else {
-      const offsetX = 'offsetX' in event ? (event as any).offsetX : 0;
-      this.startX = event.pageX - offsetX - this.scrollThumbPosition;
+      const target = event.target as HTMLElement;
+      const rect = target.getBoundingClientRect();
+      const offsetX = isTouch ? clientX - rect.left : (event as any).offsetX || 0;
+      this.startX = pageX - offsetX - this.scrollThumbPosition;
     }
     
-    event.preventDefault();
-    event.stopPropagation();
+    // Prevent default for touch events to avoid scrolling the page
+    if (event.cancelable) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    // Add touch move/end listeners if this is a touch event
+    if (isTouch) {
+      const moveHandler = (e: TouchEvent) => this.onDrag(e as any);
+      const endHandler = () => this.onDragEnd();
+      
+      document.addEventListener('touchmove', moveHandler, { passive: false });
+      document.addEventListener('touchend', endHandler, { once: true });
+      document.addEventListener('touchcancel', endHandler, { once: true });
+      
+      // Clean up listeners after drag ends
+      this.onDragEnd = () => {
+        document.removeEventListener('touchmove', moveHandler);
+        document.body.style.touchAction = '';
+        this.isDragging = false;
+      };
+    }
   }
   
   private getThumbWidth(): number {
@@ -217,10 +247,17 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
   }
   
   @HostListener('document:mousemove', ['$event'])
-  onDrag(event: MouseEvent) {
+  @HostListener('document:touchmove', ['$event'])
+  onDrag(event: MouseEvent | TouchEvent) {
     if (!this.isDragging) return;
     
-    event.preventDefault();
+    const isTouch = 'touches' in event;
+    const clientX = isTouch ? (event as TouchEvent).touches[0].clientX : (event as MouseEvent).clientX;
+    
+    // Prevent default to avoid scrolling the page
+    if (event.cancelable) {
+      event.preventDefault();
+    }
     
     const tableContainer = this.dataTable?.nativeElement?.parentElement as HTMLElement | null;
     if (!tableContainer) return;
@@ -233,7 +270,7 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
     const scrollbarRect = scrollbar.getBoundingClientRect();
     
     // Calculate the thumb position relative to the scrollbar
-    let x = event.clientX - scrollbarRect.left - (this.startX - scrollbarRect.left);
+    let x = clientX - scrollbarRect.left - (this.startX - scrollbarRect.left);
     
     // Constrain the thumb within the scrollbar bounds
     const thumbWidth = this.getThumbWidth();
@@ -244,26 +281,23 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
     this.syncTableScroll();
     
     // Prevent text selection during drag
-    event.preventDefault();
+    if (event.cancelable) {
+      event.preventDefault();
+    }
     return false;
   }
   
   @HostListener('document:mouseup')
+  @HostListener('document:touchend')
+  @HostListener('document:mouseleave')
   onDragEnd() {
     if (this.isDragging) {
       this.isDragging = false;
       
-      // Re-enable text selection
+      // Re-enable text selection and touch actions
       document.body.style.userSelect = '';
       document.body.style.webkitUserSelect = '';
-    }
-  }
-  
-  @HostListener('document:mouseleave')
-  onMouseLeave() {
-    // Only end drag if mouse leaves the window
-    if (this.isDragging) {
-      this.onDragEnd();
+      document.body.style.touchAction = '';
     }
   }
   

@@ -82,10 +82,12 @@
     <div class="scrollbar-wrapper">
         <div class="dummy-scrollbar-container">
             <div class="dummy-scrollbar" 
-                 (mousedown)="startDrag($event)">
+                 (mousedown)="startDrag($event)"
+                 (touchstart)="startDrag($event); false">
                 <div class="dummy-scrollbar-thumb" 
                      [style.left.px]="scrollThumbPosition" 
-                     (mousedown)="startDrag($event, true); $event.stopPropagation()">
+                     (mousedown)="startDrag($event, true); $event.stopPropagation()"
+                     (touchstart)="startDrag($event, true); $event.stopPropagation(); false">
                 </div>
             </div>
         </div>

@@ -768,9 +768,11 @@
     width: 100%;
     overflow: hidden;
     padding: 0;
-    background-color: #f5f5f5;
+    background-color: #f0f2f5;
     border-radius: 4px 4px 0 0;
-    height: 16px; /* Standard scrollbar height */
+    height: 1rem; /* Increased from 0.75rem to 1rem (16px) */
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.1);
+    touch-action: none; /* Prevent touch scrolling on the scrollbar */
 }
 
 .dummy-scrollbar-container {
@@ -778,7 +780,7 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background-color: #f1f1f1;
+    background-color: #e1e4e8;
     border-radius: 4px;
 }
 
@@ -788,34 +790,78 @@
     height: 100%;
     cursor: pointer;
     user-select: none;
-    padding: 2px 0;
+    padding: 0.125rem 0; /* 2px */
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
 }
 
 .dummy-scrollbar-thumb {
     position: absolute;
-    height: 8px;
-    min-height: 8px;
-    width: var(--thumb-width, 40px);
-    min-width: 40px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-    top: 4px;
+    height: 0.75rem; /* Increased from 0.625rem to 0.75rem (12px) */
+    min-height: 0.75rem;
+    width: var(--thumb-width, 6.25rem); /* 100px */
+    min-width: 6.25rem; /* 100px */
+    background: linear-gradient(to right, #4a90e2, #357abd);
+    border-radius: 0.5rem; /* 8px */
+    top: 50%;
+    transform: translateY(-50%);
     cursor: grab;
-    transition: background-color 0.2s, width 0.2s ease;
-    will-change: width, left;
+    transition: all 0.2s ease;
+    will-change: width, left, height, transform;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    touch-action: none; /* Prevent touch scrolling on the thumb */
 }
 
 .dummy-scrollbar-thumb:hover {
-    background-color: rgba(0, 0, 0, 0.3);
-    height: 10px;
-    top: 3px;
+    background: linear-gradient(to right, #3a7bc8, #2c5d9a);
+    height: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .dummy-scrollbar-thumb:active {
-    background-color: rgba(0, 0, 0, 0.4);
+    background: linear-gradient(to right, #2c5d9a, #1e416b);
     cursor: grabbing;
-    height: 10px;
-    top: 3px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) inset;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .scrollbar-wrapper {
+        height: 1.125rem; /* Increased from 0.875rem to 1.125rem (18px) on smaller screens */
+    }
+    
+    .dummy-scrollbar-thumb {
+        min-width: 5rem; /* 80px on smaller screens */
+        height: 0.875rem; /* Increased from 0.75rem to 0.875rem (14px) */
+    }
+    
+    .dummy-scrollbar-thumb:hover {
+        height: 1rem; /* Increased from 0.875rem to 1rem (16px) */
+    }
+}
+
+/* For very small devices */
+@media (max-width: 480px) {
+    .scrollbar-wrapper {
+        height: 1.25rem; /* Increased from 1rem to 1.25rem (20px) on very small screens */
+    }
+    
+    .dummy-scrollbar-thumb {
+        min-width: 4rem; /* 64px on very small screens */
+        height: 1rem; /* Increased from 0.875rem to 1rem (16px) */
+        border-radius: 0.5rem; /* Increased from 0.375rem to 0.5rem (8px) */
+    }
+    
+    .dummy-scrollbar-thumb:hover {
+        height: 1.125rem; /* Increased from 1rem to 1.125rem (18px) */
+    }
+}
+
+/* Prevent text selection during drag on touch devices */
+.dummy-scrollbar * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 /* Native scrollbar styling (for reference and to match) */
