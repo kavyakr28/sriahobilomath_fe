@@ -77,8 +77,23 @@
 </div>
 
 <!-- Data Table -->
-<div class="table-responsive" *ngIf="!isLoading && !errorMessage">
-    <table class="attendance-table">
+<div *ngIf="!isLoading && !errorMessage">
+    <!-- Dummy Scrollbar -->
+    <div class="scrollbar-wrapper">
+        <div class="dummy-scrollbar-container">
+            <div class="dummy-scrollbar" 
+                 (mousedown)="startDrag($event)">
+                <div class="dummy-scrollbar-thumb" 
+                     [style.left.px]="scrollThumbPosition" 
+                     (mousedown)="startDrag($event, true); $event.stopPropagation()">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="table-responsive">
+    
+    <table #dataTable class="attendance-table">
       <thead>
         <tr >
           <th>#</th>

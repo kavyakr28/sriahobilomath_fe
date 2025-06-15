@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { fromEvent, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import {  RegistrationService } from '../../services/registration.service';
 import { AttendanceData, RegistrationFormData, RegistrationListResponse, RegistrationResponse } from '../../models/registration-form-data.model';
@@ -30,7 +32,16 @@ export interface AttendanceRecord {
   templateUrl: './attendance-management.component.html',
   styleUrls: ['./attendance-management.component.css']
 })
-export class AttendanceManagementComponent implements OnInit {
+export class AttendanceManagementComponent implements OnInit, AfterViewInit {
+  @ViewChild('dataTable') dataTable!: ElementRef<HTMLTableElement>;
+  
+  // Scrollbar properties
+  isDragging = false;
+  startX = 0;
+  scrollLeft = 0;
+  scrollThumbPosition = 0;
+  maxScrollLeft = 0;
+  private resizeSubscription?: Subscription;
   attendanceList: AttendanceRecord[] = [];
   attendanceRecords: RegistrationResponse[] = [];
   attendanceLog: AttendanceData | {} = {};
@@ -56,6 +67,209 @@ export class AttendanceManagementComponent implements OnInit {
     private registrationService: RegistrationService,
     private authService: AuthService
   ) { }
+
+  ngAfterViewInit() {
+    this.setupScrollSync();
+    this.updateTableWidth();
+    
+    // Update max scroll and width when window is resized
+    this.resizeSubscription = fromEvent(window, 'resize').pipe(
+      debounceTime(100)
+    ).subscribe(() => {
+      this.updateMaxScroll();
+      this.updateTableWidth();
+    });
+  }
+
+  ngOnDestroy() {
+    // Clean up the subscription
+    if (this.resizeSubscription) {
+      this.resizeSubscription.unsubscribe();
+    }
+  }
+
+  setupScrollSync() {
+    const table = this.dataTable?.nativeElement;
+    const tableContainer = table?.parentElement as HTMLElement | null;
+    const scrollbarContainer = document.querySelector('.dummy-scrollbar-container') as HTMLElement | null;
+    
+    if (!table || !tableContainer || !scrollbarContainer) return;
+    
+    // Initial setup
+    this.updateMaxScroll();
+    this.updateTableWidth();
+    
+    // Sync table scroll with dummy scrollbar
+    const onScroll = () => {
+      if (!this.isDragging) {
+        const maxScroll = table.scrollWidth - tableContainer.clientWidth;
+        const scrollRatio = maxScroll > 0 ? tableContainer.scrollLeft / maxScroll : 0;
+        this.scrollThumbPosition = scrollRatio * (tableContainer.offsetWidth - 40); // 40 is the thumb width
+      }
+    };
+    
+    // Update scrollbar width when table content changes
+    const observer = new MutationObserver(() => {
+      this.updateTableWidth();
+      this.updateMaxScroll();
+    });
+    
+    observer.observe(table, { childList: true, subtree: true });
+    tableContainer.addEventListener('scroll', onScroll);
+    
+    // Clean up event listeners and observer on component destroy
+    return () => {
+      observer.disconnect();
+      tableContainer.removeEventListener('scroll', onScroll);
+    };
+  }
+  
+  updateMaxScroll() {
+    const table = this.dataTable?.nativeElement;
+    const tableContainer = table?.parentElement;
+    
+    if (table && tableContainer) {
+      this.maxScrollLeft = Math.max(0, table.scrollWidth - tableContainer.clientWidth);
+    } else {
+      this.maxScrollLeft = 0;
+    }
+  }
+  
+  updateTableWidth() {
+    const table = this.dataTable?.nativeElement;
+    const tableContainer = table?.parentElement;
+    const scrollbarContainer = document.querySelector('.dummy-scrollbar');
+    
+    if (table && tableContainer && scrollbarContainer) {
+      // Get the width of the table's parent container
+      const containerWidth = tableContainer.clientWidth;
+      const tableWidth = table.scrollWidth;
+      
+      // Calculate the width of the scrollbar track
+      const scrollbarWidth = Math.min(containerWidth, tableWidth);
+      
+      // Update the scrollbar width
+      (scrollbarContainer as HTMLElement).style.width = `${scrollbarWidth}px`;
+      
+      // Update the thumb width based on the visible area
+      const thumbWidth = Math.max(40, (containerWidth / tableWidth) * scrollbarWidth);
+      document.documentElement.style.setProperty('--thumb-width', `${thumbWidth}px`);
+    }
+  }
+  
+  startDrag(event: MouseEvent, isThumb = false) {
+    const scrollbar = (event.currentTarget as HTMLElement).closest('.dummy-scrollbar');
+    if (!scrollbar) return;
+    
+    this.isDragging = true;
+    const scrollbarRect = scrollbar.getBoundingClientRect();
+    
+    // Prevent text selection during drag
+    document.body.style.userSelect = 'none';
+    document.body.style.webkitUserSelect = 'none';
+    
+    if (!isThumb) {
+      // Calculate the position where the thumb should be centered
+      const clickPosition = event.clientX - scrollbarRect.left;
+      const thumbWidth = this.getThumbWidth();
+      let newThumbPosition = clickPosition - (thumbWidth / 2);
+      
+      // Constrain the thumb within the scrollbar bounds
+      const maxPosition = scrollbarRect.width - thumbWidth;
+      newThumbPosition = Math.max(0, Math.min(newThumbPosition, maxPosition));
+      
+      // Update the scroll position
+      this.scrollThumbPosition = newThumbPosition;
+      this.syncTableScroll();
+      
+      // Update startX for smooth dragging after click
+      this.startX = scrollbarRect.left + newThumbPosition - event.clientX;
+    } else {
+      const offsetX = 'offsetX' in event ? (event as any).offsetX : 0;
+      this.startX = event.pageX - offsetX - this.scrollThumbPosition;
+    }
+    
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
+  private getThumbWidth(): number {
+    const thumb = document.querySelector('.dummy-scrollbar-thumb') as HTMLElement;
+    return thumb ? thumb.offsetWidth : 40; // Default to 40px if thumb not found
+  }
+  
+  private syncTableScroll() {
+    const table = this.dataTable?.nativeElement;
+    const tableContainer = table?.parentElement as HTMLElement | null;
+    const scrollbar = document.querySelector('.dummy-scrollbar') as HTMLElement;
+    
+    if (!tableContainer || !scrollbar) return;
+    
+    const scrollbarWidth = scrollbar.offsetWidth;
+    const thumbWidth = this.getThumbWidth();
+    const maxScrollLeft = table.scrollWidth - tableContainer.clientWidth;
+    const maxThumbPosition = scrollbarWidth - thumbWidth;
+    
+    if (maxThumbPosition > 0) {
+      const scrollRatio = this.scrollThumbPosition / maxThumbPosition;
+      tableContainer.scrollLeft = scrollRatio * maxScrollLeft;
+    }
+  }
+  
+  @HostListener('document:mousemove', ['$event'])
+  onDrag(event: MouseEvent) {
+    if (!this.isDragging) return;
+    
+    event.preventDefault();
+    
+    const tableContainer = this.dataTable?.nativeElement?.parentElement as HTMLElement | null;
+    if (!tableContainer) return;
+    
+    // Get the scrollbar element
+    const scrollbar = document.querySelector('.dummy-scrollbar') as HTMLElement;
+    if (!scrollbar) return;
+    
+    // Get the scrollbar's position
+    const scrollbarRect = scrollbar.getBoundingClientRect();
+    
+    // Calculate the thumb position relative to the scrollbar
+    let x = event.clientX - scrollbarRect.left - (this.startX - scrollbarRect.left);
+    
+    // Constrain the thumb within the scrollbar bounds
+    const thumbWidth = this.getThumbWidth();
+    const maxPosition = scrollbarRect.width - thumbWidth;
+    this.scrollThumbPosition = Math.max(0, Math.min(x, maxPosition));
+    
+    // Update the table scroll position
+    this.syncTableScroll();
+    
+    // Prevent text selection during drag
+    event.preventDefault();
+    return false;
+  }
+  
+  @HostListener('document:mouseup')
+  onDragEnd() {
+    if (this.isDragging) {
+      this.isDragging = false;
+      
+      // Re-enable text selection
+      document.body.style.userSelect = '';
+      document.body.style.webkitUserSelect = '';
+    }
+  }
+  
+  @HostListener('document:mouseleave')
+  onMouseLeave() {
+    // Only end drag if mouse leaves the window
+    if (this.isDragging) {
+      this.onDragEnd();
+    }
+  }
+  
+  endDrag() {
+    this.isDragging = false;
+  }
 
   ngOnInit(): void {
     this.loadAttendanceData();
