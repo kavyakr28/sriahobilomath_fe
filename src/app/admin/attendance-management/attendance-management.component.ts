@@ -1,10 +1,14 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { fromEvent, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import {  RegistrationService } from '../../services/registration.service';
+import { RegistrationService } from '../../services/registration.service';
 import { AttendanceData, RegistrationFormData, RegistrationListResponse, RegistrationResponse } from '../../models/registration-form-data.model';
 import { AuthService } from 'src/app/services/auth.service';
+import { PadNumberPipe } from '../../pipes/pad-number.pipe';
+
 
 export interface AttendanceRecord {
   id: number;
@@ -30,7 +34,9 @@ export interface AttendanceRecord {
 @Component({
   selector: 'app-attendance-management',
   templateUrl: './attendance-management.component.html',
-  styleUrls: ['./attendance-management.component.css']
+  styleUrls: ['./attendance-management.component.css'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, PadNumberPipe]
 })
 export class AttendanceManagementComponent implements OnInit, AfterViewInit {
   @ViewChild('dataTable') dataTable!: ElementRef<HTMLTableElement>;
@@ -582,7 +588,7 @@ printIdCard(record: RegistrationResponse): void {
   <div style="display: flex; margin: 1px 0; padding: 0 1px; width: 100%;">
     <div style="width: 70px; font-size: 15px; color: #555;">ID No:</div>
     <div style="font-size: 15px; font-weight: bold; flex: 1; padding: 1px 0 1px 1px;">
-      ${record.registration.id}
+      ${this.formatId(record.registration.id)}
     </div>
   </div>
               
@@ -881,6 +887,13 @@ onSearchChange(): void {
     });
   }
 
+  private formatId(id: number | string): string {
+    if (id === null || id === undefined || id === '') return '';
+    const stringValue = id.toString();
+    const zerosNeeded = Math.max(0, 4 - stringValue.length);
+    return '0'.repeat(zerosNeeded) + stringValue;
+  }
+
   private openPrintWindow(data: any[]): void {
     const newWindow = window.open('', '_blank');
     if (!newWindow) {
@@ -979,7 +992,7 @@ onSearchChange(): void {
                 </div>
                 <div class="detail-row">
                   <span class="label">ID No:</span>
-                  <span class="value">${item.registration.id}</span>
+                  <span class="value">${this.formatId(item.registration.id)}</span>
                 </div>
                 <div class="detail-row">
                   <span class="label">Vedham:</span>

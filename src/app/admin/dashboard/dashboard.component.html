@@ -25,6 +25,10 @@
     <button (click)="onQRScanGifts()" class="action-button">
       <span>QR Scan for Gifts</span>
     </button>
+
+    <button (click)="onManualEntry()" class="action-button">
+      <span>Manual Entry(ID/Gifts)</span>
+    </button>
   </div>
 
   <div class="scanner-container" *ngIf="isCameraActive">

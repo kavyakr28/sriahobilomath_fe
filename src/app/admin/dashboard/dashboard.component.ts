@@ -149,6 +149,11 @@ export class DashboardComponent implements OnInit {
     this.currentScanType = 'gifts';
     this.toggleCamera(true);
   }
+
+  onManualEntry(): void {
+    this.router.navigate(['/manual-entry']);
+  }
+
   
   onCloseScanner(): void {
     this.toggleCamera(false);

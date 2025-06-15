@@ -1,0 +1,84 @@
+<div class="manual-entry-container">
+  <div class="card">
+    <div class="card-header">
+      <h2>Manual Entry</h2>
+    </div>
+    
+    <div class="card-content">
+      <div class="tabs">
+        <div class="tab-buttons">
+          <button 
+            [class.active]="selectedTabIndex === 0" 
+            (click)="selectedTabIndex = 0"
+          >
+            Attendance
+          </button>
+          <button 
+            [class.active]="selectedTabIndex === 1" 
+            (click)="selectedTabIndex = 1"
+          >
+            Gift Registration
+          </button>
+        </div>
+        
+        <!-- Attendance Tab -->
+        <div *ngIf="selectedTabIndex === 0" class="tab-content">
+          <div class="form-group">
+            <label for="registrationId">Registration ID</label>
+            <input 
+              id="registrationId"
+              type="number"
+              class="form-control"
+              [(ngModel)]="registrationId" 
+              placeholder="Enter registration ID"
+              (keyup.enter)="onRegisterAttendance()"
+              [disabled]="isLoading"
+            >
+          </div>
+          
+          <div class="button-group">
+            <button 
+              class="btn btn-primary"
+              (click)="onRegisterAttendance()"
+              [disabled]="!registrationId || isLoading"
+            >
+              <span *ngIf="!isLoading">Register Attendance</span>
+              <span *ngIf="isLoading && selectedTabIndex === 0" class="spinner">Loading...</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Gift Registration Tab -->
+        <div *ngIf="selectedTabIndex === 1" class="tab-content">
+          <div class="form-group">
+            <label for="giftCode">Gift Code</label>
+            <input 
+              id="giftCode"
+              type="number"
+              class="form-control"
+              [(ngModel)]="giftCode" 
+              placeholder="Enter gift code"
+              (keyup.enter)="onRegisterGift()"
+              [disabled]="isLoading"
+            >
+          </div>
+          
+          <div class="button-group">
+            <button 
+              class="btn btn-secondary"
+              (click)="onRegisterGift()"
+              [disabled]="!giftCode || isLoading"
+            >
+              <span *ngIf="!isLoading">Register Gift</span>
+              <span *ngIf="isLoading && selectedTabIndex === 1" class="spinner">Loading...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card-actions">
+      <button class="btn btn-link" (click)="onBack()">Back to Dashboard</button>
+    </div>
+  </div>
+</div>
