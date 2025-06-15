@@ -13,7 +13,7 @@
       <span>On-Spot Registration</span>
     </button>
     
-    <button (click)="onAttendanceManagement()" class="action-button">
+    <button *ngIf="checkRole() === 'ADMIN'" (click)="onAttendanceManagement()" class="action-button">
       <span>Attendance Management</span>
     </button>
     

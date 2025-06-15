@@ -187,6 +187,17 @@ export class DashboardComponent implements OnInit {
     };
   }
 
+  checkRole(): string | null {
+    const user = this.authService.getCurrentUser();
+
+    if (user?.role?.includes('ADMIN') || user?.username.toLowerCase() === 'admin') {
+      return 'ADMIN';
+    } else if (user?.role?.includes('USER') || user?.username.toLowerCase() === 'user') {
+      return 'USER';
+    }
+    return null;
+  }
+
   /**
    * Generates date slots with attendance types and finds the current attendance type
    */
