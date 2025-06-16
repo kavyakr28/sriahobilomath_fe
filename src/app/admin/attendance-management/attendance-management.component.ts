@@ -378,14 +378,40 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
       record.attendanceAndGifts = {
         travelCharge: 0,
         sambavanai: 0,
-        totalAmount: 0
+        totalAmount: 0,
+        day1FnAttendance: false,
+        day1AnAttendance: false,
+        day2FnAttendance: false,
+        day2AnAttendance: false,
+        day3FnAttendance: false,
+        day3AnAttendance: false,
+        day4FnAttendance: false,
+        day4AnAttendance: false,
+        day5FnAttendance: false,
+        day5AnAttendance: false
       };
     }
     
     // Update the model value
     record.attendanceAndGifts.travelCharge = value;
-    // Calculate total amount
-    record.attendanceAndGifts.totalAmount = value + (record.attendanceAndGifts.sambavanai || 0);
+    
+    // Calculate attendance count
+    const attendanceCount = [
+      record.attendanceAndGifts.day1FnAttendance,
+      record.attendanceAndGifts.day1AnAttendance,
+      record.attendanceAndGifts.day2FnAttendance,
+      record.attendanceAndGifts.day2AnAttendance,
+      record.attendanceAndGifts.day3FnAttendance,
+      record.attendanceAndGifts.day3AnAttendance,
+      record.attendanceAndGifts.day4FnAttendance,
+      record.attendanceAndGifts.day4AnAttendance,
+      record.attendanceAndGifts.day5FnAttendance,
+      record.attendanceAndGifts.day5AnAttendance
+    ].filter(Boolean).length;
+    
+    // Calculate total amount using the formula: (sambavanai * attendanceCount) + travelCharge
+    const sambavanai = record.attendanceAndGifts.sambavanai || 0;
+    record.attendanceAndGifts.totalAmount = (sambavanai * attendanceCount) + value;
   }
 
   onSambavanaiChange(record: RegistrationResponse, value: number): void {
@@ -395,13 +421,41 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
       record.attendanceAndGifts = {
         travelCharge: 0,
         sambavanai: 0,
-        totalAmount: 0
+        totalAmount: 0,
+        day1FnAttendance: false,
+        day1AnAttendance: false,
+        day2FnAttendance: false,
+        day2AnAttendance: false,
+        day3FnAttendance: false,
+        day3AnAttendance: false,
+        day4FnAttendance: false,
+        day4AnAttendance: false,
+        day5FnAttendance: false,
+        day5AnAttendance: false
       };
     }    
+    
     // Update the model value
     record.attendanceAndGifts.sambavanai = value;
-    // Calculate total amount
-    record.attendanceAndGifts.totalAmount = (record.attendanceAndGifts.travelCharge || 0) + value;
+    
+    // Calculate attendance count
+    const attendanceCount = [
+      record.attendanceAndGifts.day1FnAttendance,
+      record.attendanceAndGifts.day1AnAttendance,
+      record.attendanceAndGifts.day2FnAttendance,
+      record.attendanceAndGifts.day2AnAttendance,
+      record.attendanceAndGifts.day3FnAttendance,
+      record.attendanceAndGifts.day3AnAttendance,
+      record.attendanceAndGifts.day4FnAttendance,
+      record.attendanceAndGifts.day4AnAttendance,
+      record.attendanceAndGifts.day5FnAttendance,
+      record.attendanceAndGifts.day5AnAttendance
+    ].filter(Boolean).length;
+    
+    // Calculate total amount using the formula: (sambavanai * attendanceCount) + travelCharge
+    const travelCharge = record.attendanceAndGifts.travelCharge || 0;
+    console.log("No of days attended", attendanceCount);
+    record.attendanceAndGifts.totalAmount = (value * attendanceCount) + travelCharge;
   }
 
   onGiftGiven(record: RegistrationResponse, value: boolean): void {
@@ -417,11 +471,9 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
 
   onDayAttendanceChange(record: RegistrationResponse, value: boolean, day: string, session: string): void {
     if (!this.canEdit()) return;
-    console.log("record",record);
-    console.log("value",value);
-    console.log("day",day);
+    
+    // Initialize attendanceAndGifts if it doesn't exist
     if (!record.attendanceAndGifts) {
-
       record.attendanceAndGifts = {
         day1FnAttendance: false,
         day1AnAttendance: false,
@@ -433,8 +485,13 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
         day4AnAttendance: false,
         day5FnAttendance: false,
         day5AnAttendance: false,
+        travelCharge: 0,
+        sambavanai: 0,
+        totalAmount: 0
       };
     }
+
+    // Update the attendance for the specific day and session
     if (day === 'day1' && session === 'FN') {
       record.attendanceAndGifts.day1FnAttendance = value;
     } else if (day === 'day1' && session === 'AN') {
@@ -456,7 +513,25 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
     } else if (day === 'day5' && session === 'AN') {
       record.attendanceAndGifts.day5AnAttendance = value;
     }
-    // record.attendanceAndGifts.day1FnAttendance = value || false;
+
+    // Calculate total attendance count
+    const attendanceCount = [
+      record.attendanceAndGifts.day1FnAttendance,
+      record.attendanceAndGifts.day1AnAttendance,
+      record.attendanceAndGifts.day2FnAttendance,
+      record.attendanceAndGifts.day2AnAttendance,
+      record.attendanceAndGifts.day3FnAttendance,
+      record.attendanceAndGifts.day3AnAttendance,
+      record.attendanceAndGifts.day4FnAttendance,
+      record.attendanceAndGifts.day4AnAttendance,
+      record.attendanceAndGifts.day5FnAttendance,
+      record.attendanceAndGifts.day5AnAttendance
+    ].filter(Boolean).length;
+
+    // Calculate total amount using the formula: (sambavanai * attendanceCount) + travelCharge
+    const sambavanai = record.attendanceAndGifts.sambavanai || 0;
+    const travelCharge = record.attendanceAndGifts.travelCharge || 0;
+    record.attendanceAndGifts.totalAmount = (sambavanai * attendanceCount) + travelCharge;
   }
 
  updateTravelCharges(record: RegistrationResponse): void {

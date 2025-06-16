@@ -23,7 +23,7 @@ export class DashboardComponent implements OnInit {
 
   // Scanner properties
   allowedFormats = [BarcodeFormat.QR_CODE];
-  currentScanType: 'attendance' | 'gifts' | null = null;
+  currentScanType: 'attendance' | 'gift' | null = null;
   
   // Camera and device management
   devices$ = new BehaviorSubject<MediaDeviceInfo[]>([]);
@@ -75,7 +75,7 @@ export class DashboardComponent implements OnInit {
       this.processAttendanceScan(Number(result));
       // Show success message
       // this.scanSuccess$.next(result);
-    } else if (this.currentScanType === 'gifts') {
+    } else if (this.currentScanType === 'gift') {
       this.processGiftScan(Number(result));
       // Show success message
       // this.scanSuccess$.next(result);
@@ -112,7 +112,7 @@ export class DashboardComponent implements OnInit {
     // TODO: Implement gift processing logic
     console.log('Processing gift for:', scanResult);
     // Example: Call your gift service
-    this.registrationService.processScan(scanResult, 'gifts').subscribe(
+    this.registrationService.processScan(scanResult, 'gift').subscribe(
       (response) => {
         if(response.giftGiven){
           alert(`Gift already marked for ${scanResult}`);
@@ -146,7 +146,7 @@ export class DashboardComponent implements OnInit {
 
   onQRScanGifts(): void {
     console.log('QR Scan for Gifts clicked');
-    this.currentScanType = 'gifts';
+    this.currentScanType = 'gift';
     this.toggleCamera(true);
   }
 
