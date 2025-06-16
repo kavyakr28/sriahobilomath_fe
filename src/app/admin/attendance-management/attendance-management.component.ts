@@ -52,6 +52,7 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
   attendanceRecords: RegistrationResponse[] = [];
   attendanceLog: AttendanceData | {} = {};
   giftGiven: boolean = false;
+  accommodation: string = '';
   currentPage = 1;
   itemsPerPage = 100;
   searchText = '';
@@ -68,6 +69,14 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
   isExportingAll = false;
 
   filteredRecords: RegistrationResponse[] = [];
+  
+  accommodationOptions = [
+    'Yatri Nivas',
+    'V.S.Mahal',
+    'Krishnakumar Mandapam',
+    'Own Arrangement',
+    'Others'
+  ];
 
   constructor(
     private router: Router,
@@ -582,13 +591,22 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
     record.attendanceAndGifts.totalAmount = (sambavanai * attendanceCount) + travelCharge;
   }
 
+  onAccommodationChange(record: RegistrationResponse, value: string) {
+    if (record.attendanceAndGifts) {
+      record.attendanceAndGifts.accommodation = value;
+      // Update the accommodation in the backend
+      // this.updateTravelCharges(record);
+    }
+  }
+
  updateTravelCharges(record: RegistrationResponse): void {
 
 // Create charges object with numbers
     const charges = {
       travelCharge: record?.attendanceAndGifts?.travelCharge || 0,
       sambavanai: record?.attendanceAndGifts?.sambavanai || 0,
-      totalAmount: record?.attendanceAndGifts?.totalAmount || 0
+      totalAmount: record?.attendanceAndGifts?.totalAmount || 0,
+      accommodation: record?.attendanceAndGifts?.accommodation || 'N/A'
     };
 this.attendanceLog = {
   day1FnAttendance: record?.attendanceAndGifts?.day1FnAttendance,

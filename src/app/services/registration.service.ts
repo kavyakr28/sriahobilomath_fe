@@ -116,8 +116,9 @@ export class RegistrationService {
   updateCharges(registrationId: number, charges: {
     travelCharge: number,
     sambavanai: number,
-    totalAmount: number
-  }, attendanceLog: AttendanceData, giftGiven: boolean): Observable<void> {
+    totalAmount: number,
+    accommodation: string
+  }, attendanceLog: AttendanceData, giftGiven: boolean ): Observable<void> {
     const url = `${this.backendUrl}/${registrationId}/charges`;
     
     // Convert numbers to strings to match BigDecimal format
@@ -125,8 +126,9 @@ export class RegistrationService {
       travelCharge: charges.travelCharge.toString(),
       sambavanai: charges.sambavanai.toString(),
       totalAmount: charges.totalAmount.toString(),
+      accommodation: charges.accommodation.toString(),
       attendanceLog: attendanceLog,
-      giftGiven: giftGiven
+      giftGiven: giftGiven,
     };
     console.log("payload :",payload);
 

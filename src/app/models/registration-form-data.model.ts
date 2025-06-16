@@ -33,6 +33,7 @@ export interface RegistrationFormData {
    day4AnAttendance?: boolean;
    day5FnAttendance?: boolean;
    day5AnAttendance?: boolean;
+   accommodation?: string;
 
 }
 
@@ -80,6 +81,7 @@ export interface Registration {
    updatedAt?: string;
    registration?: Registration;
    totalAttendance?: number;
+   accommodation?: string;
  }
  
  export interface RegistrationResponse {

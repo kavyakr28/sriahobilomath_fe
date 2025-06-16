@@ -144,6 +144,7 @@
          </th>
           <th>Print</th>
           <th>Gift</th>
+          <th *ngIf="checkRole() === 'ADMIN'">Accommodation</th>
           <th *ngIf="checkRole() === 'ADMIN'">Travel Charges</th>
           <th *ngIf="checkRole() === 'ADMIN'">Sambavanai</th>
           <th *ngIf="checkRole() === 'ADMIN'">Total Amount</th>
@@ -169,6 +170,7 @@
           <td>{{ record.registration.scholarIn }}</td>
           <td>{{ record.registration.sakai }}</td>
           <td>{{ record.registration.registrationDate | date: 'dd/MM/yyyy' }}</td>
+          
           
           <!-- Day 1 -->
           <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day1FnAttendance" class="attendance-cell">
@@ -298,9 +300,23 @@
           </ng-container>
           <ng-template #viewGiftGiven>{{ record?.attendanceAndGifts?.giftGiven === true ? '🎁' : '' }}</ng-template>
           </td>
+
+          <td *ngIf="checkRole() === 'ADMIN'">
+            <ng-container *ngIf="isEditing; else viewAccommodation">
+              <select [ngModel]="record?.attendanceAndGifts?.accommodation" 
+                    (ngModelChange)="onAccommodationChange(record, $event)"
+                    class="form-control form-control-sm">
+                <option *ngFor="let option of accommodationOptions" [value]="option">{{ option }}</option>
+              </select>
+            </ng-container>
+            <ng-template #viewAccommodation>
+              {{ record?.attendanceAndGifts?.accommodation || 'N/A' }}
+            </ng-template>
+          </td>
           
             <!--Admin only columns-->
           <td *ngIf="checkRole() === 'ADMIN'">
+            
             <ng-container *ngIf="isEditing; else viewTravelCharge">
             <input type="number" [ngModel]="record?.attendanceAndGifts?.travelCharge ?? 0"
             (ngModelChange)="onTravelChange(record, $event)"
