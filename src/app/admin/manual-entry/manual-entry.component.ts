@@ -75,6 +75,7 @@ export class ManualEntryComponent implements OnInit {
     // Call the registration service with the attendance type
     this.registrationService.processScan(registrationId, this.currentAttendanceType).subscribe({
       next: (response: any) => {
+        console.log("Gift making response", response);
         this.isLoading = false;
         if(response.attendanceAlreadyMarked){
           this.showSuccess(`Attendance already marked for ${this.registrationId}`);
@@ -109,9 +110,9 @@ export class ManualEntryComponent implements OnInit {
 
     this.registrationService.processScan(giftCode, this.currentScanType).subscribe({
       next: (response: any) => {
-
+        console.log("Gift making response", response);
         this.isLoading = false;
-        if(response.giftGiven){
+        if(response.giftAlreadyMarked){
           this.showSuccess(`Gift already marked for ${this.giftCode}`);
           return;
         }else{

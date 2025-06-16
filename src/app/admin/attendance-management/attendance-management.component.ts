@@ -51,6 +51,7 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
   attendanceList: AttendanceRecord[] = [];
   attendanceRecords: RegistrationResponse[] = [];
   attendanceLog: AttendanceData | {} = {};
+  giftGiven: boolean = false;
   currentPage = 1;
   itemsPerPage = 100;
   searchText = '';
@@ -467,6 +468,7 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
       };
     }
     record.attendanceAndGifts.giftGiven = value;
+    this.giftGiven = value;
   }
 
   onDayAttendanceChange(record: RegistrationResponse, value: boolean, day: string, session: string): void {
@@ -487,7 +489,8 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
         day5AnAttendance: false,
         travelCharge: 0,
         sambavanai: 0,
-        totalAmount: 0
+        totalAmount: 0,
+        giftGiven: false
       };
     }
 
@@ -554,7 +557,7 @@ this.attendanceLog = {
   day5FnAttendance: record?.attendanceAndGifts?.day5FnAttendance,
   day5AnAttendance: record?.attendanceAndGifts?.day5AnAttendance,
 }
-this.registrationService.updateCharges(record.registration.id, charges, this.attendanceLog).subscribe({
+this.registrationService.updateCharges(record.registration.id, charges, this.attendanceLog, this.giftGiven).subscribe({
   next: () => {
     alert('Charges updated successfully');
   },
