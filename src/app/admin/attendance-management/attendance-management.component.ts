@@ -335,6 +335,48 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // Define the type for attendance stats
+  private attendanceStats = {
+    day1: { fn: 0, an: 0 },
+    day2: { fn: 0, an: 0 },
+    day3: { fn: 0, an: 0 },
+    day4: { fn: 0, an: 0 },
+    day5: { fn: 0, an: 0 }
+  };
+
+  getAttendanceStats() {
+    // Reset stats
+    Object.values(this.attendanceStats).forEach(day => {
+      day.fn = 0;
+      day.an = 0;
+    });
+
+    // Calculate stats
+    this.attendanceRecords.forEach(record => {
+      if (record.attendanceAndGifts) {
+        const att = record.attendanceAndGifts;
+        if (att.day1FnAttendance) this.attendanceStats.day1.fn++;
+        if (att.day1AnAttendance) this.attendanceStats.day1.an++;
+        if (att.day2FnAttendance) this.attendanceStats.day2.fn++;
+        if (att.day2AnAttendance) this.attendanceStats.day2.an++;
+        if (att.day3FnAttendance) this.attendanceStats.day3.fn++;
+        if (att.day3AnAttendance) this.attendanceStats.day3.an++;
+        if (att.day4FnAttendance) this.attendanceStats.day4.fn++;
+        if (att.day4AnAttendance) this.attendanceStats.day4.an++;
+        if (att.day5FnAttendance) this.attendanceStats.day5.fn++;
+        if (att.day5AnAttendance) this.attendanceStats.day5.an++;
+      }
+    });
+
+    return this.attendanceStats;
+  }
+
+  // Helper method to get stats for a specific day
+  getDayStats(day: number) {
+    const dayKey = `day${day}` as keyof typeof this.attendanceStats;
+    return this.attendanceStats[dayKey] || { fn: 0, an: 0 };
+  }
+
   loadAttendanceData(): void {
     this.isLoading = true;
     this.errorMessage = '';
@@ -343,7 +385,10 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
       next: (registrations: RegistrationListResponse) => {
         this.attendanceRecords = registrations;
         this.filteredRecords = [...registrations];
-        console.log("Filtered Records",this.filteredRecords);
+        console.log("Filtered Records", this.filteredRecords);
+        
+        // Log attendance stats for debugging
+        console.log("Attendance Stats:", this.getAttendanceStats());
         
         this.isLoading = false;
       },
@@ -560,6 +605,7 @@ this.attendanceLog = {
 this.registrationService.updateCharges(record.registration.id, charges, this.attendanceLog, this.giftGiven).subscribe({
   next: () => {
     alert('Charges updated successfully');
+    this.getAttendanceStats();
   },
   error: (err) => {
     console.error('Error updating charges:', err);

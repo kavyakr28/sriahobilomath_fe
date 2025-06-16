@@ -5,12 +5,33 @@
     </button>
     <h2>Attendance Management</h2>
 
-    <div class="count-card" *ngIf="!isLoading && !errorMessage">
-      <div class="count-card-content">
-        <i class="fas fa-users"></i>
-        <div class="count-info">
-          <h3>Total Attendees</h3>
-          <p class="count-number">{{ attendanceRecords.length }}</p>
+    <div class="stats-container" *ngIf="!isLoading && !errorMessage">
+      <!-- Total Attendees Card -->
+      <div class="count-card">
+        <div class="count-card-content">
+          <i class="fas fa-users"></i>
+          <div class="count-info">
+            <h3>Total Attendees</h3>
+            <p class="count-number">{{ attendanceRecords.length }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attendance Stats Card -->
+      <div class="count-card">
+        <div class="count-card-header">
+          <h3>Attendance Stats</h3>
+        </div>
+        <div class="attendance-stats">
+          <table>
+            <tr *ngFor="let day of [1,2,3,4,5]">
+              <td class="day-label">Day {{day}}</td>
+              <td class="session-stats">
+                <span class="session" title="Forenoon">AM: {{ getDayStats(day).fn }}</span>
+                <span class="session" title="Afternoon">PM: {{ getDayStats(day).an }}</span>
+              </td>
+            </tr>
+          </table>
         </div>
       </div>
     </div>

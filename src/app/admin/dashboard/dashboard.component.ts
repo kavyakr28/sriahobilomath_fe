@@ -114,7 +114,7 @@ export class DashboardComponent implements OnInit {
     // Example: Call your gift service
     this.registrationService.processScan(scanResult, 'gift').subscribe(
       (response) => {
-        if(response.giftGiven){
+        if(response.giftAlreadyMarked){
           alert(`Gift already marked for ${scanResult}`);
           return;
         }else{
