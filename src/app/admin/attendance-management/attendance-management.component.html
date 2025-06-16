@@ -34,6 +34,23 @@
           </table>
         </div>
       </div>
+
+      <!-- Accommodation Stats Card -->
+      <div class="count-card">
+        <div class="count-card-header">
+          <h3>Accommodation Stats</h3>
+        </div>
+        <div class="attendance-stats">
+          <table>
+            <tr *ngFor="let option of accommodationOptions">
+              <td class="day-label">{{option}}</td>
+              <td class="session-stats">
+                <span class="session">{{ accommodationStats[option] }}</span>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
     </div>
     
     <div class="header-actions">

@@ -71,18 +71,48 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
   filteredRecords: RegistrationResponse[] = [];
   
   accommodationOptions = [
-    'Yatri Nivas',
-    'V.S.Mahal',
+    'Yatri Nivas Non AC',
+    'Yatri Nivas AC Cottage',
+    'Yatri Nivas AC Room',
+    'Yatri Nivas 8 bed AC',
+    'VS Mahal',
     'Krishnakumar Mandapam',
-    'Own Arrangement',
-    'Others'
+    'Hari Kirupa',
+    'Own arrangement',
+    'Not required'
   ];
+
+  accommodationStats: { [key: string]: number } = {};
 
   constructor(
     private router: Router,
     private registrationService: RegistrationService,
     private authService: AuthService
-  ) { }
+  ) {
+    // Initialize stats object with all accommodation options
+    this.accommodationOptions.forEach(option => {
+      this.accommodationStats[option] = 0;
+    });
+  }
+
+  private calculateAccommodationStats() {
+    // Reset stats to zero
+    Object.keys(this.accommodationStats).forEach(option => {
+      this.accommodationStats[option] = 0;
+    });
+
+    // Count scholars for each accommodation option
+    this.filteredRecords.forEach(record => {
+      if (record.attendanceAndGifts?.accommodation) {
+        const options = record.attendanceAndGifts.accommodation.split(',').map(opt => opt.trim());
+        options.forEach(option => {
+          if (this.accommodationStats[option] !== undefined) {
+            this.accommodationStats[option]++;
+          }
+        });
+      }
+    });
+  }
 
   ngAfterViewInit() {
     this.setupScrollSync();
