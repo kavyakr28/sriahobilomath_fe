@@ -135,32 +135,32 @@ export class RegistrationService {
     );
   }
 
-  exportRegistrationsToCsv(): Observable<Blob> {
-    return this.http.get(`${this.backendUrl}/export-csv`, { responseType: 'blob' })
+  exportRegistrationsToExcel(): Observable<Blob> {
+    return this.http.get(`${this.backendUrl}/export/excel`, { responseType: 'blob' })
       .pipe(
         tap((blob: Blob) => {
           // Use file-saver to trigger the download
           // The filename here will be "registrations_export.csv" as set by the backend
-          saveAs(blob, 'registrations_export.csv');
+          saveAs(blob, 'registrations.xlsx');
         }),
         catchError(error => {
-          console.error('Error downloading the CSV file:', error);
+          console.error('Error downloading the Excel file:', error);
           // Re-throw the error to be handled by the component
-          return throwError(() => new Error('Error downloading CSV file.'));
+          return throwError(() => new Error('Error downloading Excel file.'));
         })
       );
   }
 
 
-  exportRegistrationsToCsvAll(): Observable<Blob> {
-    return this.http.get(`${this.backendUrl}/export-csv-all-records`, { responseType: 'blob' })
+  exportRegistrationsToExcelAll(): Observable<Blob> {
+    return this.http.get(`${this.backendUrl}/export/excel/bank-details`, { responseType: 'blob' })
       .pipe(
         tap(blob => {
-        saveAs(blob, 'registrations_all_records_export.csv'); // Differentiated filename
+        saveAs(blob, 'registrations_with_bank_details.xlsx'); // Differentiated filename
       }),
       catchError(error => {
-        console.error('Error downloading all records CSV file:', error);
-        return throwError(() => new Error('Error downloading all records CSV file.'));
+        console.error('Error downloading all records Excel file:', error);
+        return throwError(() => new Error('Error downloading all records Excel file.'));
       })
     );
 }

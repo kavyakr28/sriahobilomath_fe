@@ -915,13 +915,13 @@ onSearchChange(): void {
   exportAllRecords(): void {
     console.log('Exporting all records...');
     this.isExportingAll = true;
-    this.registrationService.exportRegistrationsToCsvAll().subscribe({
+    this.registrationService.exportRegistrationsToExcelAll().subscribe({
       next: () => {
-        console.log('All records CSV export successful.');
+        console.log('All records Excel export successful.');
         this.isExportingAll = false;
       },
       error: (err) => {
-        console.error('Error exporting all records CSV:', err);
+        console.error('Error exporting all records Excel:', err);
         // Optionally, show a user-friendly error message
         alert('Failed to export all records: ' + err.message);
         this.isExportingAll = false;
@@ -933,13 +933,13 @@ onSearchChange(): void {
   exportToExcel() {
     console.log('Exporting records...');
     this.isExporting = true;
-    this.registrationService.exportRegistrationsToCsv().subscribe({
+    this.registrationService.exportRegistrationsToExcel().subscribe({
       next: () => {
-        console.log('CSV export successful.');
+        console.log('Excel export successful.');
         this.isExporting = false;
       },
       error: (err) => {
-        console.error('Error exporting CSV:', err);
+        console.error('Error exporting  Excel:', err);
         // Optionally, show a user-friendly error message
         alert('Failed to export records: ' + err.message);
         this.isExporting = false;
