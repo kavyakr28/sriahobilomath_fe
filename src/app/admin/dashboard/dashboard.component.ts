@@ -256,24 +256,25 @@ export class DashboardComponent implements OnInit {
       // Create time slot entries with attendance types
       const foreNoonSlot = {
         date: foreNoon,
-        formattedDate: `${dateStr} (09:00 - 12:00)`,
+        formattedDate: `${dateStr} (00:00 - 12:00)`,
         timeSlot: 'Fore Noon' as const,
         attendanceType: `ATTENDANCE_DAY${dayCount}_FN`
       };
       
       const afternoonSlot = {
         date: afternoon,
-        formattedDate: `${dateStr} (13:00 - 24:00)`,
+        formattedDate: `${dateStr} (12:01 - 24:00)`,
         timeSlot: 'Afternoon' as const,
         attendanceType: `ATTENDANCE_DAY${dayCount}_AN`
       };
       
       // Check if this is the current time slot
       if (isCurrentDay) {
-        if (current.timeSlot === 'Fore Noon' && current.date.getHours() <= 9 && current.date.getHours() <= 12) {
+        const currentHour = current.date.getHours();
+        if (current.timeSlot === 'Fore Noon' && currentHour >= 0 && currentHour < 12) {
           currentAttendanceType = foreNoonSlot.attendanceType;
           console.log('Current Attendance Type:', currentAttendanceType);
-        } else if (current.timeSlot === 'Afternoon' && current.date.getHours() <= 13 && current.date.getHours() < 24) {
+        } else if (current.timeSlot === 'Afternoon' && currentHour >= 12 && currentHour <= 23) {
           currentAttendanceType = afternoonSlot.attendanceType;
           console.log('Current Attendance Type:', currentAttendanceType);
         }
