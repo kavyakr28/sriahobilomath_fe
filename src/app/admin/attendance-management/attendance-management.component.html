@@ -40,16 +40,20 @@
         <div class="count-card-header">
           <h3>Accommodation Stats</h3>
         </div>
-        <div class="attendance-stats">
-          <table>
-            <tr *ngFor="let option of accommodationOptions">
-              <td class="day-label">{{option}}</td>
-              <td class="session-stats">
-                <span class="session">{{ accommodationStats[option] }}</span>
-              </td>
-            </tr>
-          </table>
+        <div class="accommodation-stats">
+          <div class="accommodation-list" *ngIf="accommodationStats.length > 0">
+            <div class="accommodation-item" *ngFor="let stat of accommodationStats">
+              <div class="accommodation-info">
+                <span class="accommodation-name">{{ stat.hallName }}:</span>
+                <span class="capacity-info ms-2">{{ stat.occupied }}/{{ stat.capacity }}</span>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="accommodationStats.length === 0" class="loading-text">
+            Loading accommodation data...
+          </div>
         </div>
+      </div>
       </div>
     </div>
     
@@ -137,7 +141,7 @@
       <thead>
         <tr >
           <th>#</th>
-          <th>Unq ID</th>
+          <th>Regn ID</th>
           <th>Name</th>
           <th>Phone</th>
           <th *ngIf="checkRole() === 'ADMIN'">Aadhaar</th>

@@ -53,6 +53,7 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
   attendanceLog: AttendanceData | {} = {};
   giftGiven: boolean = false;
   accommodation: string = '';
+  accommodationStats: { hallName: string; capacity: number; occupied: number; available: number }[] = [];
   currentPage = 1;
   itemsPerPage = 100;
   searchText = '';
@@ -82,36 +83,15 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
     'Not required'
   ];
 
-  accommodationStats: { [key: string]: number } = {};
-
   constructor(
     private router: Router,
     private registrationService: RegistrationService,
     private authService: AuthService
-  ) {
-    // Initialize stats object with all accommodation options
-    this.accommodationOptions.forEach(option => {
-      this.accommodationStats[option] = 0;
-    });
-  }
+  ) {}
 
-  private calculateAccommodationStats() {
-    // Reset stats to zero
-    Object.keys(this.accommodationStats).forEach(option => {
-      this.accommodationStats[option] = 0;
-    });
-
-    // Count scholars for each accommodation option
-    this.filteredRecords.forEach(record => {
-      if (record.attendanceAndGifts?.accommodation) {
-        const options = record.attendanceAndGifts.accommodation.split(',').map(opt => opt.trim());
-        options.forEach(option => {
-          if (this.accommodationStats[option] !== undefined) {
-            this.accommodationStats[option]++;
-          }
-        });
-      }
-    });
+  ngOnInit() {
+    this.loadAttendanceData();
+    this.loadAccommodationStats();
   }
 
   ngAfterViewInit() {
@@ -351,11 +331,6 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
     this.isDragging = false;
   }
 
-  ngOnInit(): void {
-    this.loadAttendanceData();
-  }
-
-
   checkRole(): string | null {
     const user = this.authService.getCurrentUser();
 
@@ -424,8 +399,7 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
       next: (registrations: RegistrationListResponse) => {
         this.attendanceRecords = registrations;
         this.filteredRecords = [...registrations];
-        console.log("Filtered Records", this.filteredRecords);
-        
+        console.log("Filtered Records", this.filteredRecords);        
         // Log attendance stats for debugging
         console.log("Attendance Stats:", this.getAttendanceStats());
         
@@ -437,8 +411,24 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
         this.isLoading = false;
       }
     });
+  }
 
-
+  loadAccommodationStats(): void {
+    console.log('Loading accommodation stats...');
+    this.registrationService.accommodationStats().subscribe({
+      next: (data: any) => {
+        console.log('Accommodation stats:', data);
+        this.accommodationStats = Object.entries(data).map(([hallName, stats]: [string, any]) => ({
+          hallName: stats.hallName,
+          capacity: stats.capacity,
+          occupied: stats.occupied,
+          available: stats.capacity - stats.occupied
+        }));
+      },
+      error: (error) => {
+        console.error('Error loading accommodation stats:', error);
+      }
+    });
   }
 
   toggleAttendance(record: AttendanceRecord, day: string, session: 'forenoon' | 'afternoon'): void {

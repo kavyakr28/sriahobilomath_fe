@@ -39,11 +39,27 @@
 }
 
 .count-info h3,
+.count-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
 .count-card-header h3 {
   margin: 0;
   font-size: 1rem;
   color: #6c757d;
   font-weight: 600;
+}
+
+.total-count {
+  font-size: 0.85rem;
+  background: #e9ecef;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  color: #495057;
 }
 
 .count-number {
@@ -79,12 +95,205 @@
   padding-right: 15px;
 }
 
-.session-stats {
+/* Accommodation Stats */
+.accommodation-stats {
+  width: 100%;
+}
+
+.accommodation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.accommodation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.accommodation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.accommodation-item:last-child {
+  border-bottom: none;
+}
+
+.accommodation-info {
+  flex: 1;
+  margin-right: 15px;
+}
+
+.accommodation-name {
+  font-weight: 500;
+  color: #343a40;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+}
+
+.capacity-info {
+  font-weight: normal;
+  color: #6c757d;
+  font-size: 0.85rem;
+  margin-left: 6px;
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #4a6cf7;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.progress-fill.nearly-full {
+  background-color: #ffc107;
+}
+
+.progress-fill.full {
+  background-color: #dc3545;
+}
+
+.percentage {
+  font-size: 0.8rem;
+  color: #6c757d;
+  min-width: 40px;
   text-align: right;
 }
 
-.session {
+.accommodation-count {
+  margin-left: 10px;
+}
+
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 24px;
+  padding: 0 8px;
+  background-color: #e9ecef;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #343a40;
+}
+
+.count-badge.full {
+  background-color: #dc3545;
+  color: white;
+}
+
+.session-stats {
+  text-align: right;
+  min-width: 40px;
+}
+
+.count-badge {
   display: inline-block;
+  background: #e9ecef;
+  color: #495057;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Accommodation specific styles */
+.accommodation-stats {
+  padding: 10px;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+.accommodation-stats h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.2rem;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 15px;
+}
+
+.accommodation-list {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.accommodation-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.accommodation-item:last-child {
+  border-bottom: none;
+}
+
+.accommodation-name {
+  flex: 1;
+  font-weight: 500;
+  color: #444;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 15px;
+}
+
+.capacity-info {
+  font-weight: normal;
+  color: #666;
+  margin-left: 5px;
+}
+
+.progress-container {
+  flex: 2;
+  display: flex;
+  align-items: center;
+  min-width: 120px;
+  margin: 0 15px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-right: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #4CAF50;
+  border-radius: 4px;
+  transition: width 0.3s ease, background-color 0.3s ease;
   margin-left: 10px;
   color: #6c757d;
   font-size: 0.9rem;

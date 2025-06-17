@@ -4,6 +4,7 @@ import { Observable, catchError, throwError, map, tap } from 'rxjs';
 import { AttendanceData, RegistrationFormData, RegistrationListResponse } from '../models/registration-form-data.model';
 import { saveAs } from 'file-saver';
 import { aadhaarCheck } from '../models/aadhaarCheck';
+import { HallOccupancy } from '../models/HallOccupancy';
 
 
 
@@ -166,6 +167,15 @@ export class RegistrationService {
       })
     );
 }
+
+accommodationStats(): Observable<HallOccupancy> {
+  const url = `${this.backendUrl}/halls/occupancy`;
+  return this.http.get<HallOccupancy>(url).pipe(
+    catchError(this.handleError)
+  );
+}
+
+
   /**
    * Handle HTTP errors
    * @param error Error object
