@@ -73,11 +73,14 @@
         </button>
       <div class="action-buttons">
         <div class="print-actions">
-          <div class="date-range-picker">
-            <i class="far fa-calendar-alt"></i>
-            <input type="date" [(ngModel)]="startDate" placeholder="Start Date">
-            <span>to</span>
-            <input type="date" [(ngModel)]="endDate" placeholder="End Date">
+          <div class="date-picker-container">
+            <div class="date-range-picker">
+              <i class="far fa-calendar-alt"></i>
+              <input type="date" [(ngModel)]="startDate" placeholder="Start Date">
+              <span>to</span>
+              <input type="date" [(ngModel)]="endDate" placeholder="End Date">
+            </div>
+            <div class="date-picker-note">Date picker is only for Print All</div>
           </div>
           <button (click)="printAll()" class="print-button">
             <i class="fas fa-print"></i> Print All
