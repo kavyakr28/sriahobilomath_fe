@@ -652,6 +652,23 @@ this.registrationService.updateCharges(record.registration.id, charges, this.att
 });
  }
 
+
+ deleteRegistration(id: number): void {
+  if (confirm(`Are you sure you want to delete registration ID ${id}?`)) {
+    this.registrationService.deleteRegistration(id).subscribe({
+      next: (message: string) => {
+        console.log(message);
+        alert(message);
+        this.getAttendanceStats();
+      },
+      error: (err) => {
+        console.error('Error deleting registration:', err);
+        alert('Failed to delete registration: ' + err.message);
+      }
+    });
+  }
+}
+
  
 printIdCard(record: RegistrationResponse): void {
     this.registrationService.getQRImage(record.registration.id).subscribe({

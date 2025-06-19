@@ -17,6 +17,20 @@ import { HallOccupancy } from '../models/HallOccupancy';
 export class RegistrationService {
   private backendUrl = '/api/registrations'; // Your backend API endpoint
 
+  /**
+   * Delete a registration by ID
+   * @param id The ID of the registration to delete
+   * @returns Observable with the delete confirmation message
+   */
+  deleteRegistration(id: number): Observable<string> {
+    console.log("Deleting registration with ID:", id);
+    const url = `${this.backendUrl}/delete/${id}`;
+    return this.http.delete(url, { responseType: 'text' }).pipe(
+      map(response => response as string),
+      catchError(this.handleError)
+    );
+  }
+
   constructor(private http: HttpClient) {}
 
   /**

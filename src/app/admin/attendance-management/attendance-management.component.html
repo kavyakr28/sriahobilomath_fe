@@ -365,6 +365,11 @@
           <td *ngIf="checkRole() === 'ADMIN' && isEditing">
             <button (click)="updateTravelCharges(record)" class="update-button">Update</button>
           </td>
+          <td *ngIf="checkRole() === 'ADMIN'">
+            <button (click)="deleteRegistration(record.registration.id)" class="delete-button">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
