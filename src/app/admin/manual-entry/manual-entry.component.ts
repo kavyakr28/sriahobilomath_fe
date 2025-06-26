@@ -55,8 +55,8 @@ export class ManualEntryComponent implements OnInit {
     
     // Generate date slots and get current attendance type
     const { slots, currentAttendanceType } = this.generateDateSlots(
-      '13-06-2025', 
-      '17-06-2025'
+      '25-06-2025', 
+      '29-06-2025'
     );
     
     this.slots = slots;
@@ -163,7 +163,7 @@ export class ManualEntryComponent implements OnInit {
         minute: '2-digit',
         hour12: true
       }),
-      timeSlot: now.getHours() < 12 ? 'Fore Noon' : 'Afternoon' as 'Fore Noon' | 'Afternoon'
+      timeSlot: (now.getHours() >= 6 && now.getHours() < 12) ? 'Fore Noon' : (now.getHours() >= 14 && now.getHours() < 20) ? 'Afternoon' : 'Afternoon' as 'Fore Noon' | 'Afternoon' // This will be updated by the time range check in generateDateSlots
     };
   }
   
@@ -199,12 +199,18 @@ export class ManualEntryComponent implements OnInit {
     
     // Generate dates in the range
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      // Create time slots for each day
-      const foreNoon = new Date(d);
-      foreNoon.setHours(9, 0, 0, 0);
+      // Create time slots for each day with specific hours
+      const foreNoonStart = new Date(d);
+      foreNoonStart.setHours(6, 0, 0, 0); // 6:00 AM
       
-      const afternoon = new Date(d);
-      afternoon.setHours(13, 0, 0, 0);
+      const foreNoonEnd = new Date(d);
+      foreNoonEnd.setHours(12, 0, 0, 0); // 12:00 PM
+      
+      const afternoonStart = new Date(d);
+      afternoonStart.setHours(14, 0, 0, 0); // 4:00 PM
+      
+      const afternoonEnd = new Date(d);
+      afternoonEnd.setHours(20, 0, 0, 0); // 8:00 PM
       
       // Format date string
       const day = String(d.getDate()).padStart(2, '0');
@@ -215,30 +221,32 @@ export class ManualEntryComponent implements OnInit {
       // Check if current date matches this day
       const isCurrentDay = d.toDateString() === current.date.toDateString();
       
-      // Create time slot entries with attendance types
+      // Create time slot entries with specific time ranges
       const foreNoonSlot = {
-        date: foreNoon,
-        formattedDate: `${dateStr} (00:00 - 12:00)`,
+        date: foreNoonStart,
+        formattedDate: `${dateStr} (06:00 - 12:00)`,
         timeSlot: 'Fore Noon' as const,
         attendanceType: `ATTENDANCE_DAY${dayCount}_FN`
       };
       
       const afternoonSlot = {
-        date: afternoon,
-        formattedDate: `${dateStr} (12:01 - 24:00)`,
+        date: afternoonStart,
+        formattedDate: `${dateStr} (14:00 - 20:00)`,
         timeSlot: 'Afternoon' as const,
         attendanceType: `ATTENDANCE_DAY${dayCount}_AN`
       };
+      
       console.log("Current Time Slot:", current.timeSlot);
       console.log("Current Date/Time:", current.formattedDateTime);
       console.log("Current Date/Time:", current.date.getHours());
+      
       // Check if this is the current time slot
       if (isCurrentDay) {
         const currentHour = current.date.getHours();
-        if (current.timeSlot === 'Fore Noon' && currentHour >= 0 && currentHour < 12) {
+        if (current.timeSlot === 'Fore Noon' && currentHour >= 6 && currentHour < 12) {
           currentAttendanceType = foreNoonSlot.attendanceType;
           console.log('Current Attendance Type:', currentAttendanceType);
-        } else if (current.timeSlot === 'Afternoon' && currentHour >= 12 && currentHour <= 23) {
+        } else if (current.timeSlot === 'Afternoon' && currentHour >= 14 && currentHour < 20) {
           currentAttendanceType = afternoonSlot.attendanceType;
           console.log('Current Attendance Type:', currentAttendanceType);
         }
