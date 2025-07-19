@@ -207,7 +207,7 @@ export class ManualEntryComponent implements OnInit {
       foreNoonEnd.setHours(12, 0, 0, 0); // 12:00 PM
       
       const afternoonStart = new Date(d);
-      afternoonStart.setHours(14, 0, 0, 0); // 4:00 PM
+      afternoonStart.setHours(14, 0, 0, 0); // 2:00 PM
       
       const afternoonEnd = new Date(d);
       afternoonEnd.setHours(20, 0, 0, 0); // 8:00 PM

@@ -12,6 +12,7 @@ import {
   map,
   shareReplay,
 } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-dashboard',
@@ -60,7 +61,8 @@ export class DashboardComponent implements OnInit {
     private route: ActivatedRoute,
     private authService: AuthService,
     private snackBar: MatSnackBar,
-    private registrationService: RegistrationService
+    private registrationService: RegistrationService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {}
@@ -95,7 +97,7 @@ export class DashboardComponent implements OnInit {
     setTimeout(() => {
       this.lastScannedCode = null;
       this.isProcessing = false;
-    }, 7000);
+    }, 3000);
   }
   
   private processAttendanceScan(scanResult: number): void {
@@ -106,27 +108,30 @@ export class DashboardComponent implements OnInit {
       (response) => {
         console.log("Response value : ", response);
         if(response.attendanceAlreadyMarked){
-          this.snackBar.open(`Attendance already marked for ${scanResult}`, 'Close', { 
-            duration: 10000,
-            panelClass: ['snackbar-warning']
-          });
+          this.toastr.warning(
+            `Attendance already marked for ${scanResult}`,
+            '',
+            { timeOut: 3000 }
+          );
           return;
         }else{
-          this.snackBar.open(`Successfully scanned Attendance QR code for ID ${scanResult}`, 'Close', { 
-            duration: 10000,
-            panelClass: ['snackbar-success']
-          });
+          this.toastr.success(
+            `Successfully scanned Attendance QR code for ID ${scanResult}`,
+            '',
+            { timeOut: 3000 }
+          );
         }
         console.log('Attendance processed successfully:', response);
         
       },
       (error) => {
         console.error('Error processing attendance:', error);
-        this.snackBar.open(`Failed to scan Attendance QR code for ${scanResult}`, 'Close', { 
-          duration: 10000,
-          panelClass: ['snackbar-error']
-        });
 
+        this.toastr.error(
+          `Failed to scan Attendance QR code for ${scanResult}`,
+          '',
+          { timeOut: 3000 }
+        );
       }
     );
     // this.attendanceService.recordAttendance(scanResult).subscribe(...);
@@ -139,26 +144,29 @@ export class DashboardComponent implements OnInit {
     this.registrationService.processScan(scanResult, 'gift').subscribe(
       (response) => {
         if(response.giftAlreadyMarked){
-          this.snackBar.open(`Gift already marked for ${scanResult}`, 'Close', { 
-            duration: 10000,
-            panelClass: ['snackbar-warning']
-          });
+          this.toastr.warning(
+            `Gift already marked for ${scanResult}`,
+            '',
+            { timeOut: 3000 }
+          );
           return;
         }else{
-          this.snackBar.open(`Successfully scanned Gifts QR code for ID ${scanResult}`, 'Close', { 
-            duration: 10000,
-            panelClass: ['snackbar-success']
-          });
+          this.toastr.success(
+            `Successfully scanned Gifts QR code for ID ${scanResult}`,
+            '',
+            { timeOut: 3000 }
+          );
         }
         console.log('Gift processed successfully:', response);
         
       },
       (error) => {
         console.error('Error processing gift:', error);
-        this.snackBar.open(`Failed to scan Gifts QR code for ${scanResult}`, 'Close', { 
-          duration: 10000,
-          panelClass: ['snackbar-error']
-        });
+        this.toastr.error(
+          `Failed to scan Gift QR code for ${scanResult}`,
+          '',
+          { timeOut: 3000 }
+        );
       }
     );
   }
@@ -221,7 +229,7 @@ export class DashboardComponent implements OnInit {
         minute: '2-digit',
         hour12: true
       }),
-      timeSlot: (now.getHours() >= 6 && now.getHours() < 13) ? 'Fore Noon' : (now.getHours() >= 16 && now.getHours() < 20) ? 'Afternoon' : 'Afternoon' as 'Fore Noon' | 'Afternoon'
+      timeSlot: (now.getHours() >= 6 && now.getHours() < 12) ? 'Fore Noon' : (now.getHours() >= 14 && now.getHours() < 20) ? 'Afternoon' : 'Afternoon' as 'Fore Noon' | 'Afternoon'
     };
   }
 
@@ -275,10 +283,10 @@ export class DashboardComponent implements OnInit {
       foreNoonStart.setHours(6, 0, 0, 0); // 6:00 AM
       
       const foreNoonEnd = new Date(d);
-      foreNoonEnd.setHours(13, 0, 0, 0); // 12:00 PM
+      foreNoonEnd.setHours(12, 0, 0, 0); // 12:00 PM
       
       const afternoonStart = new Date(d);
-      afternoonStart.setHours(16, 0, 0, 0); // 4:00 PM
+      afternoonStart.setHours(14, 0, 0, 0); // 4:00 PM
       
       const afternoonEnd = new Date(d);
       afternoonEnd.setHours(20, 0, 0, 0); // 8:00 PM
@@ -295,14 +303,14 @@ export class DashboardComponent implements OnInit {
     // Create time slot entries with specific time ranges
     const foreNoonSlot = {
       date: foreNoonStart,
-      formattedDate: `${dateStr} (06:00 - 13:00)`,
+      formattedDate: `${dateStr} (06:00 - 12:00)`,
       timeSlot: 'Fore Noon' as const,
       attendanceType: `ATTENDANCE_DAY${dayCount}_FN`
     };
     
     const afternoonSlot = {
       date: afternoonStart,
-      formattedDate: `${dateStr} (16:00 - 20:00)`,
+      formattedDate: `${dateStr} (14:00 - 20:00)`,
       timeSlot: 'Afternoon' as const,
       attendanceType: `ATTENDANCE_DAY${dayCount}_AN`
     };  
@@ -310,10 +318,10 @@ export class DashboardComponent implements OnInit {
       // Check if this is the current time slot
       if (isCurrentDay) {
         const currentHour = current.date.getHours();
-        if (current.timeSlot === 'Fore Noon' && currentHour >= 6 && currentHour < 13) {
+        if (current.timeSlot === 'Fore Noon' && currentHour >= 6 && currentHour < 12) {
           currentAttendanceType = foreNoonSlot.attendanceType;
           console.log('Current Attendance Type:', currentAttendanceType);
-        } else if (current.timeSlot === 'Afternoon' && currentHour >= 16 && currentHour < 20) {
+        } else if (current.timeSlot === 'Afternoon' && currentHour >= 14 && currentHour < 20) {
           currentAttendanceType = afternoonSlot.attendanceType;
           console.log('Current Attendance Type:', currentAttendanceType);
         }

@@ -32,6 +32,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { SignupComponent } from './admin/signup/signup.component';
 import { AttendanceManagementModule } from './admin/attendance-management/attendance-management.module';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,13 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     MatSnackBarModule,
     MatDialogModule,
     ZXingScannerModule,
+    ToastrModule.forRoot({
+      positionClass: 'toast-top-center',
+      timeOut: 3000,
+      closeButton: true,
+      progressBar: true,
+      tapToDismiss: true
+    })
   ],
   providers: [
     RegistrationService,
