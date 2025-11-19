@@ -35,7 +35,7 @@
         </div>
       </div>
 
-      <!-- Accommodation Stats Card -->
+      <!-- Accommodation Stats Card - Commented out
       <div class="count-card">
         <div class="count-card-header">
           <h3>Accommodation Stats</h3>
@@ -54,6 +54,7 @@
           </div>
         </div>
       </div>
+      -->
       </div>
     </div>
     
@@ -80,10 +81,10 @@
               <span>to</span>
               <input type="date" [(ngModel)]="endDate" placeholder="End Date">
             </div>
-            <div class="date-picker-note">Date picker is only for Print All</div>
+            <div class="date-picker-note">Date picker is only for Download All</div>
           </div>
           <button (click)="printAll()" class="print-button">
-            <i class="fas fa-print"></i> Print All
+            <i class="fas fa-download"></i> Download All
           </button>
         </div>
         <button (click)="exportToExcel()" class="export-button">
@@ -152,23 +153,24 @@
           <th>Shaka</th>
           <th>Reg. Date</th>
           <th colspan="2"> <div>Day 1</div>
-            <div style="font-size: 0.8em; font-weight: normal;">25-06-2025</div>
+            <div style="font-size: 0.8em; font-weight: normal;">26-11-2025</div>
          </th>
           <th colspan="2"> <div>Day 2</div>
-            <div style="font-size: 0.8em; font-weight: normal;">26-06-2025</div>
+            <div style="font-size: 0.8em; font-weight: normal;">27-11-2025</div>
          </th>
           <th colspan="2"> <div>Day 3</div>
-            <div style="font-size: 0.8em; font-weight: normal;">27-06-2025</div>
+            <div style="font-size: 0.8em; font-weight: normal;">28-11-2025</div>
          </th>
           <th colspan="2"> <div>Day 4</div>
-            <div style="font-size: 0.8em; font-weight: normal;">28-06-2025</div>
+            <div style="font-size: 0.8em; font-weight: normal;">29-11-2025</div>
          </th>
           <th colspan="2"> <div>Day 5</div>
-            <div style="font-size: 0.8em; font-weight: normal;">29-06-2025</div>
+            <div style="font-size: 0.8em; font-weight: normal;">30-11-2025</div>
          </th>
-          <th>Print</th>
+          <!-- <th>Print</th> -->
+          <th>Download</th>
           <th>Gift</th>
-          <th *ngIf="checkRole() === 'ADMIN'">Accommodation</th>
+          <!-- <th *ngIf="checkRole() === 'ADMIN'">Accommodation</th> -->
           <th *ngIf="checkRole() === 'ADMIN'">Travel Charges</th>
           <th *ngIf="checkRole() === 'ADMIN'">Sambavanai</th>
           <th *ngIf="checkRole() === 'ADMIN'">Total Amount</th>
@@ -309,8 +311,8 @@
           </td>
           
           <td class="print-cell">
-            <button (click)="printIdCard(record)" class="print-button" title="Print ID Card" [disabled]="isLoading">
-              <i class="fas fa-id-card"></i> Print ID
+            <button (click)="printIdCard(record)" class="print-button" title="Download ID Card" [disabled]="isLoading">
+              <i class="fas fa-id-card"></i> Download ID
             </button>
           </td>
           <td class="gift-cell" [class.present]="record?.attendanceAndGifts?.giftGiven" aria-readonly="true">
@@ -325,7 +327,7 @@
           <ng-template #viewGiftGiven>{{ record?.attendanceAndGifts?.giftGiven === true ? '🎁' : '' }}</ng-template>
           </td>
 
-          <td *ngIf="checkRole() === 'ADMIN'">
+          <!-- <td *ngIf="checkRole() === 'ADMIN'">
             <ng-container *ngIf="isEditing; else viewAccommodation">
               <select [ngModel]="record?.attendanceAndGifts?.accommodation" 
                     (ngModelChange)="onAccommodationChange(record, $event)"
@@ -336,7 +338,7 @@
             <ng-template #viewAccommodation>
               {{ record?.attendanceAndGifts?.accommodation || 'N/A' }}
             </ng-template>
-          </td>
+          </td> -->
           
             <!--Admin only columns-->
           <td *ngIf="checkRole() === 'ADMIN'">

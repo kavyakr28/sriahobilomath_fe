@@ -334,9 +334,9 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
   checkRole(): string | null {
     const user = this.authService.getCurrentUser();
 
-    if (user?.role?.includes('ADMIN') || user?.username.toLowerCase() === 'admin') {
+    if (user?.includes('ADMIN') || user?.toLowerCase() === 'admin') {
       return 'ADMIN';
-    } else if (user?.role?.includes('USER') || user?.username.toLowerCase() === 'user') {
+    } else if (user?.includes('USER') || user?.toLowerCase() === 'user') {
       return 'USER';
     }
     return null;

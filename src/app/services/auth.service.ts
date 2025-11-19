@@ -94,11 +94,11 @@ export class AuthService {
         console.log("response : ",response);
         const userData = {
           username,
-          roles: response.role,
           // Don't store password, we'll use the auth header
           ...userWithoutUsername
         };
         localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('role', response.role);
         this.currentUserSubject.next(userData);
       })
     );
@@ -135,6 +135,7 @@ export class AuthService {
     // Remove auth data from local storage
     localStorage.removeItem('auth');
     localStorage.removeItem('user');
+    localStorage.removeItem('role');
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
@@ -154,11 +155,12 @@ export class AuthService {
   
   hasRole(role: string): boolean {
     const user = this.currentUserValue;
+    console.log(user?.role);
     return user?.role?.includes(role) || false;
   }
 
-  getCurrentUser(): User | null {
-    const user = localStorage.getItem('user') || sessionStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+  getCurrentUser(): String | null {
+    const user = localStorage.getItem('role') || sessionStorage.getItem('role');
+    return user || null;
   }
 }
