@@ -669,7 +669,9 @@ this.registrationService.updateCharges(record.registration.id, charges, this.att
   }
 }
 
- 
+downloadIdCard(record: RegistrationResponse): void {
+}
+/** 
 printIdCard(record: RegistrationResponse): void {
     this.registrationService.getQRImage(record.registration.id).subscribe({
       next: (blob: Blob) => {
@@ -832,8 +834,8 @@ printIdCard(record: RegistrationResponse): void {
         alert('Failed to load QR code. Please try again.');
       }
     });
-  }
-
+  }*/
+/**
 private showFallbackPrint(record: AttendanceRecord): void {
   const printContent = `
     <div style="font-family: Arial, sans-serif; max-width: 300px; margin: 0 auto; border: 2px solid #333; padding: 20px; text-align: center;">
@@ -894,7 +896,7 @@ private showFallbackPrint(record: AttendanceRecord): void {
     printWindow.document.close();
   }
 }
-
+*/
 
 updateFilteredRecords(): void {
   // If no search criteria, return all records
@@ -1003,7 +1005,11 @@ onSearchChange(): void {
    
   }
 
-  printAll(): void {
+  downloadAll(): void{
+
+  }
+
+  /**printAll(): void {
     if (!this.startDate || !this.endDate) {
       alert('Please select both start and end dates');
       return;
@@ -1064,7 +1070,7 @@ onSearchChange(): void {
         alert('Failed to load registration data. Please try again.');
       }
     });
-  }
+  }*/
 
   private formatId(id: number | string): string {
     if (id === null || id === undefined || id === '') return '';

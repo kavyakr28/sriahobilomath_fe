@@ -83,7 +83,8 @@
             </div>
             <div class="date-picker-note">Date picker is only for Download All</div>
           </div>
-          <button (click)="printAll()" class="print-button">
+          <!-- <button (click)="printAll()" class="print-button"> -->
+            <button (click)="downloadAll()" class="print-button">
             <i class="fas fa-download"></i> Download All
           </button>
         </div>
@@ -311,7 +312,9 @@
           </td>
           
           <td class="print-cell">
-            <button (click)="printIdCard(record)" class="print-button" title="Download ID Card" [disabled]="isLoading">
+            <!-- <button (click)="printIdCard(record)" class="print-button" title="Download ID Card" [disabled]="isLoading">
+               -->
+            <button (click)="downloadIdCard(record)" class="print-button" title="Download ID Card" [disabled]="isLoading">
               <i class="fas fa-id-card"></i> Download ID
             </button>
           </td>
