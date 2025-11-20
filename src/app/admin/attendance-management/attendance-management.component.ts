@@ -772,7 +772,7 @@ async downloadIdCard(record: RegistrationResponse): Promise<void> {
     }
   }
 }
-
+/**
 printIdCard(record: RegistrationResponse): void {
     this.registrationService.getQRImage(record.registration.id).subscribe({
       next: (blob: Blob) => {
@@ -936,6 +936,7 @@ printIdCard(record: RegistrationResponse): void {
       }
     });
   }
+  */
 /**
 private showFallbackPrint(record: AttendanceRecord): void {
   const printContent = `
@@ -1106,8 +1107,166 @@ onSearchChange(): void {
    
   }
 
-  downloadAll(): void{
+  downloadAll(): void {
+    if (!this.startDate || !this.endDate) {
+      alert('Please select both start and end dates');
+      return;
+    }
 
+    this.isExportingAll = true;
+    
+    // Format dates to YYYY-MM-DD
+    const formatDate = (dateStr: string) => {
+      const date = new Date(dateStr);
+      return date.toISOString().split('T')[0];
+    };
+
+    // Fetch registrations with QR codes for the selected date range
+    this.registrationService.getAllIds(
+      formatDate(this.startDate), 
+      formatDate(this.endDate)
+    ).subscribe({
+      next: async (response: any) => {
+        if (!response || !Array.isArray(response) || response.length === 0) {
+          alert('No registrations found for the selected date range');
+          this.isExportingAll = false;
+          return;
+        }
+
+        try {
+          // Import required libraries
+          const [html2canvas, { jsPDF }] = await Promise.all([
+            import('html2canvas'),
+            import('jspdf')
+          ]);
+
+          // Create a new PDF document
+          const pdf = new jsPDF('p', 'mm', 'a6');
+          
+          // Process each registration and add to PDF
+          for (let i = 0; i < response.length; i++) {
+            const item = response[i];
+            
+            try {
+              // Convert base64 QR code to blob URL
+              const base64String = item.qrCodeIdentifier;
+              const byteCharacters = atob(base64String);
+              const byteNumbers = new Array(byteCharacters.length);
+              
+              for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+              }
+
+              const byteArray = new Uint8Array(byteNumbers);
+              const blob = new Blob([byteArray], { type: 'image/png' });
+              const qrCodeUrl = URL.createObjectURL(blob);
+              
+              // Create a temporary div for the ID card
+              const tempDiv = document.createElement('div');
+              tempDiv.style.position = 'absolute';
+              tempDiv.style.left = '-9999px';
+              tempDiv.style.width = '400px';
+              tempDiv.style.height = '500px';
+              tempDiv.style.padding = '20px';
+              tempDiv.style.boxSizing = 'border-box';
+              tempDiv.style.fontFamily = 'Arial, sans-serif';
+              tempDiv.style.border = '1px solid #333';
+              tempDiv.style.display = 'flex';
+              tempDiv.style.flexDirection = 'column';
+              tempDiv.style.alignItems = 'center';
+              tempDiv.style.backgroundColor = 'white';
+              document.body.appendChild(tempDiv);
+
+              // Create the ID card content
+              tempDiv.innerHTML = `      
+                <div style="display: flex; margin: 10px 0; width: 100%;">
+                  <div style="width: 100px; font-size: 16px; color: #555;">Name:</div>
+                  <div style="font-size: 16px; font-weight: bold; flex: 1;">
+                    ${item.registration?.fullName || 'N/A'}
+                  </div>
+                </div>
+                
+                <div style="display: flex; margin: 10px 0; width: 100%;">
+                  <div style="width: 100px; font-size: 16px; color: #555;">ID No:</div>
+                  <div style="font-size: 16px; font-weight: bold; flex: 1;">
+                    ${this.formatId(item.registration?.id || '')}
+                  </div>
+                </div>
+                
+                <div style="display: flex; margin: 10px 0; width: 100%;">
+                  <div style="width: 100px; font-size: 16px; color: #555;">Vedham:</div>
+                  <div style="font-size: 16px; font-weight: bold; flex: 1;">
+                    ${item.registration?.scholarIn || 'N/A'}
+                  </div>
+                </div>
+                
+                <div style="display: flex; margin: 10px 0 20px 0; width: 100%;">
+                  <div style="width: 100px; font-size: 16px; color: #555;">Shakai:</div>
+                  <div style="font-size: 16px; font-weight: bold; flex: 1;">
+                    ${item.registration?.sakai || 'N/A'}
+                  </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                  <img src="${qrCodeUrl}" alt="QR Code" style="width: 200px; height: 200px;">
+                </div>
+              `;
+
+              // Convert the div to a canvas
+              const canvas = await html2canvas.default(tempDiv, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+              });
+
+              // Add a new page for each ID card after the first one
+              if (i > 0) {
+                pdf.addPage();
+              }
+              
+              // Calculate dimensions to center the content
+              const imgData = canvas.toDataURL('image/png');
+              const pdfWidth = pdf.internal.pageSize.getWidth();
+              const pdfHeight = pdf.internal.pageSize.getHeight();
+              const imgWidth = pdfWidth * 0.9;
+              const imgHeight = (canvas.height * imgWidth) / canvas.width;
+              const x = (pdfWidth - imgWidth) / 2;
+              const y = (pdfHeight - imgHeight) / 2;
+
+              // Add the image to the PDF
+              pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+              
+              // Clean up
+              document.body.removeChild(tempDiv);
+              URL.revokeObjectURL(qrCodeUrl);
+              
+            } catch (error) {
+              console.error(`Error processing ID card for ${item.fullName}:`, error);
+              // Continue with next record even if one fails
+              continue;
+            }
+          }
+          
+          // Save the PDF with all ID cards
+          const startDate = formatDate(this.startDate);
+          const endDate = formatDate(this.endDate);
+          pdf.save(`ID_Cards_${startDate}_to_${endDate}.pdf`);
+          
+        } catch (error) {
+          console.error('Error generating ID cards:', error);
+          alert('Failed to generate ID cards. Please try again.');
+        } finally {
+          this.isExportingAll = false;
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching registrations:', error);
+        alert('Failed to fetch registrations. Please try again.');
+        this.isExportingAll = false;
+      }
+    });
   }
 
   /**printAll(): void {
@@ -1171,7 +1330,7 @@ onSearchChange(): void {
         alert('Failed to load registration data. Please try again.');
       }
     });
-  }*/
+  } */
 
   private formatId(id: number | string): string {
     if (id === null || id === undefined || id === '') return '';
