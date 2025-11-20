@@ -8,6 +8,7 @@ import { RegistrationService } from '../../services/registration.service';
 import { AttendanceData, RegistrationFormData, RegistrationListResponse, RegistrationResponse } from '../../models/registration-form-data.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { PadNumberPipe } from '../../pipes/pad-number.pipe';
+declare var jsPDF: any;
 
 
 export interface AttendanceRecord {
@@ -669,9 +670,109 @@ this.registrationService.updateCharges(record.registration.id, charges, this.att
   }
 }
 
-downloadIdCard(record: RegistrationResponse): void {
+async downloadIdCard(record: RegistrationResponse): Promise<void> {
+  try {
+    const blob = await this.registrationService.getQRImage(record.registration.id).toPromise();
+    const qrCodeUrl = URL.createObjectURL(blob);
+    
+    // Create a temporary div to hold our ID card content
+    const tempDiv = document.createElement('div');
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.left = '-9999px';
+    tempDiv.style.width = '400px';
+    tempDiv.style.height = '500px';
+    tempDiv.style.padding = '20px';
+    tempDiv.style.boxSizing = 'border-box';
+    tempDiv.style.fontFamily = 'Arial, sans-serif';
+    tempDiv.style.border = '1px solid #333';
+    tempDiv.style.display = 'flex';
+    tempDiv.style.flexDirection = 'column';
+    tempDiv.style.alignItems = 'center';
+    tempDiv.style.backgroundColor = 'white';
+    document.body.appendChild(tempDiv);
+
+    // Create the ID card content
+    tempDiv.innerHTML = `      
+      <div style="display: flex; margin: 10px 0; width: 100%;">
+        <div style="width: 100px; font-size: 16px; color: #555;">Name:</div>
+        <div style="font-size: 16px; font-weight: bold; flex: 1;">
+          ${record.registration.fullName}
+        </div>
+      </div>
+      
+      <div style="display: flex; margin: 10px 0; width: 100%;">
+        <div style="width: 100px; font-size: 16px; color: #555;">ID No:</div>
+        <div style="font-size: 16px; font-weight: bold; flex: 1;">
+          ${this.formatId(record.registration.id)}
+        </div>
+      </div>
+      
+      <div style="display: flex; margin: 10px 0; width: 100%;">
+        <div style="width: 100px; font-size: 16px; color: #555;">Vedham:</div>
+        <div style="font-size: 16px; font-weight: bold; flex: 1;">
+          ${record.registration.scholarIn || 'N/A'}
+        </div>
+      </div>
+      
+      <div style="display: flex; margin: 10px 0 20px 0; width: 100%;">
+        <div style="width: 100px; font-size: 16px; color: #555;">Shakai:</div>
+        <div style="font-size: 16px; font-weight: bold; flex: 1;">
+          ${record.registration.sakai || 'N/A'}
+        </div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 20px;">
+        <img src="${qrCodeUrl}" alt="QR Code" style="width: 200px; height: 200px;">
+      </div>
+    `;
+
+    // Import required libraries
+    const [html2canvas, { jsPDF }] = await Promise.all([
+      import('html2canvas'),
+      import('jspdf')
+    ]);
+
+    // Convert the div to a canvas
+    const canvas = await html2canvas.default(tempDiv, {
+      scale: 2, // Higher scale for better quality
+      useCORS: true,
+      allowTaint: true,
+      logging: false,
+      backgroundColor: '#ffffff'
+    });
+
+    // Create a new PDF document
+    const pdf = new jsPDF('p', 'mm', 'a6'); // 'a6' is a good size for ID cards
+    
+    // Calculate dimensions to center the content
+    const imgData = canvas.toDataURL('image/png');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pdfWidth * 0.9; // 90% of page width
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    const x = (pdfWidth - imgWidth) / 2;
+    const y = (pdfHeight - imgHeight) / 2;
+
+    // Add the image to the PDF
+    pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
+    
+    // Save the PDF
+    pdf.save(`ID_Card_${record.registration.id}.pdf`);
+    
+    // Clean up
+    document.body.removeChild(tempDiv);
+    URL.revokeObjectURL(qrCodeUrl);
+    
+  } catch (err) {
+    console.error('Error generating ID card:', err);
+    // Clean up in case of error
+    const tempDiv = document.querySelector('div[style*="left: -9999px"]');
+    if (tempDiv) {
+      document.body.removeChild(tempDiv);
+    }
+  }
 }
-/** 
+
 printIdCard(record: RegistrationResponse): void {
     this.registrationService.getQRImage(record.registration.id).subscribe({
       next: (blob: Blob) => {
@@ -834,7 +935,7 @@ printIdCard(record: RegistrationResponse): void {
         alert('Failed to load QR code. Please try again.');
       }
     });
-  }*/
+  }
 /**
 private showFallbackPrint(record: AttendanceRecord): void {
   const printContent = `
