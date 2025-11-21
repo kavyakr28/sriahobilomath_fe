@@ -103,7 +103,7 @@ export class DashboardComponent implements OnInit {
   private processAttendanceScan(scanResult: number): void {
     // TODO: Implement attendance processing logic
     console.log('Processing attendance for:', scanResult);
-    const { slots, currentAttendanceType } = this.generateDateSlots('25-06-2025', '29-06-2025');    
+    const { slots, currentAttendanceType } = this.generateDateSlots('26-11-2025', '30-11-2025');    
     this.registrationService.processScan(scanResult, currentAttendanceType).subscribe(
       (response) => {
         console.log("Response value : ", response);
@@ -340,7 +340,7 @@ export class DashboardComponent implements OnInit {
   // Example usage
   exampleUsage() {
     console.log('Example Usage:');
-    const { slots, currentAttendanceType } = this.generateDateSlots('25-06-2025', '29-06-2025');
+    const { slots, currentAttendanceType } = this.generateDateSlots('26-11-2025', '30-11-2025');
     console.log('Generated Date Slots:', slots);
     console.log('Current Attendance Type:', currentAttendanceType);
     

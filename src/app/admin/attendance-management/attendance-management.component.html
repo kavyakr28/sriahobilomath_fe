@@ -81,13 +81,17 @@
               <span>to</span>
               <input type="date" [(ngModel)]="endDate" placeholder="End Date">
             </div>
-            <div class="date-picker-note">Date picker is only for Download All</div>
+            <!-- <div class="date-picker-note">Date picker is only for Download All</div> -->
           </div>
-          <!-- <button (click)="printAll()" class="print-button"> -->
-            <button (click)="downloadAll()" class="print-button">
+        </div>
+      </div>
+
+      <!-- Action Buttons Row -->
+      <div class="header-row actions-row">
+        <div class="action-buttons">
+          <button (click)="downloadAll()" class="print-button">
             <i class="fas fa-download"></i> Download All
           </button>
-        </div>
         <button (click)="exportToExcel()" class="export-button">
           <i class="fas fa-file-export"></i> 
           <span *ngIf="!isExporting">Export</span>
@@ -400,4 +404,4 @@
     </div>
   </div>
 </div>
-</div>
+
