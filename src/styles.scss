@@ -13,6 +13,35 @@ body {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* Custom Dialog Styles */
+.custom-dialog-container .mat-mdc-dialog-container {
+  padding: 0 !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+  
+  .mat-mdc-dialog-surface {
+    border-radius: 8px !important;
+  }
+  
+  .mat-mdc-dialog-content {
+    padding: 20px 24px;
+    margin: 0;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .mat-mdc-dialog-actions {
+    padding: 8px 24px 20px;
+    justify-content: center;
+    
+    button {
+      min-width: 120px;
+      margin: 0 8px;
+    }
+  }
+}
+
 .toast-container {
   margin-top: 20px;
   

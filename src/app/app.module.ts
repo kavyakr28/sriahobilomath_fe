@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { DatePipe } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { RegistrationFormComponent } from './registration-form/registration-form.component';
@@ -33,6 +34,7 @@ import { SignupComponent } from './admin/signup/signup.component';
 import { AttendanceManagementModule } from './admin/attendance-management/attendance-management.module';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { ToastrModule } from 'ngx-toastr';
+import { AlertDialogComponent } from './shared/alert-dialog/alert-dialog.component';
 
 @NgModule({
   declarations: [
@@ -78,6 +80,7 @@ import { ToastrModule } from 'ngx-toastr';
     RegistrationService,
     AuthService,
     AuthGuard,
+    DatePipe,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

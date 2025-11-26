@@ -5,9 +5,12 @@ import { LoginComponent } from './admin/login/login.component';
 import { SignupComponent } from './admin/signup/signup.component';
 import { DashboardComponent } from './admin/dashboard/dashboard.component';
 import { AuthGuard } from './guards/auth.guard';
+import { RegistrationClosedComponent } from './registration-closed/registration-closed.component';
 const routes: Routes = [
-  { path: '', redirectTo: 'registration', pathMatch: 'full' },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+    // { path: '', redirectTo: 'registrationClosed', pathMatch: 'full' },
   { path: 'registration', component: RegistrationFormComponent },
+  // { path:'registrationClosed',component:RegistrationClosedComponent  },
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
   { 
@@ -31,7 +34,7 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   // Add a catch-all route for 404
-  { path: '**', redirectTo: 'registration' }
+  { path: '**', redirectTo: 'login' }
 ];
 
 @NgModule({

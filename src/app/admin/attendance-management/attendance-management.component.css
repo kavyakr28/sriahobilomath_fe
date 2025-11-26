@@ -331,7 +331,7 @@
 }
 
 /* Search Box */
-.search-box, .id-search-box {
+/* .search-box, .id-search-box {
   position: relative;
   flex: 1;
   max-width: 250px;
@@ -347,13 +347,25 @@
   font-size: 14px;
   transition: all 0.3s ease;
   background: white;
-}
+} */
 
 
 .search-box input:focus, .id-search-box input:focus {
   outline: none;
   border-color: #0d6efd;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box .spinner-border {
+  position: absolute;
+  right: 10px;
+  color: #6c757d;
 }
 
 /* Action Buttons */
@@ -721,8 +733,10 @@
 
 .pagination-container {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  gap: 10px;
   padding: 15px 0;
   border-top: 1px solid #dee2e6;
   margin-top: 20px;
