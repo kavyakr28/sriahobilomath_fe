@@ -211,6 +211,7 @@
               <th *ngIf="checkRole() === 'ADMIN'">Travel Charges</th>
               <th *ngIf="checkRole() === 'ADMIN'">Sambavanai</th>
               <th *ngIf="checkRole() === 'ADMIN'">Total Amount</th>
+              <th *ngIf="checkRole() === 'ADMIN'">Passbook</th>
             </tr>
             <tr class="sub-header">
               <th colspan="8"></th>
@@ -393,6 +394,11 @@
                 </ng-container>
                 <ng-template #viewTotalAmount>{{ record?.attendanceAndGifts?.totalAmount ?? 0 }}</ng-template>
               </td>
+              <td *ngIf="checkRole() === 'ADMIN'">
+                <button (click)="viewPassbookImage(record)" class="print-button" title="View Passbook">
+                  <i class="fas fa-image"></i> View
+                </button>
+              </td>
               <td *ngIf="checkRole() === 'ADMIN' && isEditing">
                 <button (click)="updateTravelCharges(record)" class="update-button">Update</button>
               </td>
@@ -429,6 +435,20 @@
           <button [disabled]="currentPage === totalPages" (click)="goToLastPage()" title="Last Page">
             <i class="fas fa-angle-double-right"></i>
           </button>
-        </div>
-      </div>
     </div>
+  </div>
+</div>
+
+<!-- Image Modal -->
+<div class="image-modal-overlay" *ngIf="showImageModal" (click)="closeImageModal()">
+  <div class="image-modal-content" (click)="$event.stopPropagation()">
+    <div class="image-modal-header">
+      <h3>Passbook Image</h3>
+      <button class="close-btn" (click)="closeImageModal()">×</button>
+    </div>
+    <div class="image-modal-body">
+      <img *ngIf="selectedImageUrl" [src]="selectedImageUrl" [alt]="selectedImageAlt" 
+           onerror="this.onerror=null; this.src=''; this.alt='Failed to load image';">
+    </div>
+  </div>
+</div>

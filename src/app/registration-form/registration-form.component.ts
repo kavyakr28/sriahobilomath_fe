@@ -122,6 +122,8 @@ export class RegistrationFormComponent implements OnInit {
 
   // Add this property at the top of your component class
   registeredUserData: any = null;
+  passbookImageBase64?: string;
+  passbookImageContentType?: string;
 
   constructor(
     private fb: FormBuilder,
@@ -218,7 +220,8 @@ export class RegistrationFormComponent implements OnInit {
       branchName: ['', Validators.required],
       bankName: ['', Validators.required],
       otherBankName: [''],
-      accountType: ['', Validators.required]
+      accountType: ['', Validators.required],
+      passbookImage: [null, Validators.required]
     }, {
       validators: [
         this.accountNumberMatcher.bind(this),
@@ -418,6 +421,44 @@ export class RegistrationFormComponent implements OnInit {
     };
   }
 
+  // Handle file selection
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file.');
+        this.registrationForm.get('passbookImage')?.setErrors({ invalidFileType: true });
+        this.registrationForm.get('passbookImage')?.setValue(null);
+        return;
+      }
+      
+      // Validate file size (e.g. max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File size exceeds 5MB limit.');
+        this.registrationForm.get('passbookImage')?.setErrors({ fileSizeExceeded: true });
+        this.registrationForm.get('passbookImage')?.setValue(null);
+        return;
+      }
+
+      this.registrationForm.get('passbookImage')?.setValue(file);
+      this.passbookImageContentType = file.type;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        // The result is in format: data:image/png;base64,iVBORw0KGgo...
+        // We just need the base64 part
+        this.passbookImageBase64 = result.split(',')[1];
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.registrationForm.get('passbookImage')?.setValue(null);
+      this.passbookImageBase64 = undefined;
+      this.passbookImageContentType = undefined;
+    }
+  }
+
   // Handle form submission with proper validation and data processing
   onSubmit() {
     // Mark all fields as touched to show validation messages
@@ -441,9 +482,16 @@ export class RegistrationFormComponent implements OnInit {
       formValue.bankName = formValue.otherBankName;
     }
 
+    // Attach image data if available
+    if (this.passbookImageBase64) {
+      formValue.passbookImageBase64 = this.passbookImageBase64;
+      formValue.passbookImageContentType = this.passbookImageContentType;
+    }
+
     // Remove fields not needed in the backend
     delete formValue.confirmAccountNumber;
     delete formValue.otherBankName;
+    delete formValue.passbookImage; // Remove the File object from the payload
 
     // Proceed with form submission
     this.isSubmitting = true;

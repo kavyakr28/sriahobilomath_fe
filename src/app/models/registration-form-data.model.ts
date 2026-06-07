@@ -34,7 +34,8 @@ export interface RegistrationFormData {
   day5FnAttendance?: boolean;
   day5AnAttendance?: boolean;
   accommodation?: string;
-
+  passbookImageBase64?: string;
+  passbookImageContentType?: string;
 }
 
 export interface Registration {
@@ -58,6 +59,9 @@ export interface Registration {
   bankName: string;
   accountType: string;
   registrationDate: string;
+  hasPassbookImage?: boolean;
+  passbookImageBase64?: string;
+  passbookImageContentType?: string;
 }
 
 export interface AttendanceAndGifts {

@@ -1649,4 +1649,21 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
     newWindow.document.write(pageContent);
     newWindow.document.close();
   }
+
+  // Modal state for passbook image
+  showImageModal: boolean = false;
+  selectedImageUrl: string | null = null;
+  selectedImageAlt: string = '';
+
+  viewPassbookImage(record: RegistrationResponse): void {
+    const baseUrl = window.location.origin;
+    this.selectedImageUrl = `${baseUrl}/api/registrations/${record.registration.id}/passbook-image`;
+    this.selectedImageAlt = `Passbook for ${record.registration.fullName}`;
+    this.showImageModal = true;
+  }
+
+  closeImageModal(): void {
+    this.showImageModal = false;
+    this.selectedImageUrl = null;
+  }
 }

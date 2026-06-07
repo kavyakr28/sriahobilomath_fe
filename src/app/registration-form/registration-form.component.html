@@ -305,6 +305,22 @@
           </div>
         </div>
       </div>
+
+      <div class="form-row">
+        <!-- Passbook/Cheque Image -->
+        <div class="form-group" style="flex: 1;">
+          <label for="passbookImage">Upload Passbook or Cheque Image <span class="required">*</span></label>
+          <input type="file" id="passbookImage" accept="image/*" (change)="onFileSelected($event)" class="form-control" style="padding-top: 5px;" required>
+          <small class="helper-text" style="color: #666; font-size: 0.85em; display: block; margin-top: 5px;">
+            Please ensure the account number and IFSC code are clearly visible in the image. Max size: 5MB.
+          </small>
+          <div *ngIf="showErrors('passbookImage')" class="error-message">
+            <div *ngIf="f['passbookImage'].errors?.['required']">Passbook or Cheque image is required</div>
+            <div *ngIf="f['passbookImage'].errors?.['invalidFileType']">Please upload a valid image file</div>
+            <div *ngIf="f['passbookImage'].errors?.['fileSizeExceeded']">File size must be less than 5MB</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Security Note -->
