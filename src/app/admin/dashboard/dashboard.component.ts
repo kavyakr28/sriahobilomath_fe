@@ -235,7 +235,6 @@ export class DashboardComponent implements OnInit {
 
   checkRole(): string | null {
     const user = this.authService.getCurrentUser();
-    console.log("user : "+user);
     if (user?.includes('ADMIN') || user?.toLowerCase() === 'admin') {
       return 'ADMIN';
     } else if (user?.includes('USER') || user?.toLowerCase() === 'user') {

@@ -15,8 +15,10 @@ export class AuthInterceptor implements HttpInterceptor {
   // Define specific public API paths. These should be the full paths from the server root.
   // Example: if your registration service calls '/api/registrations/register' and it's public.
   private readonly publicApiPaths = [
-    { path: '/api/registrations/check-aadhaar', methods: ['GET'] }, // Assuming GET and URL starts with this
-    { path: '/api/registrations/register', methods: ['POST'] }      // Assuming POST and exact match
+    { path: '/api/registrations/check-aadhaar', methods: ['GET'] },
+    { path: '/api/registrations/register', methods: ['POST'] },
+    { path: '/api/registrations/', methods: ['GET'] }, // For QR code endpoint pattern
+    { path: '/api/registrations/', methods: ['GET'], isPrefix: true } // Allow all GET requests under /api/registrations/
   ];
   private readonly authServicePathPrefix = '/api/auth/';
 

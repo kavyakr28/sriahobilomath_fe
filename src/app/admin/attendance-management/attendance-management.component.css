@@ -95,6 +95,67 @@
   padding-right: 15px;
 }
 
+/* Scholar Stats (Veda/Shaka) */
+.scholar-stats {
+  margin-top: 10px;
+}
+.scholar-stats table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.scholar-stats tr {
+  border-bottom: 1px solid #f0f0f0;
+}
+.scholar-stats tr:last-child {
+  border-bottom: none;
+}
+.stat-name {
+  padding: 6px 0;
+  font-weight: 500;
+  color: #495057;
+  padding-right: 15px;
+}
+.stat-count {
+  text-align: right;
+  font-weight: 600;
+  color: #4a6cf7;
+}
+.scrollable-stats {
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.veda-header {
+  background-color: #f8f9fa;
+  border-top: 2px solid #e9ecef !important;
+}
+
+.veda-name {
+  font-weight: 700;
+  color: #343a40;
+}
+
+.veda-count {
+  font-weight: 700;
+  color: #343a40;
+}
+
+.shaka-row {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.shaka-name {
+  padding-left: 20px;
+  font-weight: 400;
+  color: #6c757d;
+}
+
+.shaka-count {
+  font-weight: 500;
+  color: #4a6cf7;
+}
+
 /* Accommodation Stats */
 .accommodation-stats {
   width: 100%;
@@ -331,7 +392,7 @@
 }
 
 /* Search Box */
-.search-box, .id-search-box {
+/* .search-box, .id-search-box {
   position: relative;
   flex: 1;
   max-width: 250px;
@@ -347,13 +408,25 @@
   font-size: 14px;
   transition: all 0.3s ease;
   background: white;
-}
+} */
 
 
 .search-box input:focus, .id-search-box input:focus {
   outline: none;
   border-color: #0d6efd;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box .spinner-border {
+  position: absolute;
+  right: 10px;
+  color: #6c757d;
 }
 
 /* Action Buttons */
@@ -721,8 +794,10 @@
 
 .pagination-container {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  gap: 10px;
   padding: 15px 0;
   border-top: 1px solid #dee2e6;
   margin-top: 20px;
@@ -1210,4 +1285,77 @@
 .table-responsive::-webkit-scrollbar-track {
     background: #f1f1f1;
     border-radius: 6px;
+}
+
+/* Image Modal Styles */
+.image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+.image-modal-content {
+  background-color: #fff;
+  border-radius: 8px;
+  max-width: 90%;
+  max-height: 90%;
+  width: 600px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.image-modal-header {
+  padding: 15px 20px;
+  border-bottom: 1px solid #dee2e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+}
+
+.image-modal-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #343a40;
+}
+
+.image-modal-header .close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #000;
+  opacity: .5;
+  cursor: pointer;
+}
+
+.image-modal-header .close-btn:hover {
+  color: #000;
+  text-decoration: none;
+  opacity: .75;
+}
+
+.image-modal-body {
+  padding: 20px;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  text-align: center;
+}
+
+.image-modal-body img {
+  max-width: 100%;
+  max-height: 70vh;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  object-fit: contain;
 }

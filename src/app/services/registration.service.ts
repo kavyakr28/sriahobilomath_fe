@@ -1,13 +1,12 @@
+
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, throwError, map, tap } from 'rxjs';
-import { AttendanceData, RegistrationFormData, RegistrationListResponse } from '../models/registration-form-data.model';
+import { AttendanceData, RegistrationFormData, RegistrationListResponse, RegistrationResponse, AttendanceStatsDTO, ScholarStatsDTO } from '../models/registration-form-data.model';
 import { saveAs } from 'file-saver';
 import { aadhaarCheck } from '../models/aadhaarCheck';
 import { HallOccupancy } from '../models/HallOccupancy';
-
-
-
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +30,7 @@ export class RegistrationService {
     );
   }
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Submit registration form data to the backend
@@ -72,8 +71,14 @@ export class RegistrationService {
     );
   }
 
-  getAllRegistrations(): Observable<RegistrationListResponse> {
-    const url = `${this.backendUrl}/all-records`;
+  /**
+   * Get all registrations with pagination support
+   * @param page Page number (0-indexed, default: 0)
+   * @param size Number of items per page (default: 50)
+   * @returns Observable of paginated registration response
+   */
+  getAllRegistrations(page: number = 0, size: number = 50): Observable<RegistrationListResponse> {
+    const url = `${this.backendUrl}/all-records?page=${page}&size=${size}`;
     return this.http.get<RegistrationListResponse>(url).pipe(
       catchError(this.handleError)
     );
@@ -104,13 +109,12 @@ export class RegistrationService {
    * @param id Registration ID
    * @returns Observable with the QR image
    */
-  getQRImage(id:number): Observable<any> {
+  getQRImage(id: number): Observable<any> {
     const url = `${this.backendUrl}/${id}/qr-code`;
     return this.http.get(url, { responseType: 'blob' }).pipe(
       catchError(this.handleError)
     );
   }
-
 
   /**
    * get list of IDs
@@ -133,9 +137,9 @@ export class RegistrationService {
     sambavanai: number,
     totalAmount: number,
     accommodation: string
-  }, attendanceLog: AttendanceData, giftGiven: boolean ): Observable<void> {
+  }, attendanceLog: AttendanceData, giftGiven: boolean): Observable<void> {
     const url = `${this.backendUrl}/${registrationId}/charges`;
-    
+
     // Convert numbers to strings to match BigDecimal format
     const payload = {
       travelCharge: charges.travelCharge.toString(),
@@ -145,7 +149,7 @@ export class RegistrationService {
       attendanceLog: attendanceLog,
       giftGiven: giftGiven,
     };
-    console.log("payload :",payload);
+    console.log("payload :", payload);
 
     return this.http.post<void>(url, payload).pipe(
       catchError(this.handleError)
@@ -173,21 +177,21 @@ export class RegistrationService {
     return this.http.get(`${this.backendUrl}/export/excel/bank-details`, { responseType: 'blob' })
       .pipe(
         tap(blob => {
-        saveAs(blob, 'registrations_with_bank_details.xlsx'); // Differentiated filename
-      }),
-      catchError(error => {
-        console.error('Error downloading all records Excel file:', error);
-        return throwError(() => new Error('Error downloading all records Excel file.'));
-      })
-    );
-}
+          saveAs(blob, 'registrations_with_bank_details.xlsx'); // Differentiated filename
+        }),
+        catchError(error => {
+          console.error('Error downloading all records Excel file:', error);
+          return throwError(() => new Error('Error downloading all records Excel file.'));
+        })
+      );
+  }
 
-accommodationStats(): Observable<HallOccupancy> {
-  const url = `${this.backendUrl}/halls/occupancy`;
-  return this.http.get<HallOccupancy>(url).pipe(
-    catchError(this.handleError)
-  );
-}
+  accommodationStats(): Observable<HallOccupancy> {
+    const url = `${this.backendUrl}/halls/occupancy`;
+    return this.http.get<HallOccupancy>(url).pipe(
+      catchError(this.handleError)
+    );
+  }
 
 
   /**
@@ -198,5 +202,52 @@ accommodationStats(): Observable<HallOccupancy> {
   private handleError(error: any): Observable<never> {
     console.error('API Error:', error);
     return throwError(() => new Error(error.message || 'An error occurred'));
+  }
+
+
+  /**
+ * Search registrations with pagination and filters
+ * @param params Search parameters (page, size, search, id)
+ * @returns Observable of paginated registration response
+ */
+  searchRegistrations(params: {
+    page?: number;
+    size?: number;
+    search?: string;
+    id?: string;
+  }): Observable<RegistrationListResponse> {
+    let url = `${this.backendUrl}/search?page=${params.page || 0}&size=${params.size || 50}`;
+
+    if (params.search) {
+      url += `&search=${encodeURIComponent(params.search)}`;
+    }
+    if (params.id) {
+      url += `&id=${encodeURIComponent(params.id)}`;
+    }
+
+    return this.http.get<RegistrationListResponse>(url).pipe(
+      catchError(this.handleError)
+    );
+  }
+  /**
+   * Get attendance statistics
+   * @returns Observable of AttendanceStatsDTO
+   */
+  getAttendanceStats(): Observable<AttendanceStatsDTO> {
+    const url = `${this.backendUrl}/attendance-stats`;
+    return this.http.get<AttendanceStatsDTO>(url).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Get scholar statistics (Veda and Shaka counts)
+   * @returns Observable of ScholarStatsDTO
+   */
+  getScholarStats(): Observable<ScholarStatsDTO> {
+    const url = `${this.backendUrl}/scholar-stats`;
+    return this.http.get<ScholarStatsDTO>(url).pipe(
+      catchError(this.handleError)
+    );
   }
 }

@@ -12,7 +12,7 @@
           <i class="fas fa-users"></i>
           <div class="count-info">
             <h3>Total Attendees</h3>
-            <p class="count-number">{{ attendanceRecords.length }}</p>
+            <p class="count-number">{{ totalElements }}</p>
           </div>
         </div>
       </div>
@@ -27,9 +27,35 @@
             <tr *ngFor="let day of [1,2,3,4,5]">
               <td class="day-label">Day {{day}}</td>
               <td class="session-stats">
-                <span class="session" title="Forenoon">AM: {{ getDayStats(day).fn }}</span>
-                <span class="session" title="Afternoon">PM: {{ getDayStats(day).an }}</span>
+                <span class="session" title="Forenoon">AM: {{ getDayStats(day).fn || 0 }}</span>
+                <span class="session" title="Afternoon">PM: {{ getDayStats(day).an || 0 }}</span>
               </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Scholar Stats Card (Grouped) -->
+      <div class="count-card">
+        <div class="count-card-header">
+          <h3>Scholar Statistics</h3>
+        </div>
+        <div class="scholar-stats scrollable-stats">
+          <table class="grouped-stats-table">
+            <ng-container *ngFor="let group of groupedScholarStats">
+              <!-- Veda Header Row -->
+              <tr class="veda-header">
+                <td class="stat-name veda-name">{{ group.vedaName }}</td>
+                <td class="stat-count veda-count">{{ group.totalVedaCount }}</td>
+              </tr>
+              <!-- Shaka Rows -->
+              <tr *ngFor="let shaka of group.shakas" class="shaka-row">
+                <td class="stat-name shaka-name">- {{ shaka.shakaName }}</td>
+                <td class="stat-count shaka-count">{{ shaka.count }}</td>
+              </tr>
+            </ng-container>
+            <tr *ngIf="groupedScholarStats.length === 0">
+              <td colspan="2" class="loading-text">Loading...</td>
             </tr>
           </table>
         </div>
@@ -55,23 +81,27 @@
         </div>
       </div>
       -->
-      </div>
     </div>
-    
-    <div class="header-actions">
-      <div class="search-box">
-        <!-- <i class="fas fa-search"></i> -->
-        <input type="text" [(ngModel)]="searchText" (input)="onSearchChange()" placeholder="Search by Name/Phone/Scholar/Shaka">
-      </div>
-      <div class="id-search-box">
-        <i class="fas fa-search"></i>
-        <input type="text" [(ngModel)]="idSearchText" (input)="onSearchChange()" placeholder="Search by ID">
-      </div>
-      <div class="action-buttons">
-        <button class="edit-toggle" *ngIf="checkRole() === 'ADMIN'" (click)="toggleEdit()" [class.active]="isEditing">
-          <i class="fas fa-edit"></i>
-          {{ isEditing ? 'Finish Editing' : 'Edit Mode' }}
-        </button>
+  </div>
+
+  <div class="header-actions">
+    <div class="search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" [(ngModel)]="searchText" (input)="onSearchChange()"
+        placeholder="Search by Name/Phone/Scholar/Shaka">
+      <span *ngIf="isSearching" class="spinner-border spinner-border-sm" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </span>
+    </div>
+    <div class="id-search-box">
+      <i class="fas fa-search"></i>
+      <input type="text" [(ngModel)]="idSearchText" (input)="onSearchChange()" placeholder="Search by ID">
+    </div>
+    <div class="action-buttons">
+      <button class="edit-toggle" *ngIf="checkRole() === 'ADMIN'" (click)="toggleEdit()" [class.active]="isEditing">
+        <i class="fas fa-edit"></i>
+        {{ isEditing ? 'Finish Editing' : 'Edit Mode' }}
+      </button>
       <div class="action-buttons">
         <div class="print-actions">
           <div class="date-picker-container">
@@ -81,7 +111,7 @@
               <span>to</span>
               <input type="date" [(ngModel)]="endDate" placeholder="End Date">
             </div>
-            <!-- <div class="date-picker-note">Date picker is only for Download All</div> -->
+            <div class="date-picker-note">Date picker is only for Download All</div>
           </div>
         </div>
       </div>
@@ -92,249 +122,244 @@
           <button (click)="downloadAll()" class="print-button">
             <i class="fas fa-download"></i> Download All
           </button>
-        <button (click)="exportToExcel()" class="export-button">
-          <i class="fas fa-file-export"></i> 
-          <span *ngIf="!isExporting">Export</span>
-          <span *ngIf="isExporting">
-            <i class="fas fa-spinner fa-spin"></i> Exporting...
-          </span>
-        </button>
-        <button *ngIf="checkRole() === 'ADMIN'" (click)="exportAllRecords()" class="export-button">
-          <i class="fas fa-file-export"></i> 
-          <span *ngIf="!isExportingAll">Export All</span>
-          <span *ngIf="isExportingAll">
-            <i class="fas fa-spinner fa-spin"></i> Exporting All...
-          </span>
-        </button>
+          <button (click)="exportToExcel()" class="export-button">
+            <i class="fas fa-file-export"></i>
+            <span *ngIf="!isExporting">Export</span>
+            <span *ngIf="isExporting">
+              <i class="fas fa-spinner fa-spin"></i> Exporting...
+            </span>
+          </button>
+          <button *ngIf="checkRole() === 'ADMIN'" (click)="exportAllRecords()" class="export-button">
+            <i class="fas fa-file-export"></i>
+            <span *ngIf="!isExportingAll">Export All</span>
+            <span *ngIf="isExportingAll">
+              <i class="fas fa-spinner fa-spin"></i> Exporting All...
+            </span>
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Loading State -->
-<div *ngIf="isLoading" class="loading-state">
-  <div class="spinner"></div>
-  <p>Loading attendance data...</p>
-</div>
-
-<!-- Error State -->
-<div *ngIf="errorMessage" class="error-state">
-  <div class="error-icon">
-    <i class="fas fa-exclamation-circle"></i>
-  </div>
-  <p>{{ errorMessage }}</p>
-  <button (click)="loadAttendanceData()" class="retry-button">
-    <i class="fas fa-sync-alt"></i> Retry
-  </button>
-</div>
-
-<!-- Data Table -->
-<div *ngIf="!isLoading && !errorMessage">
-    <!-- Dummy Scrollbar -->
-    <div class="scrollbar-wrapper">
-        <div class="dummy-scrollbar-container">
-            <div class="dummy-scrollbar" 
-                 (mousedown)="startDrag($event)"
-                 (touchstart)="startDrag($event); false">
-                <div class="dummy-scrollbar-thumb" 
-                     [style.left.px]="scrollThumbPosition" 
-                     (mousedown)="startDrag($event, true); $event.stopPropagation()"
-                     (touchstart)="startDrag($event, true); $event.stopPropagation(); false">
-                </div>
-            </div>
-        </div>
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading attendance data...</p>
     </div>
-    
-    <div class="table-responsive">
-    
-    <table #dataTable class="attendance-table">
-      <thead>
-        <tr >
-          <th>#</th>
-          <th>Regn ID</th>
-          <th>Name</th>
-          <th>Phone</th>
-          <th *ngIf="checkRole() === 'ADMIN'">Aadhaar</th>
-          <th>Scholar</th>
-          <th>Shaka</th>
-          <th>Reg. Date</th>
-          <th colspan="2"> <div>Day 1</div>
-            <div style="font-size: 0.8em; font-weight: normal;">26-11-2025</div>
-         </th>
-          <th colspan="2"> <div>Day 2</div>
-            <div style="font-size: 0.8em; font-weight: normal;">27-11-2025</div>
-         </th>
-          <th colspan="2"> <div>Day 3</div>
-            <div style="font-size: 0.8em; font-weight: normal;">28-11-2025</div>
-         </th>
-          <th colspan="2"> <div>Day 4</div>
-            <div style="font-size: 0.8em; font-weight: normal;">29-11-2025</div>
-         </th>
-          <th colspan="2"> <div>Day 5</div>
-            <div style="font-size: 0.8em; font-weight: normal;">30-11-2025</div>
-         </th>
-          <!-- <th>Print</th> -->
-          <th>Download</th>
-          <th>Gift</th>
-          <!-- <th *ngIf="checkRole() === 'ADMIN'">Accommodation</th> -->
-          <th *ngIf="checkRole() === 'ADMIN'">Travel Charges</th>
-          <th *ngIf="checkRole() === 'ADMIN'">Sambavanai</th>
-          <th *ngIf="checkRole() === 'ADMIN'">Total Amount</th>
-        </tr>
-        <tr class="sub-header">
-          <th colspan="8"></th>
-          <th>FN</th><th>AN</th>
-          <th>FN</th><th>AN</th>
-          <th>FN</th><th>AN</th>
-          <th>FN</th><th>AN</th>
-          <th>FN</th><th>AN</th>
-          <th></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let record of paginatedRecords; let i = index">
-          <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
-          <td>{{ record.registration.id | padNumber:4 }}</td>
-          <td>{{ record.registration.fullName }}</td>
-          <td>{{ record.registration.phone }}</td>
-          <td *ngIf="checkRole() === 'ADMIN'">{{ record.registration.aadhaar }}</td>
-          <td>{{ record.registration.scholarIn }}</td>
-          <td>{{ record.registration.sakai }}</td>
-          <td>{{ record.registration.registrationDate | date: 'dd/MM/yyyy' }}</td>
-          
-          
-          <!-- Day 1 -->
-          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day1FnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewModeday1Fn">
-            <input type="checkbox" 
-                   [ngModel]="record?.attendanceAndGifts?.day1FnAttendance"
-                   (ngModelChange)="onDayAttendanceChange(record, $event, 'day1','FN')"
-                   [disabled]="!isEditing"
-                   >
-          </ng-container>
-          <ng-template #viewModeday1Fn>
-           {{ record?.attendanceAndGifts?.day1FnAttendance === true ? '✓' : '' }}
-          </ng-template></td>
-          
-          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day1AnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewModeday1An">
-              <input type="checkbox" 
-                     [ngModel]="record?.attendanceAndGifts?.day1AnAttendance"
-                     (ngModelChange)="onDayAttendanceChange(record, $event, 'day1','AN')"
-                     [disabled]="!isEditing"
-                     >
-            </ng-container>
-            <ng-template #viewModeday1An>{{ record?.attendanceAndGifts?.day1AnAttendance === true ? '✓' : '' }}</ng-template>
-          </td>
-          
-          <!-- Day 2 -->
-          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day2FnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewModeday2Fn">
-              <input type="checkbox" 
-                     [ngModel]="record?.attendanceAndGifts?.day2FnAttendance"
-                     (ngModelChange)="onDayAttendanceChange(record, $event, 'day2','FN')"
-                     [disabled]="!isEditing"
-                     >
-            </ng-container>
-            <ng-template #viewModeday2Fn>{{ record?.attendanceAndGifts?.day2FnAttendance === true ? '✓' : '' }}</ng-template>
-          </td>
-          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day2AnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewModeday2An">
-              <input type="checkbox" 
-                     [ngModel]="record?.attendanceAndGifts?.day2AnAttendance"
-                     (ngModelChange)="onDayAttendanceChange(record, $event, 'day2','AN')"
-                     [disabled]="!isEditing"
-                     >
-            </ng-container>
-            <ng-template #viewModeday2An>{{ record?.attendanceAndGifts?.day2AnAttendance === true ? '✓' : '' }}</ng-template>
-          </td>
-          
-          <!-- Day 3 -->
-          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day3FnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewModeday3Fn">
-              <input type="checkbox" 
-                     [ngModel]="record?.attendanceAndGifts?.day3FnAttendance"
-                     (ngModelChange)="onDayAttendanceChange(record, $event, 'day3','FN')"
-                     [disabled]="!isEditing"
-                     >
-            </ng-container>
-            <ng-template #viewModeday3Fn>{{ record?.attendanceAndGifts?.day3FnAttendance === true ? '✓' : '' }}</ng-template>
-          </td>
-          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day3AnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewModeday3An">
-              <input type="checkbox" 
-                     [ngModel]="record?.attendanceAndGifts?.day3AnAttendance"
-                     (ngModelChange)="onDayAttendanceChange(record, $event, 'day3','AN')"
-                     [disabled]="!isEditing"
-                     >
-            </ng-container>
-            <ng-template #viewModeday3An>{{ record?.attendanceAndGifts?.day3AnAttendance === true ? '✓' : '' }}</ng-template>
-          </td>
-          
-          <!-- Day 4 -->
-          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day4FnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewModeday4Fn">
-              <input type="checkbox" 
-                     [ngModel]="record?.attendanceAndGifts?.day4FnAttendance"
-                     (ngModelChange)="onDayAttendanceChange(record, $event, 'day4','FN')"
-                     [disabled]="!isEditing"
-                     >
-            </ng-container>
-            <ng-template #viewModeday4Fn>{{ record?.attendanceAndGifts?.day4FnAttendance === true ? '✓' : '' }}</ng-template>
-          </td>
-          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day4AnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewModeday4An">
-              <input type="checkbox" 
-                     [ngModel]="record?.attendanceAndGifts?.day4AnAttendance"
-                     (ngModelChange)="onDayAttendanceChange(record, $event, 'day4','AN')"
-                     [disabled]="!isEditing"
-                     >
-            </ng-container>
-            <ng-template #viewModeday4An>{{ record?.attendanceAndGifts?.day4AnAttendance === true ? '✓' : '' }}</ng-template>
-          </td>
-          
-          <!-- Day 5 -->
-          <td aria-readonly="true" [class.present]="record ?.attendanceAndGifts?.day5FnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewModeday5Fn">
-              <input type="checkbox" 
-                     [ngModel]="record?.attendanceAndGifts?.day5FnAttendance"
-                     (ngModelChange)="onDayAttendanceChange(record, $event, 'day5','FN')"
-                     [disabled]="!isEditing"
-                     >
-            </ng-container>
-            <ng-template #viewModeday5Fn>{{ record?.attendanceAndGifts?.day5FnAttendance === true ? '✓' : '' }}</ng-template>
-          </td>
-          <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day5AnAttendance" class="attendance-cell">
-            <ng-container *ngIf="isEditing; else viewModeday5An">
-              <input type="checkbox" 
-                     [ngModel]="record?.attendanceAndGifts?.day5AnAttendance"
-                     (ngModelChange)="onDayAttendanceChange(record, $event, 'day5','AN')"
-                     [disabled]="!isEditing"
-                     >
-            </ng-container>
-            <ng-template #viewModeday5An>{{ record?.attendanceAndGifts?.day5AnAttendance === true ? '✓' : '' }}</ng-template>
-          </td>
-          
-          <td class="print-cell">
-            <!-- <button (click)="printIdCard(record)" class="print-button" title="Download ID Card" [disabled]="isLoading"></button> -->
-              
-            <button (click)="downloadIdCard(record)" class="print-button" title="Download ID Card" [disabled]="isLoading">
-              <i class="fas fa-id-card"></i> Download ID
-            </button>
-          </td>
-          <td class="gift-cell" [class.present]="record?.attendanceAndGifts?.giftGiven" aria-readonly="true">
-           
-            <ng-container *ngIf="isEditing; else viewGiftGiven">
-              <input type="checkbox" 
-                     [ngModel]="record?.attendanceAndGifts?.giftGiven"
-                     (ngModelChange)="onGiftGiven(record, $event)"
-                     [disabled]="!isEditing"
-                     >
-          </ng-container>
-          <ng-template #viewGiftGiven>{{ record?.attendanceAndGifts?.giftGiven === true ? '🎁' : '' }}</ng-template>
-          </td>
 
-          <!-- <td *ngIf="checkRole() === 'ADMIN'">
+    <!-- Error State -->
+    <div *ngIf="errorMessage" class="error-state">
+      <div class="error-icon">
+        <i class="fas fa-exclamation-circle"></i>
+      </div>
+      <p>{{ errorMessage }}</p>
+      <button (click)="loadAttendanceData()" class="retry-button">
+        <i class="fas fa-sync-alt"></i> Retry
+      </button>
+    </div>
+
+    <!-- Data Table -->
+    <div *ngIf="!isLoading && !errorMessage">
+      <!-- Dummy Scrollbar -->
+      <div class="scrollbar-wrapper">
+        <div class="dummy-scrollbar-container">
+          <div class="dummy-scrollbar" (mousedown)="startDrag($event)" (touchstart)="startDrag($event); false">
+            <div class="dummy-scrollbar-thumb" [style.left.px]="scrollThumbPosition"
+              (mousedown)="startDrag($event, true); $event.stopPropagation()"
+              (touchstart)="startDrag($event, true); $event.stopPropagation(); false">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+
+        <table #dataTable class="attendance-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Regn ID</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th *ngIf="checkRole() === 'ADMIN'">Aadhaar</th>
+              <th>Scholar</th>
+              <th>Shaka</th>
+              <th>Reg. Date</th>
+              <th colspan="2">
+                <div>Day 1</div>
+                <div style="font-size: 0.8em; font-weight: normal;">26-11-2025</div>
+              </th>
+              <th colspan="2">
+                <div>Day 2</div>
+                <div style="font-size: 0.8em; font-weight: normal;">27-11-2025</div>
+              </th>
+              <th colspan="2">
+                <div>Day 3</div>
+                <div style="font-size: 0.8em; font-weight: normal;">28-11-2025</div>
+              </th>
+              <th colspan="2">
+                <div>Day 4</div>
+                <div style="font-size: 0.8em; font-weight: normal;">29-11-2025</div>
+              </th>
+              <th colspan="2">
+                <div>Day 5</div>
+                <div style="font-size: 0.8em; font-weight: normal;">30-11-2025</div>
+              </th>
+              <!-- <th>Print</th> -->
+              <th>Download</th>
+              <th>Gift</th>
+              <!-- <th *ngIf="checkRole() === 'ADMIN'">Accommodation</th> -->
+              <th *ngIf="checkRole() === 'ADMIN'">Travel Charges</th>
+              <th *ngIf="checkRole() === 'ADMIN'">Sambavanai</th>
+              <th *ngIf="checkRole() === 'ADMIN'">Total Amount</th>
+              <th *ngIf="checkRole() === 'ADMIN'">Passbook</th>
+            </tr>
+            <tr class="sub-header">
+              <th colspan="8"></th>
+              <th>FN</th>
+              <th>AN</th>
+              <th>FN</th>
+              <th>AN</th>
+              <th>FN</th>
+              <th>AN</th>
+              <th>FN</th>
+              <th>AN</th>
+              <th>FN</th>
+              <th>AN</th>
+              <!-- <th></th> -->
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let record of filteredRecords; let i = index">
+              <td>{{ (currentPageNumber * pageSize) + i + 1 }}</td>
+              <td>{{ record.registration.id | padNumber:4 }}</td>
+              <td>{{ record.registration.fullName }}</td>
+              <td>{{ record.registration.phone }}</td>
+              <td *ngIf="checkRole() === 'ADMIN'">{{ record.registration.aadhaar }}</td>
+              <td>{{ record.registration.scholarIn }}</td>
+              <td>{{ record.registration.sakai }}</td>
+              <td>{{ record.registration.registrationDate | date: 'dd/MM/yyyy' }}</td>
+
+
+              <!-- Day 1 -->
+              <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day1FnAttendance"
+                class="attendance-cell">
+                <ng-container *ngIf="isEditing; else viewModeday1Fn">
+                  <input type="checkbox" [ngModel]="record?.attendanceAndGifts?.day1FnAttendance"
+                    (ngModelChange)="onDayAttendanceChange(record, $event, 'day1','FN')" [disabled]="!isEditing">
+                </ng-container>
+                <ng-template #viewModeday1Fn>
+                  {{ record?.attendanceAndGifts?.day1FnAttendance === true ? '✓' : '' }}
+                </ng-template>
+              </td>
+
+              <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day1AnAttendance"
+                class="attendance-cell">
+                <ng-container *ngIf="isEditing; else viewModeday1An">
+                  <input type="checkbox" [ngModel]="record?.attendanceAndGifts?.day1AnAttendance"
+                    (ngModelChange)="onDayAttendanceChange(record, $event, 'day1','AN')" [disabled]="!isEditing">
+                </ng-container>
+                <ng-template #viewModeday1An>{{ record?.attendanceAndGifts?.day1AnAttendance === true ? '✓' : ''
+                  }}</ng-template>
+              </td>
+
+              <!-- Day 2 -->
+              <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day2FnAttendance"
+                class="attendance-cell">
+                <ng-container *ngIf="isEditing; else viewModeday2Fn">
+                  <input type="checkbox" [ngModel]="record?.attendanceAndGifts?.day2FnAttendance"
+                    (ngModelChange)="onDayAttendanceChange(record, $event, 'day2','FN')" [disabled]="!isEditing">
+                </ng-container>
+                <ng-template #viewModeday2Fn>{{ record?.attendanceAndGifts?.day2FnAttendance === true ? '✓' : ''
+                  }}</ng-template>
+              </td>
+              <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day2AnAttendance"
+                class="attendance-cell">
+                <ng-container *ngIf="isEditing; else viewModeday2An">
+                  <input type="checkbox" [ngModel]="record?.attendanceAndGifts?.day2AnAttendance"
+                    (ngModelChange)="onDayAttendanceChange(record, $event, 'day2','AN')" [disabled]="!isEditing">
+                </ng-container>
+                <ng-template #viewModeday2An>{{ record?.attendanceAndGifts?.day2AnAttendance === true ? '✓' : ''
+                  }}</ng-template>
+              </td>
+
+              <!-- Day 3 -->
+              <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day3FnAttendance"
+                class="attendance-cell">
+                <ng-container *ngIf="isEditing; else viewModeday3Fn">
+                  <input type="checkbox" [ngModel]="record?.attendanceAndGifts?.day3FnAttendance"
+                    (ngModelChange)="onDayAttendanceChange(record, $event, 'day3','FN')" [disabled]="!isEditing">
+                </ng-container>
+                <ng-template #viewModeday3Fn>{{ record?.attendanceAndGifts?.day3FnAttendance === true ? '✓' : ''
+                  }}</ng-template>
+              </td>
+              <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day3AnAttendance"
+                class="attendance-cell">
+                <ng-container *ngIf="isEditing; else viewModeday3An">
+                  <input type="checkbox" [ngModel]="record?.attendanceAndGifts?.day3AnAttendance"
+                    (ngModelChange)="onDayAttendanceChange(record, $event, 'day3','AN')" [disabled]="!isEditing">
+                </ng-container>
+                <ng-template #viewModeday3An>{{ record?.attendanceAndGifts?.day3AnAttendance === true ? '✓' : ''
+                  }}</ng-template>
+              </td>
+
+              <!-- Day 4 -->
+              <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day4FnAttendance"
+                class="attendance-cell">
+                <ng-container *ngIf="isEditing; else viewModeday4Fn">
+                  <input type="checkbox" [ngModel]="record?.attendanceAndGifts?.day4FnAttendance"
+                    (ngModelChange)="onDayAttendanceChange(record, $event, 'day4','FN')" [disabled]="!isEditing">
+                </ng-container>
+                <ng-template #viewModeday4Fn>{{ record?.attendanceAndGifts?.day4FnAttendance === true ? '✓' : ''
+                  }}</ng-template>
+              </td>
+              <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day4AnAttendance"
+                class="attendance-cell">
+                <ng-container *ngIf="isEditing; else viewModeday4An">
+                  <input type="checkbox" [ngModel]="record?.attendanceAndGifts?.day4AnAttendance"
+                    (ngModelChange)="onDayAttendanceChange(record, $event, 'day4','AN')" [disabled]="!isEditing">
+                </ng-container>
+                <ng-template #viewModeday4An>{{ record?.attendanceAndGifts?.day4AnAttendance === true ? '✓' : ''
+                  }}</ng-template>
+              </td>
+
+              <!-- Day 5 -->
+              <td aria-readonly="true" [class.present]="record ?.attendanceAndGifts?.day5FnAttendance"
+                class="attendance-cell">
+                <ng-container *ngIf="isEditing; else viewModeday5Fn">
+                  <input type="checkbox" [ngModel]="record?.attendanceAndGifts?.day5FnAttendance"
+                    (ngModelChange)="onDayAttendanceChange(record, $event, 'day5','FN')" [disabled]="!isEditing">
+                </ng-container>
+                <ng-template #viewModeday5Fn>{{ record?.attendanceAndGifts?.day5FnAttendance === true ? '✓' : ''
+                  }}</ng-template>
+              </td>
+              <td aria-readonly="true" [class.present]="record?.attendanceAndGifts?.day5AnAttendance"
+                class="attendance-cell">
+                <ng-container *ngIf="isEditing; else viewModeday5An">
+                  <input type="checkbox" [ngModel]="record?.attendanceAndGifts?.day5AnAttendance"
+                    (ngModelChange)="onDayAttendanceChange(record, $event, 'day5','AN')" [disabled]="!isEditing">
+                </ng-container>
+                <ng-template #viewModeday5An>{{ record?.attendanceAndGifts?.day5AnAttendance === true ? '✓' : ''
+                  }}</ng-template>
+              </td>
+
+              <td class="print-cell">
+                <button (click)="downloadIdCard(record)" class="print-button" title="Download ID Card"
+                  [disabled]="isLoading">
+                  <i class="fas fa-id-card"></i> Download ID
+                </button>
+              </td>
+              <td class="gift-cell" [class.present]="record?.attendanceAndGifts?.giftGiven" aria-readonly="true">
+
+                <ng-container *ngIf="isEditing; else viewGiftGiven">
+                  <input type="checkbox" [ngModel]="record?.attendanceAndGifts?.giftGiven"
+                    (ngModelChange)="onGiftGiven(record, $event)" [disabled]="!isEditing">
+                </ng-container>
+                <ng-template #viewGiftGiven>{{ record?.attendanceAndGifts?.giftGiven === true ? '🎁' : ''
+                  }}</ng-template>
+              </td>
+
+              <!-- <td *ngIf="checkRole() === 'ADMIN'">
             <ng-container *ngIf="isEditing; else viewAccommodation">
               <select [ngModel]="record?.attendanceAndGifts?.accommodation" 
                     (ngModelChange)="onAccommodationChange(record, $event)"
@@ -346,62 +371,84 @@
               {{ record?.attendanceAndGifts?.accommodation || 'N/A' }}
             </ng-template>
           </td> -->
-          
-            <!--Admin only columns-->
-          <td *ngIf="checkRole() === 'ADMIN'">
-            
-            <ng-container *ngIf="isEditing; else viewTravelCharge">
-            <input type="number" [ngModel]="record?.attendanceAndGifts?.travelCharge ?? 0"
-            (ngModelChange)="onTravelChange(record, $event)"
-             class="editable-field">
-          </ng-container>
-          <ng-template #viewTravelCharge>{{ record?.attendanceAndGifts?.travelCharge ?? 0 }}</ng-template>
-          </td>
-          <td *ngIf="checkRole() === 'ADMIN'">
-            <ng-container *ngIf="isEditing; else viewSambavanai">
-            <input type="number" [ngModel]="record?.attendanceAndGifts?.sambavanai ?? 0"
-            (ngModelChange)="onSambavanaiChange(record, $event)"
-             class="editable-field">
-          </ng-container>
-          <ng-template #viewSambavanai>{{ record?.attendanceAndGifts?.sambavanai ?? 0 }}</ng-template>
-          </td>
-          <td *ngIf="checkRole() === 'ADMIN'">
-              <ng-container *ngIf="isEditing; else viewTotalAmount">
-            <span class="total-amount">{{ record?.attendanceAndGifts?.totalAmount ?? 0 }}</span>
-          </ng-container>
-          <ng-template #viewTotalAmount>{{ record?.attendanceAndGifts?.totalAmount ?? 0 }}</ng-template>
-          </td>
-          <td *ngIf="checkRole() === 'ADMIN' && isEditing">
-            <button (click)="updateTravelCharges(record)" class="update-button">Update</button>
-          </td>
-          <td *ngIf="checkRole() === 'ADMIN'">
-            <button (click)="deleteRegistration(record.registration.id)" class="delete-button">
-              <i class="fas fa-trash"></i>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  
-  <!-- Pagination -->
-  <div class="pagination-container" *ngIf="!isLoading && !errorMessage">
-    <div class="pagination-info">
-      Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to 
-      {{ getEndIndex() }} of 
-      {{ filteredRecords.length }} entries
-    </div>
-    <div class="pagination-controls">
-      <button [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)">
-        <i class="fas fa-chevron-left"></i> Previous
-      </button>
-      <span class="page-info">
-        Page {{ currentPage }} of {{ totalPages }}
-      </span>
-      <button [disabled]="currentPage === totalPages" (click)="onPageChange(currentPage + 1)">
-        Next <i class="fas fa-chevron-right"></i>
-      </button>
+
+              <!--Admin only columns-->
+              <td *ngIf="checkRole() === 'ADMIN'">
+
+                <ng-container *ngIf="isEditing; else viewTravelCharge">
+                  <input type="number" [ngModel]="record?.attendanceAndGifts?.travelCharge ?? 0"
+                    (ngModelChange)="onTravelChange(record, $event)" class="editable-field">
+                </ng-container>
+                <ng-template #viewTravelCharge>{{ record?.attendanceAndGifts?.travelCharge ?? 0 }}</ng-template>
+              </td>
+              <td *ngIf="checkRole() === 'ADMIN'">
+                <ng-container *ngIf="isEditing; else viewSambavanai">
+                  <input type="number" [ngModel]="record?.attendanceAndGifts?.sambavanai ?? 0"
+                    (ngModelChange)="onSambavanaiChange(record, $event)" class="editable-field">
+                </ng-container>
+                <ng-template #viewSambavanai>{{ record?.attendanceAndGifts?.sambavanai ?? 0 }}</ng-template>
+              </td>
+              <td *ngIf="checkRole() === 'ADMIN'">
+                <ng-container *ngIf="isEditing; else viewTotalAmount">
+                  <span class="total-amount">{{ record?.attendanceAndGifts?.totalAmount ?? 0 }}</span>
+                </ng-container>
+                <ng-template #viewTotalAmount>{{ record?.attendanceAndGifts?.totalAmount ?? 0 }}</ng-template>
+              </td>
+              <td *ngIf="checkRole() === 'ADMIN'">
+                <button (click)="viewPassbookImage(record)" class="print-button" title="View Passbook">
+                  <i class="fas fa-image"></i> View
+                </button>
+              </td>
+              <td *ngIf="checkRole() === 'ADMIN' && isEditing">
+                <button (click)="updateTravelCharges(record)" class="update-button">Update</button>
+              </td>
+              <td *ngIf="checkRole() === 'ADMIN'">
+                <button (click)="deleteRegistration(record.registration.id)" class="delete-button">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination-container" *ngIf="!isLoading && !errorMessage">
+        <div class="pagination-info">
+          Showing {{ (currentPageNumber * pageSize) + 1 }} to
+          {{ getEndIndex() }} of
+          {{ totalElements }} records (Page {{ currentPage }} of {{ totalPages }})
+        </div>
+        <div class="pagination-controls">
+          <button [disabled]="currentPage === 1" (click)="goToFirstPage()" title="First Page">
+            <i class="fas fa-angle-double-left"></i>
+          </button>
+          <button [disabled]="currentPage === 1" (click)="previousPage()">
+            <i class="fas fa-chevron-left"></i> Previous
+          </button>
+          <span class="page-info">
+            Page {{ currentPage }} of {{ totalPages }}
+          </span>
+          <button [disabled]="currentPage === totalPages" (click)="nextPage()">
+            Next <i class="fas fa-chevron-right"></i>
+          </button>
+          <button [disabled]="currentPage === totalPages" (click)="goToLastPage()" title="Last Page">
+            <i class="fas fa-angle-double-right"></i>
+          </button>
     </div>
   </div>
 </div>
 
+<!-- Image Modal -->
+<div class="image-modal-overlay" *ngIf="showImageModal" (click)="closeImageModal()">
+  <div class="image-modal-content" (click)="$event.stopPropagation()">
+    <div class="image-modal-header">
+      <h3>Passbook Image</h3>
+      <button class="close-btn" (click)="closeImageModal()">×</button>
+    </div>
+    <div class="image-modal-body">
+      <img *ngIf="selectedImageUrl" [src]="selectedImageUrl" [alt]="selectedImageAlt" 
+           onerror="this.onerror=null; this.src=''; this.alt='Failed to load image';">
+    </div>
+  </div>
+</div>
