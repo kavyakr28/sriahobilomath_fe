@@ -13,7 +13,7 @@
       <span>On-Spot Registration</span>
     </button>
     
-    <button (click)="onAttendanceManagement()" class="action-button">
+    <button *ngIf="checkRole() === 'ADMIN'" (click)="onAttendanceManagement()" class="action-button">
       <span>Attendance Management</span>
     </button>
     
@@ -24,6 +24,10 @@
     
     <button (click)="onQRScanGifts()" class="action-button">
       <span>QR Scan for Gifts</span>
+    </button>
+
+    <button (click)="onManualEntry()" class="action-button">
+      <span>Manual Entry(ID/Gifts)</span>
     </button>
   </div>
 

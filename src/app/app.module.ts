@@ -9,6 +9,8 @@ import { RegistrationService } from './services/registration.service';
 import { AuthService } from './services/auth.service';
 import { AppComponent } from './app.component';
 
+import { RouterModule } from '@angular/router';
+
 // Material Modules
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -30,6 +32,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { SignupComponent } from './admin/signup/signup.component';
 import { AttendanceManagementModule } from './admin/attendance-management/attendance-management.module';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
   declarations: [
@@ -49,6 +52,7 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     AttendanceManagementModule,
     // Shared Module
     SharedModule,
+    RouterModule,
     // Material Modules
     MatFormFieldModule,
     MatInputModule,
@@ -62,7 +66,13 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     MatSnackBarModule,
     MatDialogModule,
     ZXingScannerModule,
-    SharedModule,
+    ToastrModule.forRoot({
+      positionClass: 'toast-top-center',
+      timeOut: 3000,
+      closeButton: true,
+      progressBar: true,
+      tapToDismiss: true
+    })
   ],
   providers: [
     RegistrationService,

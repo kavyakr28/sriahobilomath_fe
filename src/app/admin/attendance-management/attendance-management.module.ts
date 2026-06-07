@@ -1,23 +1,18 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-
 import { AttendanceManagementComponent } from './attendance-management.component';
 
+const routes = [
+  {
+    path: '',
+    component: AttendanceManagementComponent
+  }
+];
+
 @NgModule({
-  declarations: [
-    AttendanceManagementComponent
-  ],
   imports: [
-    CommonModule,
-    FormsModule,
-    RouterModule.forChild([
-      { path: '', component: AttendanceManagementComponent }
-    ])
-  ],
-  exports: [
-    AttendanceManagementComponent
+    AttendanceManagementComponent,
+    RouterModule.forChild(routes)
   ]
 })
 export class AttendanceManagementModule { }

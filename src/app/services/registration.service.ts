@@ -1,13 +1,35 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, catchError, throwError, map } from 'rxjs';
-import { RegistrationFormData } from '../models/registration-form-data.model';
+import { Observable, catchError, throwError, map, tap } from 'rxjs';
+import { AttendanceData, RegistrationFormData, RegistrationListResponse } from '../models/registration-form-data.model';
+import { saveAs } from 'file-saver';
+import { aadhaarCheck } from '../models/aadhaarCheck';
+import { HallOccupancy } from '../models/HallOccupancy';
+
+
+
 
 @Injectable({
   providedIn: 'root'
 })
+
+
 export class RegistrationService {
   private backendUrl = '/api/registrations'; // Your backend API endpoint
+
+  /**
+   * Delete a registration by ID
+   * @param id The ID of the registration to delete
+   * @returns Observable with the delete confirmation message
+   */
+  deleteRegistration(id: number): Observable<string> {
+    console.log("Deleting registration with ID:", id);
+    const url = `${this.backendUrl}/delete/${id}`;
+    return this.http.delete(url, { responseType: 'text' }).pipe(
+      map(response => response as string),
+      catchError(this.handleError)
+    );
+  }
 
   constructor(private http: HttpClient) {}
 
@@ -32,10 +54,13 @@ export class RegistrationService {
    * @param aadhaar Aadhaar number to check
    * @returns Observable with boolean indicating if Aadhaar exists
    */
-  checkAadhaar(aadhaar: string): Observable<boolean> {
+  checkAadhaar(aadhaar: string): Observable<aadhaarCheck> {
     const url = `${this.backendUrl}/check-aadhaar?aadhaarNumber=${aadhaar}`;
-    return this.http.get<{ exists: boolean }>(url).pipe(
-      map(response => response.exists),
+    return this.http.get<aadhaarCheck>(url).pipe(
+      map(response => {
+        console.log("Response in service", response);
+        return response;
+      }),
       catchError(this.handleError)
     );
   }
@@ -43,6 +68,13 @@ export class RegistrationService {
   getRegistrations(): Observable<RegistrationFormData[]> {
     const url = `${this.backendUrl}/all`;
     return this.http.get<RegistrationFormData[]>(url).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  getAllRegistrations(): Observable<RegistrationListResponse> {
+    const url = `${this.backendUrl}/all-records`;
+    return this.http.get<RegistrationListResponse>(url).pipe(
       catchError(this.handleError)
     );
   }
@@ -66,6 +98,97 @@ export class RegistrationService {
       catchError(this.handleError)
     );
   }
+
+  /**
+   * QR Image Generation Call
+   * @param id Registration ID
+   * @returns Observable with the QR image
+   */
+  getQRImage(id:number): Observable<any> {
+    const url = `${this.backendUrl}/${id}/qr-code`;
+    return this.http.get(url, { responseType: 'blob' }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+
+  /**
+   * get list of IDs
+   */
+  getAllIds(startDate: string, endDate: string): Observable<any> {
+    const url = `${this.backendUrl}/attendance-between-dates?startDate=${startDate}&endDate=${endDate}`;
+    return this.http.get<any>(url).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Update travel charges, sambavanai, and total amount for a registration
+   * @param registrationId The ID of the registration to update
+   * @param charges Object containing travelCharge, sambavanai, and totalAmount
+   * @returns Observable that completes when the update is successful
+   */
+  updateCharges(registrationId: number, charges: {
+    travelCharge: number,
+    sambavanai: number,
+    totalAmount: number,
+    accommodation: string
+  }, attendanceLog: AttendanceData, giftGiven: boolean ): Observable<void> {
+    const url = `${this.backendUrl}/${registrationId}/charges`;
+    
+    // Convert numbers to strings to match BigDecimal format
+    const payload = {
+      travelCharge: charges.travelCharge.toString(),
+      sambavanai: charges.sambavanai.toString(),
+      totalAmount: charges.totalAmount.toString(),
+      accommodation: charges.accommodation.toString(),
+      attendanceLog: attendanceLog,
+      giftGiven: giftGiven,
+    };
+    console.log("payload :",payload);
+
+    return this.http.post<void>(url, payload).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  exportRegistrationsToExcel(): Observable<Blob> {
+    return this.http.get(`${this.backendUrl}/export/excel`, { responseType: 'blob' })
+      .pipe(
+        tap((blob: Blob) => {
+          // Use file-saver to trigger the download
+          // The filename here will be "registrations_export.csv" as set by the backend
+          saveAs(blob, 'registrations.xlsx');
+        }),
+        catchError(error => {
+          console.error('Error downloading the Excel file:', error);
+          // Re-throw the error to be handled by the component
+          return throwError(() => new Error('Error downloading Excel file.'));
+        })
+      );
+  }
+
+
+  exportRegistrationsToExcelAll(): Observable<Blob> {
+    return this.http.get(`${this.backendUrl}/export/excel/bank-details`, { responseType: 'blob' })
+      .pipe(
+        tap(blob => {
+        saveAs(blob, 'registrations_with_bank_details.xlsx'); // Differentiated filename
+      }),
+      catchError(error => {
+        console.error('Error downloading all records Excel file:', error);
+        return throwError(() => new Error('Error downloading all records Excel file.'));
+      })
+    );
+}
+
+accommodationStats(): Observable<HallOccupancy> {
+  const url = `${this.backendUrl}/halls/occupancy`;
+  return this.http.get<HallOccupancy>(url).pipe(
+    catchError(this.handleError)
+  );
+}
+
 
   /**
    * Handle HTTP errors

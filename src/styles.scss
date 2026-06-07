@@ -1,3 +1,4 @@
+
 /* You can add global styles to this file, and also import other style files */
 body {
   margin: 0;
@@ -12,3 +13,17 @@ body {
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.toast-container {
+  margin-top: 20px;
+  
+  .ngx-toastr {
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    
+    &:hover {
+      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    }
+  }
+}
+
