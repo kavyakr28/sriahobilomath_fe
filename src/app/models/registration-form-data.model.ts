@@ -36,6 +36,7 @@ export interface RegistrationFormData {
   accommodation?: string;
   passbookImageBase64?: string;
   passbookImageContentType?: string;
+  hasPassbookImage?: boolean;
 }
 
 export interface Registration {
