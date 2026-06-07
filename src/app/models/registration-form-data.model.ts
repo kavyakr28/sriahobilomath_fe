@@ -132,6 +132,9 @@ export interface AttendanceStatsDTO {
 }
 
 export interface ScholarStatsDTO {
-  vedaStats: { [key: string]: number };
-  shakaStats: { [key: string]: number };
+  groupedStats: {
+    [vedaKey: string]: {
+      [shakaKey: string]: number;
+    };
+  };
 }

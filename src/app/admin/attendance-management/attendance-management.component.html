@@ -35,36 +35,26 @@
         </div>
       </div>
 
-      <!-- Veda Stats Card -->
+      <!-- Scholar Stats Card (Grouped) -->
       <div class="count-card">
         <div class="count-card-header">
-          <h3>Veda Statistics</h3>
+          <h3>Scholar Statistics</h3>
         </div>
         <div class="scholar-stats scrollable-stats">
-          <table>
-            <tr *ngFor="let stat of vedaStatsList">
-              <td class="stat-name">{{ stat.name }}</td>
-              <td class="stat-count">{{ stat.count }}</td>
-            </tr>
-            <tr *ngIf="vedaStatsList.length === 0">
-              <td colspan="2" class="loading-text">Loading...</td>
-            </tr>
-          </table>
-        </div>
-      </div>
-
-      <!-- Shaka Stats Card -->
-      <div class="count-card">
-        <div class="count-card-header">
-          <h3>Shaka Statistics</h3>
-        </div>
-        <div class="scholar-stats scrollable-stats">
-          <table>
-            <tr *ngFor="let stat of shakaStatsList">
-              <td class="stat-name">{{ stat.name }}</td>
-              <td class="stat-count">{{ stat.count }}</td>
-            </tr>
-            <tr *ngIf="shakaStatsList.length === 0">
+          <table class="grouped-stats-table">
+            <ng-container *ngFor="let group of groupedScholarStats">
+              <!-- Veda Header Row -->
+              <tr class="veda-header">
+                <td class="stat-name veda-name">{{ group.vedaName }}</td>
+                <td class="stat-count veda-count">{{ group.totalVedaCount }}</td>
+              </tr>
+              <!-- Shaka Rows -->
+              <tr *ngFor="let shaka of group.shakas" class="shaka-row">
+                <td class="stat-name shaka-name">- {{ shaka.shakaName }}</td>
+                <td class="stat-count shaka-count">{{ shaka.count }}</td>
+              </tr>
+            </ng-container>
+            <tr *ngIf="groupedScholarStats.length === 0">
               <td colspan="2" class="loading-text">Loading...</td>
             </tr>
           </table>

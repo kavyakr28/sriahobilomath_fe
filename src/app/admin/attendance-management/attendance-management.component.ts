@@ -413,8 +413,11 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
     });
   }
 
-  vedaStatsList: { name: string, count: number }[] = [];
-  shakaStatsList: { name: string, count: number }[] = [];
+  groupedScholarStats: {
+    vedaName: string;
+    totalVedaCount: number;
+    shakas: { shakaName: string; count: number }[];
+  }[] = [];
 
   scholarLabels: { [key: string]: string } = {
     'rig_veda': 'Rig Vedam',
@@ -458,17 +461,25 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
   loadScholarStats() {
     this.registrationService.getScholarStats().subscribe({
       next: (stats: ScholarStatsDTO) => {
-        if (stats && stats.vedaStats) {
-          this.vedaStatsList = Object.keys(stats.vedaStats).map(key => ({
-            name: this.scholarLabels[key] || key,
-            count: stats.vedaStats[key]
-          })).sort((a, b) => b.count - a.count);
-        }
-        if (stats && stats.shakaStats) {
-          this.shakaStatsList = Object.keys(stats.shakaStats).map(key => ({
-            name: this.shakaLabels[key] || key,
-            count: stats.shakaStats[key]
-          })).sort((a, b) => b.count - a.count);
+        if (stats && stats.groupedStats) {
+          this.groupedScholarStats = Object.keys(stats.groupedStats).map(vedaKey => {
+            const shakaMap = stats.groupedStats[vedaKey];
+            let totalVedaCount = 0;
+            const shakas = Object.keys(shakaMap).map(shakaKey => {
+              const count = shakaMap[shakaKey];
+              totalVedaCount += count;
+              return {
+                shakaName: this.shakaLabels[shakaKey] || shakaKey,
+                count: count
+              };
+            }).sort((a, b) => b.count - a.count);
+
+            return {
+              vedaName: this.scholarLabels[vedaKey] || vedaKey,
+              totalVedaCount: totalVedaCount,
+              shakas: shakas
+            };
+          }).sort((a, b) => b.totalVedaCount - a.totalVedaCount);
         }
       },
       error: (err) => {

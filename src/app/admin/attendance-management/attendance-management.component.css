@@ -121,9 +121,39 @@
   color: #4a6cf7;
 }
 .scrollable-stats {
-  max-height: 200px;
+  max-height: 250px;
   overflow-y: auto;
   padding-right: 5px;
+}
+
+.veda-header {
+  background-color: #f8f9fa;
+  border-top: 2px solid #e9ecef !important;
+}
+
+.veda-name {
+  font-weight: 700;
+  color: #343a40;
+}
+
+.veda-count {
+  font-weight: 700;
+  color: #343a40;
+}
+
+.shaka-row {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.shaka-name {
+  padding-left: 20px;
+  font-weight: 400;
+  color: #6c757d;
+}
+
+.shaka-count {
+  font-weight: 500;
+  color: #4a6cf7;
 }
 
 /* Accommodation Stats */
