@@ -95,6 +95,37 @@
   padding-right: 15px;
 }
 
+/* Scholar Stats (Veda/Shaka) */
+.scholar-stats {
+  margin-top: 10px;
+}
+.scholar-stats table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.scholar-stats tr {
+  border-bottom: 1px solid #f0f0f0;
+}
+.scholar-stats tr:last-child {
+  border-bottom: none;
+}
+.stat-name {
+  padding: 6px 0;
+  font-weight: 500;
+  color: #495057;
+  padding-right: 15px;
+}
+.stat-count {
+  text-align: right;
+  font-weight: 600;
+  color: #4a6cf7;
+}
+.scrollable-stats {
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
 /* Accommodation Stats */
 .accommodation-stats {
   width: 100%;

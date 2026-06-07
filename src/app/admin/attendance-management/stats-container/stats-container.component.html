@@ -1,0 +1,9 @@
+<div class="stats-container">
+  <h3>Accommodation Statistics</h3>
+  <div class="stats-grid">
+    <div *ngFor="let stat of statsArray" class="stat-card">
+      <div class="stat-label">{{ stat.key }}</div>
+      <div class="stat-value">{{ stat.value }}</div>
+    </div>
+  </div>
+</div>

@@ -5,7 +5,7 @@ import { fromEvent, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { RegistrationService } from '../../services/registration.service';
-import { AttendanceData, RegistrationFormData, RegistrationListResponse, RegistrationResponse } from '../../models/registration-form-data.model';
+import { AttendanceData, RegistrationFormData, RegistrationListResponse, RegistrationResponse, AttendanceStatsDTO, ScholarStatsDTO } from '../../models/registration-form-data.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { PadNumberPipe } from '../../pipes/pad-number.pipe';
 declare var jsPDF: any;
@@ -100,6 +100,8 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.loadAttendanceData();
+    this.loadAttendanceStats();
+    this.loadScholarStats();
     // this.loadAccommodationStats();
   }
 
@@ -387,53 +389,109 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
   }
 
   // Define the type for attendance stats
-  private attendanceStats = {
-    day1: { fn: 0, an: 0 },
-    day2: { fn: 0, an: 0 },
-    day3: { fn: 0, an: 0 },
-    day4: { fn: 0, an: 0 },
-    day5: { fn: 0, an: 0 }
+  attendanceStats: AttendanceStatsDTO = {
+    day1FnCount: 0,
+    day1AnCount: 0,
+    day2FnCount: 0,
+    day2AnCount: 0,
+    day3FnCount: 0,
+    day3AnCount: 0,
+    day4FnCount: 0,
+    day4AnCount: 0,
+    day5FnCount: 0,
+    day5AnCount: 0
   };
 
-  getAttendanceStats() {
-    // Reset stats
-    Object.values(this.attendanceStats).forEach(day => {
-      day.fn = 0;
-      day.an = 0;
-    });
-
-    // Calculate stats
-    this.attendanceRecords.forEach(record => {
-      if (record.attendanceAndGifts) {
-        const att = record.attendanceAndGifts;
-        if (att.day1FnAttendance) this.attendanceStats.day1.fn++;
-        if (att.day1AnAttendance) this.attendanceStats.day1.an++;
-        if (att.day2FnAttendance) this.attendanceStats.day2.fn++;
-        if (att.day2AnAttendance) this.attendanceStats.day2.an++;
-        if (att.day3FnAttendance) this.attendanceStats.day3.fn++;
-        if (att.day3AnAttendance) this.attendanceStats.day3.an++;
-        if (att.day4FnAttendance) this.attendanceStats.day4.fn++;
-        if (att.day4AnAttendance) this.attendanceStats.day4.an++;
-        if (att.day5FnAttendance) this.attendanceStats.day5.fn++;
-        if (att.day5AnAttendance) this.attendanceStats.day5.an++;
+  loadAttendanceStats() {
+    this.registrationService.getAttendanceStats().subscribe({
+      next: (stats: AttendanceStatsDTO) => {
+        this.attendanceStats = stats;
+      },
+      error: (err) => {
+        console.error('Error loading attendance stats:', err);
       }
     });
+  }
 
-    return {
-      ...this.attendanceStats,
-      total: this.attendanceRecords.length
-    };
+  vedaStatsList: { name: string, count: number }[] = [];
+  shakaStatsList: { name: string, count: number }[] = [];
+
+  scholarLabels: { [key: string]: string } = {
+    'rig_veda': 'Rig Vedam',
+    'krishna_yajur_veda': 'Krishna Yajur Veda',
+    'shukla_yajur_veda': 'Shukla Yajur Veda',
+    'sama_veda': 'Sama Veda',
+    'atharva_veda': 'Atharva Veda',
+    'granthas': 'Granthas',
+    'prabandam': 'Prabandam'
+  };
+
+  shakaLabels: { [key: string]: string } = {
+    'sakala': 'Śākala',
+    'baskala': 'Bāṣkala',
+    'taittiriya': 'Taittirīya Śākhā',
+    'maitrayaniya': 'Maitrāyaṇīya Śākhā',
+    'kathaka': 'Kāṭhaka Śākhā',
+    'kapishthala_katha': 'Kapiṣṭhala-Kaṭha Śākhā',
+    'madhyandina': 'Mādhyandina Śākhā',
+    'kanva': 'Kāṇva Śākhā',
+    'kauthuma': 'Kauthuma Śākhā',
+    'ranayaniya': 'Rāṇāyanīya Śākhā',
+    'jaiminiya': 'Jaiminīya Śākhā',
+    'shaunaka': 'Śaunaka Śākhā',
+    'paippalada': 'Paippalāda',
+    'devadarsha': 'Devadarśa',
+    'mauda': 'Mauda',
+    'jajala': 'Jājala',
+    'brahmavada': 'Brahmavada',
+    'shaulkayana': 'Śaulkāyana',
+    'naka': 'Nāka',
+    'vedashiras': 'Vedaśiras',
+    'bhagavad_gita': 'Bhagavad Gita',
+    'sri_bashyam': 'Sri Bashyam',
+    'sri_ramayana': 'Sri Ramayana',
+    'others': 'Others',
+    'poorna_athikari': 'Poorna Athikari',
+    'book_support': 'Book support'
+  };
+
+  loadScholarStats() {
+    this.registrationService.getScholarStats().subscribe({
+      next: (stats: ScholarStatsDTO) => {
+        if (stats && stats.vedaStats) {
+          this.vedaStatsList = Object.keys(stats.vedaStats).map(key => ({
+            name: this.scholarLabels[key] || key,
+            count: stats.vedaStats[key]
+          })).sort((a, b) => b.count - a.count);
+        }
+        if (stats && stats.shakaStats) {
+          this.shakaStatsList = Object.keys(stats.shakaStats).map(key => ({
+            name: this.shakaLabels[key] || key,
+            count: stats.shakaStats[key]
+          })).sort((a, b) => b.count - a.count);
+        }
+      },
+      error: (err) => {
+        console.error('Error loading scholar stats:', err);
+      }
+    });
   }
 
   // Helper method to get total count of records
   getTotalCount(): number {
-    return this.attendanceRecords?.length || 0;
+    return this.totalElements || 0;
   }
 
   // Helper method to get stats for a specific day
   getDayStats(day: number) {
-    const dayKey = `day${day}` as keyof typeof this.attendanceStats;
-    return this.attendanceStats[dayKey] || { fn: 0, an: 0 };
+    switch (day) {
+      case 1: return { fn: this.attendanceStats.day1FnCount, an: this.attendanceStats.day1AnCount };
+      case 2: return { fn: this.attendanceStats.day2FnCount, an: this.attendanceStats.day2AnCount };
+      case 3: return { fn: this.attendanceStats.day3FnCount, an: this.attendanceStats.day3AnCount };
+      case 4: return { fn: this.attendanceStats.day4FnCount, an: this.attendanceStats.day4AnCount };
+      case 5: return { fn: this.attendanceStats.day5FnCount, an: this.attendanceStats.day5AnCount };
+      default: return { fn: 0, an: 0 };
+    }
   }
 
   loadAttendanceData(page: number = 0): void {
@@ -452,8 +510,7 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
         this.currentPageNumber = response.number;
         this.currentPage = response.number + 1; // Display is 1-based
 
-        // Calculate attendance stats after loading records
-        this.getAttendanceStats();
+
 
         console.log("Loaded page:", this.currentPage, "Records:", this.filteredRecords.length);
         console.log("Total Elements:", this.totalElements, "Total Pages:", this.totalPages);
@@ -707,7 +764,7 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
     this.registrationService.updateCharges(record.registration.id, charges, this.attendanceLog, record.attendanceAndGifts?.giftGiven || false).subscribe({
       next: () => {
         alert('Charges updated successfully');
-        this.getAttendanceStats();
+        this.loadAttendanceStats();
       },
       error: (err) => {
         console.error('Error updating charges:', err);
@@ -723,7 +780,7 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
         next: (message: string) => {
           console.log(message);
           alert(message);
-          this.getAttendanceStats();
+          this.loadAttendanceStats();
         },
         error: (err) => {
           console.error('Error deleting registration:', err);

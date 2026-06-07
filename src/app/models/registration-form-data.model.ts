@@ -118,3 +118,20 @@ export type AttendanceData = {
   day5AnAttendance?: boolean;
 };
 
+export interface AttendanceStatsDTO {
+  day1FnCount: number;
+  day1AnCount: number;
+  day2FnCount: number;
+  day2AnCount: number;
+  day3FnCount: number;
+  day3AnCount: number;
+  day4FnCount: number;
+  day4AnCount: number;
+  day5FnCount: number;
+  day5AnCount: number;
+}
+
+export interface ScholarStatsDTO {
+  vedaStats: { [key: string]: number };
+  shakaStats: { [key: string]: number };
+}

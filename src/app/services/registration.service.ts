@@ -1,13 +1,12 @@
+
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, catchError, throwError, map, tap } from 'rxjs';
-import { AttendanceData, RegistrationFormData, RegistrationListResponse } from '../models/registration-form-data.model';
+import { AttendanceData, RegistrationFormData, RegistrationListResponse, RegistrationResponse, AttendanceStatsDTO, ScholarStatsDTO } from '../models/registration-form-data.model';
 import { saveAs } from 'file-saver';
 import { aadhaarCheck } from '../models/aadhaarCheck';
 import { HallOccupancy } from '../models/HallOccupancy';
-
-
-
 
 @Injectable({
   providedIn: 'root'
@@ -212,23 +211,44 @@ export class RegistrationService {
  * @param params Search parameters (page, size, search, id)
  * @returns Observable of paginated registration response
  */
-searchRegistrations(params: {
-  page?: number;
-  size?: number;
-  search?: string;
-  id?: string;
-}): Observable<RegistrationListResponse> {
-  let url = `${this.backendUrl}/search?page=${params.page || 0}&size=${params.size || 50}`;
-  
-  if (params.search) {
-    url += `&search=${encodeURIComponent(params.search)}`;
+  searchRegistrations(params: {
+    page?: number;
+    size?: number;
+    search?: string;
+    id?: string;
+  }): Observable<RegistrationListResponse> {
+    let url = `${this.backendUrl}/search?page=${params.page || 0}&size=${params.size || 50}`;
+
+    if (params.search) {
+      url += `&search=${encodeURIComponent(params.search)}`;
+    }
+    if (params.id) {
+      url += `&id=${encodeURIComponent(params.id)}`;
+    }
+
+    return this.http.get<RegistrationListResponse>(url).pipe(
+      catchError(this.handleError)
+    );
   }
-  if (params.id) {
-    url += `&id=${encodeURIComponent(params.id)}`;
+  /**
+   * Get attendance statistics
+   * @returns Observable of AttendanceStatsDTO
+   */
+  getAttendanceStats(): Observable<AttendanceStatsDTO> {
+    const url = `${this.backendUrl}/attendance-stats`;
+    return this.http.get<AttendanceStatsDTO>(url).pipe(
+      catchError(this.handleError)
+    );
   }
-  
-  return this.http.get<RegistrationListResponse>(url).pipe(
-    catchError(this.handleError)
-  );
-}
+
+  /**
+   * Get scholar statistics (Veda and Shaka counts)
+   * @returns Observable of ScholarStatsDTO
+   */
+  getScholarStats(): Observable<ScholarStatsDTO> {
+    const url = `${this.backendUrl}/scholar-stats`;
+    return this.http.get<ScholarStatsDTO>(url).pipe(
+      catchError(this.handleError)
+    );
+  }
 }
