@@ -37,6 +37,9 @@ export interface RegistrationFormData {
   passbookImageBase64?: string;
   passbookImageContentType?: string;
   hasPassbookImage?: boolean;
+  photoImageBase64?: string;
+  photoImageContentType?: string;
+  hasPhotoImage?: boolean;
 }
 
 export interface Registration {
@@ -63,6 +66,9 @@ export interface Registration {
   hasPassbookImage?: boolean;
   passbookImageBase64?: string;
   passbookImageContentType?: string;
+  hasPhotoImage?: boolean;
+  photoImageBase64?: string;
+  photoImageContentType?: string;
 }
 
 export interface AttendanceAndGifts {

@@ -143,6 +143,20 @@
             <div *ngIf="f['emergencyContact'].errors?.['sameAsPhone']">Emergency contact cannot be the same as phone number</div>
           </div>
         </div>
+
+        <!-- Registrant Photo Image -->
+        <div class="form-group">
+          <label for="photoImage">Upload Registrant Photo (Stamp Size) <span class="required">*</span></label>
+          <input type="file" id="photoImage" accept="image/*" (change)="onPhotoSelected($event)" class="form-control" style="padding-top: 5px;" required>
+          <small class="helper-text" style="color: #666; font-size: 0.85em; display: block; margin-top: 5px;">
+            Please upload a clear stamp size photo for the ID card. Recommended dimensions: 35mm x 45mm or roughly 400x500 pixels. Max size: 5MB.
+          </small>
+          <div *ngIf="showErrors('photoImage')" class="error-message">
+            <div *ngIf="f['photoImage'].errors?.['required']">Photo image is required</div>
+            <div *ngIf="f['photoImage'].errors?.['invalidFileType']">Please upload a valid image file</div>
+            <div *ngIf="f['photoImage'].errors?.['fileSizeExceeded']">File size must be less than 5MB</div>
+          </div>
+        </div>
       </div>
     </div>
 

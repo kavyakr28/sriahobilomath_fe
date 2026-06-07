@@ -124,6 +124,8 @@ export class RegistrationFormComponent implements OnInit {
   registeredUserData: any = null;
   passbookImageBase64?: string;
   passbookImageContentType?: string;
+  photoImageBase64?: string;
+  photoImageContentType?: string;
 
   constructor(
     private fb: FormBuilder,
@@ -221,7 +223,8 @@ export class RegistrationFormComponent implements OnInit {
       bankName: ['', Validators.required],
       otherBankName: [''],
       accountType: ['', Validators.required],
-      passbookImage: [null, Validators.required]
+      passbookImage: [null, Validators.required],
+      photoImage: [null, Validators.required]
     }, {
       validators: [
         this.accountNumberMatcher.bind(this),
@@ -459,6 +462,39 @@ export class RegistrationFormComponent implements OnInit {
     }
   }
 
+  // Handle photo selection
+  onPhotoSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Please select a valid image file for the photo.');
+        this.registrationForm.get('photoImage')?.setErrors({ invalidFileType: true });
+        this.registrationForm.get('photoImage')?.setValue(null);
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Photo file size exceeds 5MB limit.');
+        this.registrationForm.get('photoImage')?.setErrors({ fileSizeExceeded: true });
+        this.registrationForm.get('photoImage')?.setValue(null);
+        return;
+      }
+
+      this.registrationForm.get('photoImage')?.setValue(file);
+      this.photoImageContentType = file.type;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = reader.result as string;
+        this.photoImageBase64 = result.split(',')[1];
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.registrationForm.get('photoImage')?.setValue(null);
+      this.photoImageBase64 = undefined;
+      this.photoImageContentType = undefined;
+    }
+  }
+
   // Handle form submission with proper validation and data processing
   onSubmit() {
     // Mark all fields as touched to show validation messages
@@ -488,11 +524,19 @@ export class RegistrationFormComponent implements OnInit {
       formValue.passbookImageContentType = this.passbookImageContentType;
       formValue.hasPassbookImage = true;
     }
+    
+    // Attach photo image data if available
+    if (this.photoImageBase64) {
+      formValue.photoImageBase64 = this.photoImageBase64;
+      formValue.photoImageContentType = this.photoImageContentType;
+      formValue.hasPhotoImage = true;
+    }
 
     // Remove fields not needed in the backend
     delete formValue.confirmAccountNumber;
     delete formValue.otherBankName;
     delete formValue.passbookImage; // Remove the File object from the payload
+    delete formValue.photoImage; // Remove the File object from the payload
 
     // Proceed with form submission
     this.isSubmitting = true;
@@ -543,32 +587,43 @@ export class RegistrationFormComponent implements OnInit {
       document.body.appendChild(tempDiv);
 
       // Create the ID card content
+      const photoHtml = this.photoImageBase64 
+        ? `<img src="data:${this.photoImageContentType};base64,${this.photoImageBase64}" alt="Registrant Photo" style="width: 80px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px;">` 
+        : `<div style="width: 80px; height: 100px; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #999;">No Photo</div>`;
+
       tempDiv.innerHTML = `      
-      <div style="display: flex; margin: 10px 0; width: 100%;">
-        <div style="width: 100px; font-size: 16px; color: #555;">Name:</div>
-        <div style="font-size: 16px; font-weight: bold; flex: 1;">
-          ${registration.fullName}
+      <div style="display: flex; flex-direction: row; width: 100%; align-items: flex-start;">
+        <div style="flex: 1;">
+          <div style="display: flex; margin: 10px 0; width: 100%;">
+            <div style="width: 100px; font-size: 16px; color: #555;">Name:</div>
+            <div style="font-size: 16px; font-weight: bold; flex: 1;">
+              ${registration.fullName}
+            </div>
+          </div>
+          
+          <div style="display: flex; margin: 10px 0; width: 100%;">
+            <div style="width: 100px; font-size: 16px; color: #555;">ID No:</div>
+            <div style="font-size: 16px; font-weight: bold; flex: 1;">
+              ${this.formatId(registration.id)}
+            </div>
+          </div>
+          
+          <div style="display: flex; margin: 10px 0; width: 100%;">
+            <div style="width: 100px; font-size: 16px; color: #555;">Vedham:</div>
+            <div style="font-size: 16px; font-weight: bold; flex: 1;">
+              ${registration.scholarIn || 'N/A'}
+            </div>
+          </div>
+          
+          <div style="display: flex; margin: 10px 0 20px 0; width: 100%;">
+            <div style="width: 100px; font-size: 16px; color: #555;">Shakai:</div>
+            <div style="font-size: 16px; font-weight: bold; flex: 1;">
+              ${registration.sakai || 'N/A'}
+            </div>
+          </div>
         </div>
-      </div>
-      
-      <div style="display: flex; margin: 10px 0; width: 100%;">
-        <div style="width: 100px; font-size: 16px; color: #555;">ID No:</div>
-        <div style="font-size: 16px; font-weight: bold; flex: 1;">
-          ${this.formatId(registration.id)}
-        </div>
-      </div>
-      
-      <div style="display: flex; margin: 10px 0; width: 100%;">
-        <div style="width: 100px; font-size: 16px; color: #555;">Vedham:</div>
-        <div style="font-size: 16px; font-weight: bold; flex: 1;">
-          ${registration.scholarIn || 'N/A'}
-        </div>
-      </div>
-      
-      <div style="display: flex; margin: 10px 0 20px 0; width: 100%;">
-        <div style="width: 100px; font-size: 16px; color: #555;">Shakai:</div>
-        <div style="font-size: 16px; font-weight: bold; flex: 1;">
-          ${registration.sakai || 'N/A'}
+        <div style="margin-left: 10px; margin-top: 10px;">
+          ${photoHtml}
         </div>
       </div>
       
