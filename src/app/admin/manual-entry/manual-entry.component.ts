@@ -55,8 +55,8 @@ export class ManualEntryComponent implements OnInit {
     
     // Generate date slots and get current attendance type
     const { slots, currentAttendanceType } = this.generateDateSlots(
-      '26-11-2025', 
-      '30-11-2025'
+      '22-11-2025', 
+      '36-11-2025'
     );
     
     this.slots = slots;
