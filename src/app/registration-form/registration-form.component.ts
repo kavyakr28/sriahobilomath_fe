@@ -550,8 +550,15 @@ export class RegistrationFormComponent implements OnInit {
 
         this.isSubmitting = false;
         this.submitted = true;
-        alert('Registration successful!!! Please collect your ID Card at Srirangam mutt office on 24-06-2025');
-        this.registrationForm.reset();
+        
+        const dialogRef = this.dialog.open(AlertDialogComponent, {
+          width: '450px',
+          disableClose: true
+        });
+
+        dialogRef.afterClosed().subscribe(() => {
+          this.registrationForm.reset();
+        });
       },
       error: (error: Error) => {
         this.isSubmitting = false;
