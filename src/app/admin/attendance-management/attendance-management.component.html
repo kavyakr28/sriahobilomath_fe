@@ -186,23 +186,23 @@
               <th>Reg. Date</th>
               <th colspan="2">
                 <div>Day 1</div>
-                <div style="font-size: 0.8em; font-weight: normal;">26-11-2025</div>
+                <div style="font-size: 0.8em; font-weight: normal;">16-06-2026</div>
               </th>
               <th colspan="2">
                 <div>Day 2</div>
-                <div style="font-size: 0.8em; font-weight: normal;">27-11-2025</div>
+                <div style="font-size: 0.8em; font-weight: normal;">17-06-2026</div>
               </th>
               <th colspan="2">
                 <div>Day 3</div>
-                <div style="font-size: 0.8em; font-weight: normal;">28-11-2025</div>
+                <div style="font-size: 0.8em; font-weight: normal;">18-06-2026</div>
               </th>
               <th colspan="2">
                 <div>Day 4</div>
-                <div style="font-size: 0.8em; font-weight: normal;">29-11-2025</div>
+                <div style="font-size: 0.8em; font-weight: normal;">19-06-2026</div>
               </th>
               <th colspan="2">
                 <div>Day 5</div>
-                <div style="font-size: 0.8em; font-weight: normal;">30-11-2025</div>
+                <div style="font-size: 0.8em; font-weight: normal;">20-06-2026</div>
               </th>
               <!-- <th>Print</th> -->
               <th>Download</th>
@@ -435,20 +435,20 @@
           <button [disabled]="currentPage === totalPages" (click)="goToLastPage()" title="Last Page">
             <i class="fas fa-angle-double-right"></i>
           </button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- Image Modal -->
-<div class="image-modal-overlay" *ngIf="showImageModal" (click)="closeImageModal()">
-  <div class="image-modal-content" (click)="$event.stopPropagation()">
-    <div class="image-modal-header">
-      <h3>Passbook Image</h3>
-      <button class="close-btn" (click)="closeImageModal()">×</button>
+    <!-- Image Modal -->
+    <div class="image-modal-overlay" *ngIf="showImageModal" (click)="closeImageModal()">
+      <div class="image-modal-content" (click)="$event.stopPropagation()">
+        <div class="image-modal-header">
+          <h3>Passbook Image</h3>
+          <button class="close-btn" (click)="closeImageModal()">×</button>
+        </div>
+        <div class="image-modal-body">
+          <img *ngIf="selectedImageUrl" [src]="selectedImageUrl" [alt]="selectedImageAlt"
+            onerror="this.onerror=null; this.src=''; this.alt='Failed to load image';">
+        </div>
+      </div>
     </div>
-    <div class="image-modal-body">
-      <img *ngIf="selectedImageUrl" [src]="selectedImageUrl" [alt]="selectedImageAlt" 
-           onerror="this.onerror=null; this.src=''; this.alt='Failed to load image';">
-    </div>
-  </div>
-</div>

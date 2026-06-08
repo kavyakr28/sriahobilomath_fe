@@ -25,7 +25,7 @@ export class DashboardComponent implements OnInit {
   // Scanner properties
   allowedFormats = [BarcodeFormat.QR_CODE];
   currentScanType: 'attendance' | 'gift' | null = null;
-  
+
   // Camera and device management
   devices$ = new BehaviorSubject<MediaDeviceInfo[]>([]);
   selectedDevice$: Observable<MediaDeviceInfo> = this.devices$.pipe(
@@ -34,13 +34,13 @@ export class DashboardComponent implements OnInit {
     shareReplay(1)
   );
   enable$ = this.devices$.pipe(map(Boolean));
-  
+
   // Camera control
   isCameraActive = false;
 
   private lastScannedCode: string | null = null;
   private isProcessing = false;
-  
+
   toggleCamera(enable: boolean): void {
     this.isCameraActive = enable;
     if (enable) {
@@ -52,7 +52,7 @@ export class DashboardComponent implements OnInit {
       });
     }
   }
-  
+
   // Scan results
   scanSuccess$ = new BehaviorSubject<string>('');
 
@@ -63,9 +63,9 @@ export class DashboardComponent implements OnInit {
     private snackBar: MatSnackBar,
     private registrationService: RegistrationService,
     private toastr: ToastrService
-  ) {}
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   scanError(error: Error) {
     console.error('Scan error:', error);
@@ -79,9 +79,9 @@ export class DashboardComponent implements OnInit {
     }
 
     if (!this.currentScanType) return;
-    
+
     console.log(`QR Code scanned (${this.currentScanType}):`, result);
-    
+
     // Set processing flag and store the last scanned code
     this.isProcessing = true;
     this.lastScannedCode = result;
@@ -99,22 +99,22 @@ export class DashboardComponent implements OnInit {
       this.isProcessing = false;
     }, 3000);
   }
-  
+
   private processAttendanceScan(scanResult: number): void {
     // TODO: Implement attendance processing logic
     console.log('Processing attendance for:', scanResult);
-    const { slots, currentAttendanceType } = this.generateDateSlots('26-11-2025', '30-11-2025');    
+    const { slots, currentAttendanceType } = this.generateDateSlots('16-06-2026', '20-06-2026');
     this.registrationService.processScan(scanResult, currentAttendanceType).subscribe(
       (response) => {
         console.log("Response value : ", response);
-        if(response.attendanceAlreadyMarked){
+        if (response.attendanceAlreadyMarked) {
           this.toastr.warning(
             `Attendance already marked for ${scanResult}`,
             '',
             { timeOut: 3000 }
           );
           return;
-        }else{
+        } else {
           this.toastr.success(
             `Successfully scanned Attendance QR code for ID ${scanResult}`,
             '',
@@ -122,7 +122,7 @@ export class DashboardComponent implements OnInit {
           );
         }
         console.log('Attendance processed successfully:', response);
-        
+
       },
       (error) => {
         console.error('Error processing attendance:', error);
@@ -136,21 +136,21 @@ export class DashboardComponent implements OnInit {
     );
     // this.attendanceService.recordAttendance(scanResult).subscribe(...);
   }
-  
+
   private processGiftScan(scanResult: number): void {
     // TODO: Implement gift processing logic
     console.log('Processing gift for:', scanResult);
     // Example: Call your gift service
     this.registrationService.processScan(scanResult, 'gift').subscribe(
       (response) => {
-        if(response.giftAlreadyMarked){
+        if (response.giftAlreadyMarked) {
           this.toastr.warning(
             `Gift already marked for ${scanResult}`,
             '',
             { timeOut: 3000 }
           );
           return;
-        }else{
+        } else {
           this.toastr.success(
             `Successfully scanned Gifts QR code for ID ${scanResult}`,
             '',
@@ -158,7 +158,7 @@ export class DashboardComponent implements OnInit {
           );
         }
         console.log('Gift processed successfully:', response);
-        
+
       },
       (error) => {
         console.error('Error processing gift:', error);
@@ -195,7 +195,7 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/manual-entry']);
   }
 
-  
+
   onCloseScanner(): void {
     this.toggleCamera(false);
     this.currentScanType = null;
@@ -261,59 +261,59 @@ export class DashboardComponent implements OnInit {
       timeSlot: 'Fore Noon' | 'Afternoon',
       attendanceType: string
     }> = [];
-    
+
     console.log('Generating date slots for:', startDate, endDate);
-    
+
     const current = this.getCurrentDateTime();
     let currentAttendanceType: string = '';
-    let dayCount= 1;
-    
+    let dayCount = 1;
+
     // Parse start and end dates
     const [startDay, startMonth, startYear] = startDate.split('-').map(Number);
     const [endDay, endMonth, endYear] = endDate.split('-').map(Number);
-    
+
     const start = new Date(startYear, startMonth - 1, startDay);
     const end = new Date(endYear, endMonth - 1, endDay);
-    
+
     // Generate dates in the range
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       // Create time slots for each day with specific hours
       const foreNoonStart = new Date(d);
       foreNoonStart.setHours(6, 0, 0, 0); // 6:00 AM
-      
+
       const foreNoonEnd = new Date(d);
       foreNoonEnd.setHours(12, 0, 0, 0); // 12:00 PM
-      
+
       const afternoonStart = new Date(d);
       afternoonStart.setHours(14, 0, 0, 0); // 4:00 PM
-      
+
       const afternoonEnd = new Date(d);
       afternoonEnd.setHours(20, 0, 0, 0); // 8:00 PM
-      
+
       // Format date string
       const day = String(d.getDate()).padStart(2, '0');
       const month = String(d.getMonth() + 1).padStart(2, '0');
       const year = d.getFullYear();
       const dateStr = `${day}-${month}-${year}`;
-    
-    // Check if current date matches this day
-    const isCurrentDay = d.toDateString() === current.date.toDateString();
-    
-    // Create time slot entries with specific time ranges
-    const foreNoonSlot = {
-      date: foreNoonStart,
-      formattedDate: `${dateStr} (06:00 - 12:00)`,
-      timeSlot: 'Fore Noon' as const,
-      attendanceType: `ATTENDANCE_DAY${dayCount}_FN`
-    };
-    
-    const afternoonSlot = {
-      date: afternoonStart,
-      formattedDate: `${dateStr} (14:00 - 20:00)`,
-      timeSlot: 'Afternoon' as const,
-      attendanceType: `ATTENDANCE_DAY${dayCount}_AN`
-    };  
-      
+
+      // Check if current date matches this day
+      const isCurrentDay = d.toDateString() === current.date.toDateString();
+
+      // Create time slot entries with specific time ranges
+      const foreNoonSlot = {
+        date: foreNoonStart,
+        formattedDate: `${dateStr} (06:00 - 12:00)`,
+        timeSlot: 'Fore Noon' as const,
+        attendanceType: `ATTENDANCE_DAY${dayCount}_FN`
+      };
+
+      const afternoonSlot = {
+        date: afternoonStart,
+        formattedDate: `${dateStr} (14:00 - 20:00)`,
+        timeSlot: 'Afternoon' as const,
+        attendanceType: `ATTENDANCE_DAY${dayCount}_AN`
+      };
+
       // Check if this is the current time slot
       if (isCurrentDay) {
         const currentHour = current.date.getHours();
@@ -325,24 +325,24 @@ export class DashboardComponent implements OnInit {
           console.log('Current Attendance Type:', currentAttendanceType);
         }
       }
-      
+
       // Add both time slots
       slots.push(foreNoonSlot);
       slots.push(afternoonSlot);
-      
+
       dayCount++;
     }
-    
+
     return { slots, currentAttendanceType };
   }
-  
+
   // Example usage
   exampleUsage() {
     console.log('Example Usage:');
-    const { slots, currentAttendanceType } = this.generateDateSlots('26-11-2025', '30-11-2025');
+    const { slots, currentAttendanceType } = this.generateDateSlots('16-06-2026', '20-06-2026');
     console.log('Generated Date Slots:', slots);
     console.log('Current Attendance Type:', currentAttendanceType);
-    
+
     const current = this.getCurrentDateTime();
     console.log('Current Date/Time:', current.formattedDateTime);
     console.log('Current Time Slot:', current.timeSlot);
