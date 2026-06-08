@@ -435,7 +435,7 @@ export class RegistrationFormComponent implements OnInit {
         this.registrationForm.get('passbookImage')?.setValue(null);
         return;
       }
-      
+
       // Validate file size (e.g. max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         alert('File size exceeds 5MB limit.');
@@ -524,7 +524,7 @@ export class RegistrationFormComponent implements OnInit {
       formValue.passbookImageContentType = this.passbookImageContentType;
       formValue.hasPassbookImage = true;
     }
-    
+
     // Attach photo image data if available
     if (this.photoImageBase64) {
       formValue.photoImageBase64 = this.photoImageBase64;
@@ -547,7 +547,7 @@ export class RegistrationFormComponent implements OnInit {
         } catch (err) {
           console.error('Failed to download ID card', err);
         }
-        
+
         this.isSubmitting = false;
         this.submitted = true;
         alert('Registration successful!!! Please collect your ID Card at Srirangam mutt office on 24-06-2025');
@@ -561,8 +561,18 @@ export class RegistrationFormComponent implements OnInit {
     });
   }
 
-  formatId(id: number): string {
-    return 'SRI-' + id.toString().padStart(4, '0');
+  formatId(id: number, scholarIn?: string): string {
+    const prefixMap: { [key: string]: string } = {
+      'rig_veda': 'RV',
+      'krishna_yajur_veda': 'KYV',
+      'shukla_yajur_veda': 'SYV',
+      'sama_veda': 'SV',
+      'atharva_veda': 'ATH',
+      'granthas': 'GR',
+      'prabandam': 'DP'
+    };
+    const prefix = (scholarIn && prefixMap[scholarIn]) ? prefixMap[scholarIn] : 'SRI';
+    return prefix + ' ' + id.toString().padStart(4, '0');
   }
 
   async downloadIdCard(registration: any): Promise<void> {
@@ -587,8 +597,8 @@ export class RegistrationFormComponent implements OnInit {
       document.body.appendChild(tempDiv);
 
       // Create the ID card content
-      const photoHtml = this.photoImageBase64 
-        ? `<img src="data:${this.photoImageContentType};base64,${this.photoImageBase64}" alt="Registrant Photo" style="width: 80px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px;">` 
+      const photoHtml = this.photoImageBase64
+        ? `<img src="data:${this.photoImageContentType};base64,${this.photoImageBase64}" alt="Registrant Photo" style="width: 80px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px;">`
         : `<div style="width: 80px; height: 100px; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #999;">No Photo</div>`;
 
       tempDiv.innerHTML = `      
@@ -604,7 +614,7 @@ export class RegistrationFormComponent implements OnInit {
           <div style="display: flex; margin: 10px 0; width: 100%;">
             <div style="width: 100px; font-size: 16px; color: #555;">ID No:</div>
             <div style="font-size: 16px; font-weight: bold; flex: 1;">
-              ${this.formatId(registration.id)}
+              ${this.formatId(registration.id, registration.scholarIn)}
             </div>
           </div>
           
