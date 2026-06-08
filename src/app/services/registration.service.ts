@@ -117,6 +117,18 @@ export class RegistrationService {
   }
 
   /**
+   * Photo Image Generation Call
+   * @param id Registration ID
+   * @returns Observable with the photo image blob
+   */
+  getPhotoImage(id: number): Observable<any> {
+    const url = `${this.backendUrl}/${id}/photo-image`;
+    return this.http.get(url, { responseType: 'blob' }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
    * get list of IDs
    */
   getAllIds(startDate: string, endDate: string): Observable<any> {

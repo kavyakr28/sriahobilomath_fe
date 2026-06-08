@@ -805,6 +805,16 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
     try {
       const blob = await this.registrationService.getQRImage(record.registration.id).toPromise();
       const qrCodeUrl = URL.createObjectURL(blob);
+      
+      let photoUrl = '';
+      try {
+        const photoBlob = await this.registrationService.getPhotoImage(record.registration.id).toPromise();
+        if (photoBlob) {
+          photoUrl = URL.createObjectURL(photoBlob);
+        }
+      } catch (err) {
+        console.log('No photo available or error fetching photo');
+      }
 
       // Create a temporary div to hold our ID card content
       const tempDiv = document.createElement('div');
@@ -822,33 +832,44 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
       tempDiv.style.backgroundColor = 'white';
       document.body.appendChild(tempDiv);
 
+      const photoHtml = photoUrl
+        ? `<img src="${photoUrl}" alt="Registrant Photo" style="width: 80px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px;">`
+        : `<div style="width: 80px; height: 100px; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #999;">No Photo</div>`;
+
       // Create the ID card content
       tempDiv.innerHTML = `      
-      <div style="display: flex; margin: 10px 0; width: 100%;">
-        <div style="width: 100px; font-size: 16px; color: #555;">Name:</div>
-        <div style="font-size: 16px; font-weight: bold; flex: 1;">
-          ${record.registration.fullName}
+      <div style="display: flex; flex-direction: row; width: 100%; align-items: flex-start;">
+        <div style="flex: 1;">
+          <div style="display: flex; margin: 10px 0; width: 100%;">
+            <div style="width: 100px; font-size: 16px; color: #555;">Name:</div>
+            <div style="font-size: 16px; font-weight: bold; flex: 1;">
+              ${record.registration.fullName}
+            </div>
+          </div>
+          
+          <div style="display: flex; margin: 10px 0; width: 100%;">
+            <div style="width: 100px; font-size: 16px; color: #555;">ID No:</div>
+            <div style="font-size: 16px; font-weight: bold; flex: 1;">
+              ${this.formatId(record.registration.id, record.registration.scholarIn)}
+            </div>
+          </div>
+          
+          <div style="display: flex; margin: 10px 0; width: 100%;">
+            <div style="width: 100px; font-size: 16px; color: #555;">Vedham:</div>
+            <div style="font-size: 16px; font-weight: bold; flex: 1;">
+              ${record.registration.scholarIn || 'N/A'}
+            </div>
+          </div>
+          
+          <div style="display: flex; margin: 10px 0 20px 0; width: 100%;">
+            <div style="width: 100px; font-size: 16px; color: #555;">Shakai:</div>
+            <div style="font-size: 16px; font-weight: bold; flex: 1;">
+              ${record.registration.sakai || 'N/A'}
+            </div>
+          </div>
         </div>
-      </div>
-      
-      <div style="display: flex; margin: 10px 0; width: 100%;">
-        <div style="width: 100px; font-size: 16px; color: #555;">ID No:</div>
-        <div style="font-size: 16px; font-weight: bold; flex: 1;">
-          ${this.formatId(record.registration.id)}
-        </div>
-      </div>
-      
-      <div style="display: flex; margin: 10px 0; width: 100%;">
-        <div style="width: 100px; font-size: 16px; color: #555;">Vedham:</div>
-        <div style="font-size: 16px; font-weight: bold; flex: 1;">
-          ${record.registration.scholarIn || 'N/A'}
-        </div>
-      </div>
-      
-      <div style="display: flex; margin: 10px 0 20px 0; width: 100%;">
-        <div style="width: 100px; font-size: 16px; color: #555;">Shakai:</div>
-        <div style="font-size: 16px; font-weight: bold; flex: 1;">
-          ${record.registration.sakai || 'N/A'}
+        <div style="margin-left: 10px; margin-top: 10px;">
+          ${photoHtml}
         </div>
       </div>
       
@@ -893,6 +914,9 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
       // Clean up
       document.body.removeChild(tempDiv);
       URL.revokeObjectURL(qrCodeUrl);
+      if (photoUrl) {
+        URL.revokeObjectURL(photoUrl);
+      }
 
     } catch (err) {
       console.error('Error generating ID card:', err);
@@ -1001,7 +1025,7 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
     <div style="display: flex; margin: 1px 0; padding: 0 1px; width: 100%;">
       <div style="width: 70px; font-size: 15px; color: #555;">ID No:</div>
       <div style="font-size: 15px; font-weight: bold; flex: 1; padding: 1px 0 1px 1px;">
-        ${this.formatId(record.registration.id)}
+        ${this.formatId(record.registration.id, record.registration.scholarIn)}
       </div>
     </div>
                 
@@ -1290,6 +1314,18 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
               const blob = new Blob([byteArray], { type: 'image/png' });
               const qrCodeUrl = URL.createObjectURL(blob);
 
+              let photoUrl = '';
+              try {
+                if (item.registration?.id) {
+                  const photoBlob = await this.registrationService.getPhotoImage(item.registration.id).toPromise();
+                  if (photoBlob) {
+                    photoUrl = URL.createObjectURL(photoBlob);
+                  }
+                }
+              } catch (err) {
+                console.log('No photo available or error fetching photo for id: ', item.registration?.id);
+              }
+
               // Create a temporary div for the ID card
               const tempDiv = document.createElement('div');
               tempDiv.style.position = 'absolute';
@@ -1306,39 +1342,50 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
               tempDiv.style.backgroundColor = 'white';
               document.body.appendChild(tempDiv);
 
+              const photoHtml = photoUrl
+                ? `<img src="${photoUrl}" alt="Registrant Photo" style="width: 80px; height: 100px; object-fit: cover; border: 1px solid #ccc; border-radius: 4px;">`
+                : `<div style="width: 80px; height: 100px; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #999;">No Photo</div>`;
+
               // Create the ID card content
               tempDiv.innerHTML = `      
-                <div style="display: flex; margin: 10px 0; width: 100%;">
-                  <div style="width: 100px; font-size: 16px; color: #555;">Name:</div>
-                  <div style="font-size: 16px; font-weight: bold; flex: 1;">
-                    ${item.registration?.fullName || 'N/A'}
+              <div style="display: flex; flex-direction: row; width: 100%; align-items: flex-start;">
+                <div style="flex: 1;">
+                  <div style="display: flex; margin: 10px 0; width: 100%;">
+                    <div style="width: 100px; font-size: 16px; color: #555;">Name:</div>
+                    <div style="font-size: 16px; font-weight: bold; flex: 1;">
+                      ${item.registration?.fullName || 'N/A'}
+                    </div>
+                  </div>
+                  
+                  <div style="display: flex; margin: 10px 0; width: 100%;">
+                    <div style="width: 100px; font-size: 16px; color: #555;">ID No:</div>
+                    <div style="font-size: 16px; font-weight: bold; flex: 1;">
+                      ${this.formatId(item.registration?.id || '', item.registration?.scholarIn)}
+                    </div>
+                  </div>
+                  
+                  <div style="display: flex; margin: 10px 0; width: 100%;">
+                    <div style="width: 100px; font-size: 16px; color: #555;">Vedham:</div>
+                    <div style="font-size: 16px; font-weight: bold; flex: 1;">
+                      ${item.registration?.scholarIn || 'N/A'}
+                    </div>
+                  </div>
+                  
+                  <div style="display: flex; margin: 10px 0 20px 0; width: 100%;">
+                    <div style="width: 100px; font-size: 16px; color: #555;">Shakai:</div>
+                    <div style="font-size: 16px; font-weight: bold; flex: 1;">
+                      ${item.registration?.sakai || 'N/A'}
+                    </div>
                   </div>
                 </div>
-                
-                <div style="display: flex; margin: 10px 0; width: 100%;">
-                  <div style="width: 100px; font-size: 16px; color: #555;">ID No:</div>
-                  <div style="font-size: 16px; font-weight: bold; flex: 1;">
-                    ${this.formatId(item.registration?.id || '')}
-                  </div>
+                <div style="margin-left: 20px;">
+                  ${photoHtml}
                 </div>
-                
-                <div style="display: flex; margin: 10px 0; width: 100%;">
-                  <div style="width: 100px; font-size: 16px; color: #555;">Vedham:</div>
-                  <div style="font-size: 16px; font-weight: bold; flex: 1;">
-                    ${item.registration?.scholarIn || 'N/A'}
-                  </div>
-                </div>
-                
-                <div style="display: flex; margin: 10px 0 20px 0; width: 100%;">
-                  <div style="width: 100px; font-size: 16px; color: #555;">Shakai:</div>
-                  <div style="font-size: 16px; font-weight: bold; flex: 1;">
-                    ${item.registration?.sakai || 'N/A'}
-                  </div>
-                </div>
-                
-                <div style="text-align: center; margin-top: 20px;">
-                  <img src="${qrCodeUrl}" alt="QR Code" style="width: 200px; height: 200px;">
-                </div>
+              </div>
+              
+              <div style="text-align: center; margin-top: 20px; width: 100%;">
+                <img src="${qrCodeUrl}" alt="QR Code" style="width: 200px; height: 200px;">
+              </div>
               `;
 
               // Convert the div to a canvas
@@ -1370,6 +1417,9 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
               // Clean up
               document.body.removeChild(tempDiv);
               URL.revokeObjectURL(qrCodeUrl);
+              if (photoUrl) {
+                URL.revokeObjectURL(photoUrl);
+              }
 
             } catch (error) {
               console.error(`Error processing ID card for ${item.fullName}:`, error);
@@ -1517,11 +1567,23 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
     });
   } */
 
-  private formatId(id: number | string): string {
+  private formatId(id: number | string, scholarIn?: string): string {
     if (id === null || id === undefined || id === '') return '';
     const stringValue = id.toString();
     const zerosNeeded = Math.max(0, 4 - stringValue.length);
-    return '0'.repeat(zerosNeeded) + stringValue;
+    const paddedId = '0'.repeat(zerosNeeded) + stringValue;
+    
+    const prefixMap: { [key: string]: string } = {
+      'rig_veda': 'RV',
+      'krishna_yajur_veda': 'KYV',
+      'shukla_yajur_veda': 'SYV',
+      'sama_veda': 'SV',
+      'atharva_veda': 'ATH',
+      'granthas': 'GR',
+      'prabandam': 'DP'
+    };
+    const prefix = (scholarIn && prefixMap[scholarIn]) ? prefixMap[scholarIn] : 'SRI';
+    return prefix + ' ' + paddedId;
   }
 
   private openPrintWindow(data: any[]): void {
@@ -1622,7 +1684,7 @@ export class AttendanceManagementComponent implements OnInit, AfterViewInit {
                 </div>
                 <div class="detail-row">
                   <span class="label">ID No:</span>
-                  <span class="value">${this.formatId(item.registration.id)}</span>
+                  <span class="value">${this.formatId(item.registration.id, item.registration.scholarIn)}</span>
                 </div>
                 <div class="detail-row">
                   <span class="label">Vedham:</span>
